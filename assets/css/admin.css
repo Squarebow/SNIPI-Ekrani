@@ -1,17 +1,18 @@
 /* admin.css - basic admin layout for SNIPI ekrani */
 .snipi-admin-row {
-display: flex;
-gap: 16px;
-margin-bottom: 30px;
-flex-wrap: wrap;
+	display: flex;
+	gap: 16px;
+	margin-bottom: 30px;
+	flex-wrap: wrap;
+	align-items: flex-start;
 }
 
 .snipi-admin-row--quarters .snipi-admin-col {
-flex: 0 0 25%;
+	flex: 0 0 25%;
 }
 
 .snipi-admin-row--thirds .snipi-admin-col {
-flex: 0 0 33.333%;
+	flex: 0 0 33.333%;
 }
 
 .snipi-admin-row--full .snipi-admin-col {
@@ -60,6 +61,9 @@ flex: 0 0 33.333%;
 	align-items: center;
 	justify-content: center;
 	padding: 0 10px;
+	border: none;
+	background: transparent;
+	cursor: pointer;
 }
 
 .snipi-copy-button .dashicons {
@@ -68,24 +72,24 @@ flex: 0 0 33.333%;
 }
 
 .snipi-admin-info-box {
-background: #f6f7f7;
-border: 1px solid #dcdcde;
-border-radius: 3px;
-padding: 12px;
-min-height: 72px;
-display: flex;
-flex-direction: column;
-align-items: flex-start;
-gap: 8px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 3px;
+	padding: 12px;
+	min-height: 72px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 8px;
 }
 
 .snipi-admin-info-box__text {
-margin: 0;
+	margin: 0;
 }
 
 .snipi-admin-info-box__value {
-font-weight: 700;
-font-size: 110%;
+	font-weight: 700;
+	font-size: 110%;
 }
 
 .snipi-logo-actions {
@@ -134,14 +138,61 @@ font-size: 110%;
 }
 
 .snipi-tabs {
-margin-top: 24px;
-display: flex;
-gap: 8px;
-align-items: center;
-padding-top: 8px;
+	margin-top: 24px;
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	padding-top: 8px;
 }
 
 .snipi-copy-icon {
-width: 20px;
-height: 20px;
+	width: 20px;
+	height: 20px;
+}
+
+.snipi-admin-checkbox {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	font-weight: 500;
+}
+
+.snipi-admin-status {
+	margin: 4px 0;
+	font-weight: 600;
+}
+
+.snipi-info-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-left: 6px;
+	position: relative;
+}
+
+.snipi-info-icon__svg {
+	display: block;
+}
+
+.snipi-info-icon__tooltip {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: calc(100% + 8px);
+	background: #000;
+	color: #fff;
+	padding: 8px 10px;
+	border-radius: 4px;
+	white-space: nowrap;
+	font-size: 12px;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.2s ease, visibility 0.2s ease;
+	z-index: 10;
+}
+
+.snipi-info-icon:hover .snipi-info-icon__tooltip,
+.snipi-info-icon:focus-within .snipi-info-icon__tooltip {
+	opacity: 1;
+	visibility: visible;
 }

@@ -1,0 +1,33 @@
+snipi-admin-page: Ovitek administrativnih podstrani vtičnika.
+snipi-admin-form: Ovitek za obrazce z nastavitvami na posameznih zavihkih.
+snipi-admin-row: Osnovni flex vrstični razpored za mrežo nastavitev.
+snipi-admin-row--quarters: Razporedi .snipi-admin-col v štiri enake stolpce (25%).
+snipi-admin-row--thirds: Razporedi .snipi-admin-col v tri enake stolpce (33,3%).
+snipi-admin-row--full: Uporablja polno širino vrstice za en sam stolpec.
+snipi-admin-row--logo: Poravna elemente za blok z nalaganjem logotipa.
+snipi-admin-col: Posamezen stolpec znotraj vrstice nastavitev.
+snipi-admin-col--shortcode: Stolpec za prikaz kratke kode s kopirnim gumbom.
+snipi-admin-label: Besedilna oznaka (naslov) posameznega polja.
+snipi-admin-input: Splošni razred za vhodna polja (polna širina).
+snipi-admin-input--readonly: Oznaka za polje kratke kode samo za branje.
+snipi-shortcode-inline: Mreža za polje kratke kode in kopirni gumb v eni vrstici.
+snipi-copy-button: Gumb z ikono za kopiranje kratke kode.
+snipi-copy-icon: SVG/bitmapična ikona kopiranja v gumbu.
+snipi-admin-info-box: Polje za prikaz povzetkov (statističnih) informacij.
+snipi-admin-info-box__text: Posamezna vrstica v polju s povzetki.
+snipi-admin-info-box__value: Poudarjena vrednost v vrstici povzetka.
+snipi-logo-actions: Vrstica z gumbi za nalaganje in odstranjevanje logotipa.
+snipi-logo-slider: Vrstica z drsnikom za višino logotipa in njegovim izpisom.
+snipi-logo-slider__value: Prikaz izbrane višine logotipa v px.
+snipi-logo-preview: Prikaz predogleda logotipa.
+snipi-tab: Vsebinski panel posamezne zavihke (skrit privzeto).
+snipi-tab.active: Panel zavihka v prikazanem stanju.
+snipi-tab-btn: Gumb za preklapljanje zavihkov.
+snipi-tabs: Vrstica s karticami/zavihki nad vsebino strani.
+snipi-admin-checkbox: Vrstični prikaz potrditvenega polja z opisnim besedilom.
+snipi-admin-status: Povzetek stanja (npr. ali je spodnja vrstica prikazana).
+snipi-info-icon: Ikona z informacijami (črni krog z "i") ob naslovih polj.
+snipi-info-icon__svg: SVG ikona znotraj obrobe .snipi-info-icon.
+snipi-info-icon__tooltip: Tooltip z opisom, ki se prikaže ob prehodu miške ali fokusu.
+snipi-copy-list: Gumb za kopiranje kratke kode v tabeli “Vsi ekrani”.
+snipi-copy-icon (list): Ikona znotraj seznama ekranov za kopiranje kratke kode.

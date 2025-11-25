@@ -208,6 +208,14 @@ $info_rows[] = 'Vikend način: ' . ( $data['weekend_mode'] ? 'Vključen' : 'Izkl
 $info_rows[] = 'Spodnja vrstica: ' . ( $data['display_bottom'] ? 'Prikazana' : 'Ni prikazana' );
 $info_rows[] = 'Dodatni stolpec: ' . ( $data['show_program_column'] ? 'Program' : 'Ni prikazan' );
 
+$tooltip_icon = '<span class="snipi-info-icon" tabindex="0" aria-label="Informacija">' .
+'<svg class="snipi-info-icon__svg" width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">' .
+'<circle cx="12" cy="12" r="11" fill="#000" />' .
+'<path d="M12 6.5a1 1 0 110 2 1 1 0 010-2zm1 11h-2v-7h2v7z" fill="#fff" />' .
+'</svg>' .
+'<span class="snipi-info-icon__tooltip">Dodaj opis orodja tukaj.</span>' .
+'</span>';
+
 echo '<div class="wrap snipi-admin-page">';
 echo '<h1 class="wp-heading-inline">' . esc_html( $post->post_title ? $post->post_title : 'Ekran' ) . '</h1>';
 self::render_page_nav( $post_id, 'snipi-nastavitve' );
@@ -218,32 +226,40 @@ echo '<input type="hidden" name="action" value="snipi_save_settings" />';
 echo '<input type="hidden" name="snipi_section" value="snipi-nastavitve" />';
 echo '<input type="hidden" name="post_id" value="' . intval( $post_id ) . '" />';
 
-echo '<div class="snipi-admin-row">';
+echo '<div class="snipi-admin-row snipi-admin-row--full">';
 echo '<div class="snipi-admin-col">';
-echo '<label class="snipi-admin-label" for="snipi_post_title">Ime ekrana</label>';
+echo '<label class="snipi-admin-label" for="snipi_post_title">Ime ekrana ' . $tooltip_icon . '</label>';
 echo '<input type="text" id="snipi_post_title" name="snipi_post_title" class="snipi-admin-input" value="' . esc_attr( $post->post_title ) . '" />';
+echo '<p class="description">Poimenuj ekran za lažje prepoznavanje.</p>';
 echo '</div>';
 echo '</div>';
 
-echo '<div class="snipi-admin-row snipi-admin-row--thirds" style="align-items:center;">';
+echo '<div class="snipi-admin-row snipi-admin-row--quarters">';
 echo '<div class="snipi-admin-col">';
-echo '<label class="snipi-admin-label">API ključ</label>';
+echo '<label class="snipi-admin-label">API ključ ' . $tooltip_icon . '</label>';
 echo '<input type="text" name="snipi_api_key" value="' . esc_attr( $data['api_key'] ) . '" class="snipi-admin-input" placeholder="npr. BdhBcrRm8" />';
 echo '<p class="description">Vnesi zadnji del URL-ja (key) za tvoj ekran.</p>';
 echo '</div>';
 
+echo '<div class="snipi-admin-col">';
+echo '<label class="snipi-admin-label">Vrstic na stran ' . $tooltip_icon . '</label>';
+echo '<input type="number" name="snipi_rows_per_page" min="1" value="' . esc_attr( $data['rows_per_page'] ) . '" class="snipi-admin-input" />';
+echo '<p class="description">Koliko vrstic naj se prikaže na eni strani tabele.</p>';
+echo '</div>';
+
 echo '<div class="snipi-admin-col snipi-admin-col--shortcode">';
-echo '<label class="snipi-admin-label">Kratka koda</label>';
+echo '<label class="snipi-admin-label">Kratka koda ' . $tooltip_icon . '</label>';
 echo '<div class="snipi-shortcode-inline">';
 echo '<input readonly id="snipi_shortcode_field" value="' . esc_attr( $shortcode_str ) . '" class="snipi-admin-input snipi-admin-input--readonly" />';
 echo '<button type="button" class="snipi-copy-button" id="snipi_copy_shortcode" title="Kopiraj" aria-label="Kopiraj kratko kodo">';
 echo '<img src="' . esc_url( SNIPI_EKRANI_URL . 'assets/Copy_icon_256px.svg' ) . '" alt="Kopiraj" class="snipi-copy-icon" />';
 echo '</button>';
 echo '</div>';
+echo '<p class="description">Uporabi kratko kodo kjer koli v urejevalniku.</p>';
 echo '</div>';
 
 echo '<div class="snipi-admin-col">';
-echo '<label class="snipi-admin-label">Informacije o prikazu</label>';
+echo '<label class="snipi-admin-label">Informacije o prikazu ' . $tooltip_icon . '</label>';
 echo '<div class="snipi-admin-info-box">';
 foreach ( $info_rows as $row ) {
 echo '<p class="snipi-admin-info-box__text"><span class="snipi-admin-info-box__value">' . esc_html( $row ) . '</span></p>';
@@ -252,26 +268,9 @@ echo '</div>';
 echo '</div>';
 echo '</div>';
 
-echo '<div class="snipi-admin-row">';
+echo '<div class="snipi-admin-row snipi-admin-row--thirds">';
 echo '<div class="snipi-admin-col">';
-echo '<h3 style="margin:0;">Obdobje prikaza dogodkov</h3>';
-echo '<p class="description">Dogodki se vedno prikazujejo za današnji dan (00:00 do 23:59:59). Po želji lahko vključite še do treh prihodnjih dni.</p>';
-echo '</div>';
-echo '</div>';
-
-echo '<div class="snipi-admin-row">';
-echo '<div class="snipi-admin-col">';
-echo '<label class="snipi-admin-label">Vrstic na stran</label>';
-echo '<input type="number" name="snipi_rows_per_page" min="1" value="' . esc_attr( $data['rows_per_page'] ) . '" style="width:100%;" />';
-echo '<p class="description">Koliko vrstic naj se prikaže na eni strani tabele.</p>';
-echo '</div>';
-echo '<div class="snipi-admin-col">';
-echo '<label class="snipi-admin-label">Autoplay interval (s)</label>';
-echo '<input type="number" name="snipi_autoplay_interval" min="1" value="' . esc_attr( $data['autoplay_interval'] ) . '" style="width:100%;" />';
-echo '<p class="description">Koliko sekund naj bo prikaz vsake strani (avtomatsko menjavanje).</p>';
-echo '</div>';
-echo '<div class="snipi-admin-col">';
-echo '<label class="snipi-admin-label">Prikaz dogodkov za prihodnje dni</label>';
+echo '<label class="snipi-admin-label">Prikaz dogodkov ' . $tooltip_icon . '</label>';
 echo '<select name="snipi_future_days" class="snipi-admin-input">';
 for ( $i = 0; $i <= 3; $i++ ) {
 if ( 0 === $i ) {
@@ -286,28 +285,40 @@ $label = 'Danes + ' . $i . ' dni';
 echo '<option value="' . esc_attr( $i ) . '" ' . selected( $data['future_days'], $i, false ) . '>' . esc_html( $label ) . '</option>';
 }
 echo '</select>';
-echo '<p class="description">Izberi, koliko prihodnjih dni (poleg današnjega) naj se prikaže. Največ 3.</p>';
+echo '<p class="description">Dogodki se vedno prikazujejo za današnji dan (00:00–23:59:59). Dodaj prikaz do treh prihodnjih dni.</p>';
+echo '</div>';
+
+echo '<div class="snipi-admin-col">';
+echo '<label class="snipi-admin-label">Autoplay interval (s) ' . $tooltip_icon . '</label>';
+echo '<input type="number" name="snipi_autoplay_interval" min="1" value="' . esc_attr( $data['autoplay_interval'] ) . '" class="snipi-admin-input" />';
+echo '<p class="description">Koliko sekund naj bo prikaz vsake strani (avtomatsko menjavanje).</p>';
+echo '</div>';
+
+echo '<div class="snipi-admin-col">';
+echo '<label class="snipi-admin-label">Prikaži spodnjo vrstico ' . $tooltip_icon . '</label>';
+echo '<p class="snipi-admin-status">Front-end prikaz: <strong>' . ( $data['display_bottom'] ? 'Prikazana' : 'Ni prikazana' ) . '</strong></p>';
+echo '<p class="description">Stanje se posodobi po shranjevanju nastavitev.</p>';
 echo '</div>';
 echo '</div>';
 
 echo '<div class="snipi-admin-row snipi-admin-row--thirds">';
 echo '<div class="snipi-admin-col">';
-echo '<label class="snipi-admin-label"><input type="checkbox" name="snipi_weekend_mode" value="1" ' . checked( $data['weekend_mode'], '1', false ) . ' /> Vikend način</label>';
-echo '<p class="description">Vključi prikaz dogodkov v vikend načinu.</p>';
+echo '<label class="snipi-admin-label">Vikend način ' . $tooltip_icon . '</label>';
+echo '<label class="snipi-admin-checkbox"><input type="checkbox" name="snipi_weekend_mode" value="1" ' . checked( $data['weekend_mode'], '1', false ) . ' /> <span>Vključi prikaz dogodkov v vikend načinu.</span></label>';
 echo '</div>';
 echo '<div class="snipi-admin-col">';
-echo '<label class="snipi-admin-label"><input type="checkbox" name="snipi_show_program_column" value="1" ' . checked( $data['show_program_column'], '1', false ) . ' /> Prikaz dodatnega stolpca v tabeli</label>';
-echo '<p class="description">SNIPI API podpira prikaz dodatnih stolpcev. Če želite med stolpcema IZOBRAŽEVANJE in UČITELJ v tabeli prikazati tudi stolpec PROGRAM, izberite to možnost in shranite/posodobite ekran.</p>';
+echo '<label class="snipi-admin-label">Prikaz dodatnega stolpca v tabeli ' . $tooltip_icon . '</label>';
+echo '<label class="snipi-admin-checkbox"><input type="checkbox" name="snipi_show_program_column" value="1" ' . checked( $data['show_program_column'], '1', false ) . ' /> <span>Dodaj stolpec PROGRAM med IZOBRAŽEVANJE in UČITELJ.</span></label>';
 echo '</div>';
 echo '<div class="snipi-admin-col">';
-echo '<label class="snipi-admin-label"><input type="checkbox" name="snipi_display_bottom" value="1" ' . checked( $data['display_bottom'], '1', false ) . ' /> Prikaži spodnjo vrstico</label>';
-echo '<p class="description">Dodaj opis spodnje vrstice, ki se prikaže na ekranu.</p>';
+echo '<label class="snipi-admin-label">Prikaži spodnjo vrstico ' . $tooltip_icon . '</label>';
+echo '<label class="snipi-admin-checkbox"><input type="checkbox" name="snipi_display_bottom" value="1" ' . checked( $data['display_bottom'], '1', false ) . ' /> <span>Prikaži dodatno vrstico na dnu tabele.</span></label>';
 echo '</div>';
 echo '</div>';
 
 echo '<div class="snipi-admin-row snipi-admin-row--full">';
 echo '<div class="snipi-admin-col">';
-echo '<label class="snipi-admin-label">V spodnjo vrstico lahko vnesete poljubno vsebino (npr. legendo kratic predmetov in programov). Podpira HTML.</label>';
+echo '<label class="snipi-admin-label">V spodnjo vrstico lahko vnesete poljubno vsebino (npr. legendo kratic predmetov in programov). Podpira HTML. ' . $tooltip_icon . '</label>';
 $editor_settings = array( 'textarea_name' => 'snipi_bottom_row', 'media_buttons' => false, 'textarea_rows' => 4 );
 wp_editor( wp_kses_post( $data['bottom_row'] ), 'snipi_bottom_row_editor', $editor_settings );
 echo '</div>';
