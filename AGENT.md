@@ -10,10 +10,11 @@ This is my Wordpress plugin that pulls the data from a bespoke CRM called SNIPI 
 
 - The plugin should never under no circumstances use any form of caching as the purpose of the frontend table is to display live events
 - I do not ever want to use Jquery - in any form. Remove any trae of it if it exists. Until now I used Vanilla JS but as it's very spartan and limited, I shall prefer you to use a modern UI building framework for admin panel such as React JS
-- Never replace anything that is working without asking me first and my approval. You may always suggest QoL improvements of code, UX functionality, but if I ask for something in particular, focus only on that
+- Never replace anything that is working without asking me first for my approval. You may always suggest QoL improvements of code, UX functionality, but if I ask for something in particular, focus only on that
 - The plugin will be publicly abvailable and distributed to other schools so it should be as "agnostic" as possible for exotic technologies. It should work out of the box in Wordpress
-- The last development version on Github (the one Codex scanned) is also the version I use on my dev server as a WP install for testing
+- The development version on Github is the stable version I use on my dev server as a WP install for testing
 - For any code you generate, please use tabs for indentation and not spaces. If you need to enqueue any scripts, ask me questions to help me figure out whether we should use conditional loading or if we should enqueue globally. In addition, when generating CSS, please follow BEM methodology. In terms of performance, make sure the plugin loads JS and CSS files only on the pages where the table is actually displayed (shortcode is used) and nowhere else globally. Always apply wordpress best coding practices. Never guess or speculate, ask me for clarification.
+- From now on, number the plugin versions after every fix by one minor step, e.g. from 1.0 currently to 1.0.1 When a major upgrade is due, I will tell you. Change the version in plugin file and in README.md
 
 - My stack and workflow: my webserver is nginx with maria db. Live wp installation on a subdomain for development at https://upi.wptweaker.com. I use Blocksy PRO theme and Kadence blocks pro (Gutenberg), use Super Page Cache WP plugin by themeisle with cloudflare integration and redis for caching. Tools: Filezilla for ftp, VS Code with github integration, git and Github for windows desktop GUI (avoid giving terminal prompts when possible and give instructions for desktop version). Chrome and Chrome dev tools
 
@@ -24,31 +25,22 @@ I Will describe the logic and the features as I WANT THEM TO be, not as they cur
 ## BACKEND
 
 3.1 Creating and editing Ekran (a CPT created by plugin)
-- When a user/admin clicks Dodaj ekran, he sets the API ključ in the metabox and saves/publishes Ekran. After that, he should automatiaclly be redirected to the editing screen of the created Ekran, where he sets the parameters and designs the table.
+- When a user/admin clicks Dodaj ekran, he sets the API ključ in the metabox and saves/publishes Ekran. After that, he should automatiaclly be redirected to the editing page Nastavitve of the created Ekran, where he sets the parameters and designs the table.
 
-For Vsi ekrani admin screen see image Vsi-ekrani.png I want you to add an icon after shortcode to copy it with a tooltip on mousehover saying "Kopiraj" and a confirmation message.
 
-3.2 Editing screen / Admin settings
-The elements of the editing screen are as follows, from top to bottom:
-- The horizontal tabs Nastavitve (current screen), Oblikovanje and Navodila should be under the Ekran name, with nastavitve highlighted as an active tab
+3.2 Editing page nastavitve / Admin settings
+The elements of the editing page should be set in a grid sometimes with 3 or four or one columns, depending on the number of elements
 
-# Nastavitve
-- below it a section with API ključ printed on the left and shortcode with copy button printed on the right of a 50/50 row
-- below it a row in the same 50/50 format with pagination Vrstic na stran on the left and Autoplay interval on the right (there is some code "" style="width:100%;" />" printed in the current version outside metabox - remove it)
--Below should be four checkbox options for the user to pick, all unchecked by default. Also, if there are further options available when checking the checkbox, it should auto-expand on click:
-1) Prikaži današnje končane dogodke (so, if a user chooses so, he can display past events from earlier of the current day in the table as well. Default display is set for events that are going on or are scheduled for later. 2) Pokaži dogodke za prihodnje dni (default display is for event of today, but if the user chooses so I want to give them an option to display, fore example up to 7 days of events ahead - in the future. When he clicks the checkbox, he can select how many days of events he can display). There should be a placeholder for description under every checkbox. 3) Prikaži spodnjo vrstico (this is a text box for bottom row with basic editing capabilites. If uncchecked, there shuld only be a checkbox visible, if checked it should expand into full view.
-- the last Nastavitve row is for the logo. By default there should be a button Naloži logotip to upload logo from the media library with brief description that only PNG and SVG format are allowed. Concerning the heigth of the logo, I'm not sure, but it should be adaptable and definately not to small or to big for big screens. Now there's a slider for the heigth that is not functional I think, at least the logo does not visibly resize.
-- entirely remove existing obdobje - od obdobje - do meta fields as I won't need or use them
+# Nastavitve Features
+The working features are already implemented in the code.
 
-There should probably be a Shrani nastavitve separate button on the bottomto save all the settings apart from updating/posodobi the CPT Ekran.
+Any changes, additions, updates and upgrades will be listed below this line and given as a descriptive prompt with instructions.
 
-# Oblikovanje
+# Oblikovanje (TODO)
 
 On the second tab the user should have a neat simple GUI for stylig the rendered table without writing CSS. All the styling should be done on this admin tab and not in the wp block editor once the shortcode is pasted there. This admin editor should have controls to style every single element on the front end separately, from ala visible top row (date, Urni izobraževanj text, pagination, logonad current time)to events cotent cells and bottom fixed row. Depending on the content, there should be fields to paste hex coor code and color pickers for row backgrounds and fonts, an option to alternate background color of every second row (similar to existing wp tables plugins), selectable size units for responsive display of fonts (vw, rem, px), font weigth) and settings for rows padding with separate top right bottom and left fields (with clear labels) with auto column width that adapts itself based on the content of the cell.
 
-Does it make sense to include a checkbox option to inherit setting from the theme?
-
-# Navodila
+# Navodila (TODO)
 
 From top to bottom, just a set of brief txt instructions #namestitev vtičnika (steps as a bulleted list), #Uporaba kratke kode (some text) #Oblikovanje tabele (some text explanation or list) #CSS classes (a list of all CSS classes for the table with brief location descriptions to manually add CSS).
 
@@ -158,16 +150,3 @@ Opis "subjects"
 
 [end api notes]
 ---
-
-## 5. ChatGPT Codex initial analysis summary made on november 18th 2025
-
-Finally, now that you know the context nd have instructions, I want you to include your initial analisys summary in the code fixes, in particular allyo dscribe undr Gaps & likely broken/unfinished pieces
-- Version mismatch – The plugin header says Version: 2.5, but the constant used for cache-busting/enqueues is 2.3.2, so browsers may not get updated assets when you release new builds. -I suggest you remove the version constant. Can you do that? Do I need cache busting?
-
-- Date range UI is unused – Admins can still pick “Obdobje – od/do”, but the REST controller ignores those values and always fetches “today” by overwriting date_from/date_to. This can confuse users who expect the UI to matter. - provide a fix, this is crucial
-
-- Custom CSS never loads – _snipi_custom_css is saved but never enqueued or injected on the frontend or preview, so the “Oblikovanje” tab has no effect beyond storing text. (The string doesn’t appear in any other file.) - provide a fix
-
-- REST payload not fully used on the client – The GET route returns bottom_row and display_bottom, but front.js only reads data.items and data.logo_url. That means toggling the bottom row or editing its content won’t update dynamically after the first server render; visitors need a hard refresh to see admin changes. - provide a fix
-
-- Admin preview hook missing – admin.js never calls the preview REST endpoint that SNIPI_Admin::admin_assets() localizes (nonce + URL), so admins can’t actually see a live preview of styling/entries from the metabox without manually refreshing a frontend page. - there was ment to be a live preview screen of the Oblikovanje tab but never got it to work. - rework and fix it
