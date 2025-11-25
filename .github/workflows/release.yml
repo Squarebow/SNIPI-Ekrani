@@ -1,0 +1,37 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Generate README
+        run: php tools/generate-readme-changelog.php
+
+      - name: Build ZIP (clean)
+        run: |
+          mkdir dist
+          cd snipi-ekrani
+          zip -r ../dist/snipi-ekrani-${GITHUB_REF##*/}.zip . -x "*.git*" "tools/*" ".vscode/*"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

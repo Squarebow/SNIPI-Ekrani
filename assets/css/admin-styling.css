@@ -1,0 +1,7 @@
+/* admin-styling.css - extra styling for Oblikovanje tab */
+#snipi-styling-preview {
+	background: #f9f9f9;
+	border: 1px solid #ddd;
+	padding: 10px;
+	min-height: 150px;
+}

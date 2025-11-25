@@ -1,0 +1,147 @@
+/* admin.css - basic admin layout for SNIPI ekrani */
+.snipi-admin-row {
+display: flex;
+gap: 16px;
+margin-bottom: 30px;
+flex-wrap: wrap;
+}
+
+.snipi-admin-row--quarters .snipi-admin-col {
+flex: 0 0 25%;
+}
+
+.snipi-admin-row--thirds .snipi-admin-col {
+flex: 0 0 33.333%;
+}
+
+.snipi-admin-row--full .snipi-admin-col {
+	flex: 1;
+}
+
+.snipi-admin-row--logo {
+	align-items: flex-start;
+}
+
+.snipi-admin-col {
+	flex: 1;
+}
+
+.snipi-admin-col--shortcode {
+	min-width: 0;
+}
+
+.snipi-admin-label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.snipi-admin-input {
+	width: 100%;
+	max-width: 100%;
+}
+
+.snipi-admin-input--readonly {
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+	padding-left: 0;
+}
+
+.snipi-shortcode-inline {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: center;
+	gap: 8px;
+}
+
+.snipi-copy-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 10px;
+}
+
+.snipi-copy-button .dashicons {
+	margin: 0;
+	line-height: 1.2;
+}
+
+.snipi-admin-info-box {
+background: #f6f7f7;
+border: 1px solid #dcdcde;
+border-radius: 3px;
+padding: 12px;
+min-height: 72px;
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+gap: 8px;
+}
+
+.snipi-admin-info-box__text {
+margin: 0;
+}
+
+.snipi-admin-info-box__value {
+font-weight: 700;
+font-size: 110%;
+}
+
+.snipi-logo-actions {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+.snipi-logo-slider {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 8px;
+	flex-wrap: wrap;
+}
+
+.snipi-logo-slider__value {
+	font-weight: 600;
+}
+
+.snipi-logo-preview {
+	padding: 12px 0;
+	min-height: 40px;
+	display: flex;
+	align-items: flex-start;
+}
+
+#snipi_logo_preview img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+.snipi-tab {
+	display: none;
+	margin-top: 12px;
+}
+
+.snipi-tab.active {
+	display: block;
+}
+
+.snipi-tab-btn {
+	margin-right: 0;
+}
+
+.snipi-tabs {
+margin-top: 24px;
+display: flex;
+gap: 8px;
+align-items: center;
+padding-top: 8px;
+}
+
+.snipi-copy-icon {
+width: 20px;
+height: 20px;
+}
