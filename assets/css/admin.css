@@ -1,120 +1,132 @@
-/* admin.css - basic admin layout for SNIPI ekrani */
+/* admin.css - admin layout for SNIPI ekrani
+ * Posodobljeno: tekoča (fluid) mreža in WP-native izgled.
+ */
+
+/* Wrapper za obrazec, da ne beži preveč v širino */
+.snipi-admin-page .snipi-admin-form {
+	max-width: 1100px;
+}
+
+/* Vrstice (rows) */
 .snipi-admin-row {
-display: flex;
-gap: 16px;
-margin-bottom: 30px;
-flex-wrap: wrap;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 24px;
+	margin-bottom: 30px;
 }
 
-.snipi-row-gap-40 {
-margin-bottom: 40px;
+/* Stolpci v mreži */
+.snipi-admin-col {
+	flex: 1 1 100%;
+	min-width: 260px;
+	box-sizing: border-box;
 }
 
-.snipi-row-gap-30 {
-margin-bottom: 30px;
-}
-
-.snipi-admin-row--quarters .snipi-admin-col {
-flex: 0 0 25%;
-}
-
+/* Tretjine – fluidno, ne fiksno */
 .snipi-admin-row--thirds .snipi-admin-col {
-flex: 0 0 33.333%;
+	flex: 1 1 calc(33.333% - 24px);
+	min-width: 260px;
 }
 
+/* Četrtine – fluidno */
+.snipi-admin-row--quarters .snipi-admin-col {
+	flex: 1 1 calc(25% - 24px);
+	min-width: 220px;
+}
+
+/* Polna širina */
 .snipi-admin-row--full .snipi-admin-col {
-	flex: 1;
+	flex: 1 1 100%;
+	min-width: 0;
 }
 
 .snipi-admin-row--logo {
 	align-items: flex-start;
 }
 
-.snipi-admin-col {
-	flex: 1;
-}
-
+/* Kratka koda stolpec naj se ne stisne preveč */
 .snipi-admin-col--shortcode {
-	min-width: 0;
+	min-width: 260px;
 }
 
+/* Naslovi polj */
 .snipi-admin-label {
 	display: block;
 	font-weight: 600;
 	margin-bottom: 4px;
 }
 
-.snipi-admin-input {
+/* Vnosna polja – 100 % širine v stolpcu */
+.snipi-admin-input,
+.snipi-admin-row select,
+.snipi-admin-row input[type="text"],
+.snipi-admin-row input[type="number"],
+.snipi-admin-row textarea {
 	width: 100%;
 	max-width: 100%;
+	box-sizing: border-box;
 }
 
+/* Readonly polje za kratko kodo */
 .snipi-admin-input--readonly {
-        border: 0;
-        background: transparent;
-        box-shadow: none;
-        padding-left: 0;
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+	padding-left: 0;
+	font-family: monospace;
 }
 
+/* Kratka koda + gumb za kopiranje v eni vrstici */
 .snipi-shortcode-inline {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        align-items: center;
-        gap: 6px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
 }
 
-.snipi-copy-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        border: 0;
-        background: transparent;
-        box-shadow: none;
-        cursor: pointer;
-}
-
+/* Gumb za kopiranje (na strani ekrana) in v seznamu Vsi ekrani */
+.snipi-copy-button,
 .snipi-copy-list {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-padding: 0;
-border: 0;
-background: transparent;
-box-shadow: none;
-cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 0;
+	background: transparent;
+	padding: 0;
+	cursor: pointer;
 }
 
 .snipi-copy-button:focus,
 .snipi-copy-list:focus {
-outline: 2px solid #2271b1;
-outline-offset: 2px;
+	outline: 1px solid #2271b1;
+	outline-offset: 2px;
 }
 
+/* Ikona za kopiranje */
+.snipi-copy-icon {
+	width: 20px;
+	height: 20px;
+}
+
+/* Info blok – brez kartične pozadine */
 .snipi-admin-info-box {
-background: none;
-border: 0;
-padding: 0;
-min-height: 0;
+	margin-top: 4px;
 }
 
 .snipi-admin-info-box__text {
-margin: 0 0 8px;
-}
-
-.snipi-admin-info-box__text:last-child {
-margin-bottom: 0;
+	margin: 0 0 2px;
 }
 
 .snipi-admin-info-box__label {
-font-weight: 600;
+	font-weight: 400;
 }
 
 .snipi-admin-info-box__value {
-font-weight: 700;
-font-size: 110%;
+	font-weight: 700;
+	font-size: 110%;
 }
 
+/* Logotip */
 .snipi-logo-actions {
 	display: flex;
 	gap: 8px;
@@ -135,53 +147,53 @@ font-size: 110%;
 }
 
 .snipi-logo-preview {
-	padding: 12px 0;
-	min-height: 40px;
+	margin-top: 10px;
+	max-width: 300px;
+}
+
+/* Zavihki Nastavitve / Oblikovanje / Navodila */
+.snipi-tabs {
+	margin-top: 24px;
+	margin-bottom: 60px;
 	display: flex;
-	align-items: flex-start;
-}
-
-#snipi_logo_preview img {
-	max-width: 100%;
-	height: auto;
-	display: block;
-}
-
-.snipi-tab {
-	display: none;
-	margin-top: 12px;
-}
-
-.snipi-tab.active {
-	display: block;
+	gap: 8px;
+	align-items: center;
+	padding-top: 8px;
 }
 
 .snipi-tab-btn {
-        margin-right: 0;
+	text-decoration: none;
 }
 
-.snipi-tabs {
-margin-top: 24px;
-display: flex;
-gap: 8px;
-align-items: center;
-padding-top: 8px;
-margin-bottom: 60px;
-}
-
-.snipi-copy-icon {
-width: 20px;
-height: 20px;
-}
-
+/* Info ikona pri naslovih (tooltip) */
 .snipi-info-icon {
-display: inline-flex;
-align-items: flex-end;
-margin-left: 6px;
-color: #2271b1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background-color: #f0f6fc;
+	color: #2271b1;
+	margin-left: 4px;
+	vertical-align: middle;
+	cursor: help;
 }
 
-.snipi-info-icon svg {
-width: 16px;
-height: 16px;
+.snipi-info-icon .dashicons {
+	width: 16px;
+	height: 16px;
+	font-size: 14px;
+	line-height: 1;
+}
+
+/* Opisi pod polji */
+.snipi-admin-row .description {
+	margin-top: 4px;
+	margin-bottom: 0;
+}
+
+/* Submit gumb */
+.snipi-admin-form .submit {
+	margin-top: 10px;
 }
