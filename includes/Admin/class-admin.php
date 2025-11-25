@@ -377,21 +377,21 @@ public static function render_settings_page() {
 
 	echo '<div class="snipi-admin-col">';
 	echo '<label class="snipi-admin-label">';
-	echo '<input type="checkbox" name="snipi_weekend_mode" value="1" ' . checked( $data['weekend_mode'], '1', false ) . ' /> Vikend način';  <span class="snipi-info-icon" title="Če je omogočeno, se aktivira poseben prikaz za vikende."><span class="dashicons dashicons-editor-help"></span></span>
+	echo '<input type="checkbox" name="snipi_weekend_mode" value="1" ' . checked( $data['weekend_mode'], '1', false ) . ' /> Vikend način';
 	echo '</label>';
 	echo '<p class="description">Vključi prikaz dogodkov v vikend načinu.</p>';
 	echo '</div>';
 
 	echo '<div class="snipi-admin-col">';
 	echo '<label class="snipi-admin-label">';
-	echo '<input type="checkbox" name="snipi_show_program_column" value="1" ' . checked( $data['show_program_column'], '1', false ) . ' /> Prikaz dodatnega stolpca v tabeli'; <span class="snipi-info-icon" title="Vklopi stolpec PROGRAM, če ga API vrača."><span class="dashicons dashicons-editor-help"></span></span>
+	echo '<input type="checkbox" name="snipi_show_program_column" value="1" ' . checked( $data['show_program_column'], '1', false ) . ' /> Prikaz dodatnega stolpca v tabeli';
 	echo '</label>';
-	echo '<p class="description">Vtičnik podpira prikaz dodatnega stolpca "program". Če ga želite prikazati, izberite to možnost in shranite spremembe.</p>';
+	echo '<p class="description">SNIPI API podpira prikaz dodatnega stolpca PROGRAM. Če želite prikazati stolpec program, izberite to možnost in shranite/posodobite ekran.</p>';
 	echo '</div>';
 
 	echo '<div class="snipi-admin-col">';
 	echo '<label class="snipi-admin-label">';
-	echo '<input type="checkbox" name="snipi_display_bottom" value="1" ' . checked( $data['display_bottom'], '1', false ) . ' /> Prikaži nogo tabele';  <span class="snipi-info-icon" title="Doda prikaz spodnje vrstice z lastno vsebino."><span class="dashicons dashicons-editor-help"></span></span>
+	echo '<input type="checkbox" name="snipi_display_bottom" value="1" ' . checked( $data['display_bottom'], '1', false ) . ' /> Prikaži nogo tabele';
 	echo '</label>';
 	echo '<p class="description">V spodnjo vrstico lahko vnesete poljubno vsebino (npr. legendo). Podpira kratke kode in HTML!</p>';
 	echo '</div>';
@@ -404,7 +404,7 @@ public static function render_settings_page() {
 
 	echo '<div class="snipi-admin-row snipi-admin-row--full">';
 	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label">Vsebina noge tabele</label>';
+	echo '<label class="snipi-admin-label">Vsebina spodnje vrstice</label>';
 	$editor_settings = array(
 		'textarea_name' => 'snipi_bottom_row',
 		'media_buttons' => false,

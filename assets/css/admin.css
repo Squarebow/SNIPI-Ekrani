@@ -78,15 +78,10 @@
 
 /* Kratka koda + gumb za kopiranje v eni vrstici */
 .snipi-shortcode-inline {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px; /* 4–6px prostor */
-    width: auto; /* prevents stretching */
-}
-
-.snipi-admin-col--shortcode .snipi-admin-input--readonly {
-    flex: none;
-    width: auto;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
 }
 
 /* Gumb za kopiranje (na strani ekrana) in v seznamu Vsi ekrani */
@@ -113,7 +108,7 @@
 	height: 20px;
 }
 
-/* Info blok */
+/* Info blok – brez kartične pozadine */
 .snipi-admin-info-box {
 	margin-top: 4px;
 }
@@ -172,23 +167,24 @@
 
 /* Info ikona pri naslovih (tooltip) */
 .snipi-info-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    margin-left: 4px;
-    cursor: help;
-    color: #2271b1;
-    background: none;
-    border: none;
-    padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background-color: #f0f6fc;
+	color: #2271b1;
+	margin-left: 4px;
+	vertical-align: middle;
+	cursor: help;
 }
 
 .snipi-info-icon .dashicons {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
+	width: 16px;
+	height: 16px;
+	font-size: 14px;
+	line-height: 1;
 }
 
 /* Opisi pod polji */
@@ -200,9 +196,4 @@
 /* Submit gumb */
 .snipi-admin-form .submit {
 	margin-top: 10px;
-}
-
-/* Pull WYSIWYG closer to previous row */
-.snipi-admin-row--full .snipi-admin-col {
-    margin-top: -10px;
 }
