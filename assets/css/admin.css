@@ -197,3 +197,8 @@
 .snipi-admin-form .submit {
 	margin-top: 10px;
 }
+
+/* Pull WYSIWYG closer to previous row */
+.snipi-admin-row--full .snipi-admin-col {
+    margin-top: -10px;
+}
