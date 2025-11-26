@@ -41,18 +41,37 @@ $bottom_classes[] = 'snipi__bottom-row--hidden';
 ob_start();
 ?>
 <div class="snipi snipi--shell">
-<div class="snipi__header">
-<div class="snipi__header-left snipi__date">
-<!-- Datum se dinamično osveži v JS -->
-</div>
-<div class="snipi__header-center">
-<span class="snipi__title">Urnik izobraževanj</span>
-<span class="snipi__pagination">1/1</span>
-<?php echo $logo_html; ?>
-</div>
-<div class="snipi__header-right snipi__clock">
-<!-- Ura se osveži v JS -->
-</div>
+	<div class="snipi__header">
+
+		<!-- LEFT: LOGO -->
+		<div class="snipi__header-left snipi__logo">
+			<?php echo $logo_html; ?>
+		</div>
+
+		<!-- CENTER: TITLE + DATE + PAGINATION -->
+		<div class="snipi__header-center">
+
+			<!-- Title -->
+			<span class="snipi__title snipi__title--large">Urnik izobraževanj</span>
+
+			<!-- DATE + PAGINATION (vertical stack) -->
+			<div class="snipi__subheader">
+				<span id="snipi-date" class="snipi-date"></span>
+
+				<!-- Pagination -->
+				<span class="snipi__pagination snipi__pagination--under-date">
+					<?php echo esc_html( $pagination_text ); ?>
+				</span>
+			</div>
+
+		</div>
+
+		<!-- RIGHT: CLOCK -->
+		<div class="snipi__header-right snipi__clock">
+			<!-- Ura se osveži v JS -->
+		</div>
+
+	</div>
 </div>
 
 <div class="snipi__table-wrapper">
