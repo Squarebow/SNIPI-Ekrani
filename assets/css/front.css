@@ -49,10 +49,10 @@
 	gap: 12px;
 
 	/* ★ fiksna širina, da Chrome/Edge ne premikata sredine */
-	width: auto;
-	flex-shrink: 0;
+	min-width: 220px;  /* ★ prevents jitter */
+    width: auto;       /* ★ allows fluid layout */
+    flex-shrink: 0;    /* ★ prevents collapsing */
 }
-
 
 
 /* ============================================================
@@ -100,7 +100,7 @@
 .snipi__pagination,
 .snipi__clock-value {
 	font-size: 1rem;
-	font-weight: 500 !important;
+	font-weight: 300 !important;
 	white-space: nowrap; /* ne prelomi v 2 vrsti */
 }
 
