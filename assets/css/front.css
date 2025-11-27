@@ -5,6 +5,9 @@
 	color: #111;
 }
 
+/* ------------------------------
+   HEADER WRAPPER
+   ------------------------------ */
 .snipi__header {
 	display: flex;
 	align-items: center;
@@ -12,6 +15,7 @@
 	padding: 10px 16px;
 }
 
+/* Posamezni deli glave */
 .snipi__header-left,
 .snipi__header-center,
 .snipi__header-right {
@@ -20,21 +24,81 @@
 	gap: 8px;
 }
 
+/* CENTER: postavimo vse v stolpec (naslov + datum) */
+.snipi__header-center {
+	flex-direction: column;
+	align-items: center;
+}
+
+/* RIGHT: paginacija + ura v eni vrstici */
+.snipi__header-right {
+	display: flex;
+	align-items: center;
+	gap: 12px; /* razmik med "stran X/Y" in uro */
+}
+
+/* ------------------------------
+   NASLOV
+   ------------------------------ */
 .snipi__title {
 	font-weight: 600;
 	font-size: 1.1rem;
 }
 
-.snipi__pagination {
-	font-size: 0.95rem;
-	opacity: 0.8;
+/* Večji, odebeljen naslov na sredini */
+.snipi__title--large {
+	font-size: 2rem; /* po želji prilagodite */
+	font-weight: 700;
+	display: block;
+	text-align: center;
+	margin-bottom: 0.25rem;
 }
 
+/* ------------------------------
+   DATUM POD NASLOVOM
+   ------------------------------ */
+.snipi__subheader {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	line-height: 1.2;
+}
+
+/* Datum, npr. "sreda, 26. november 2025" */
+.snipi__date {
+	font-size: 1.3rem;
+	font-weight: 500;
+	text-transform: none;
+}
+
+/* ------------------------------
+   PAGINACIJA + URA (desno)
+   ------------------------------ */
+
+/* Paginacija v glavi – enaka velikost kot ura */
+.snipi__pagination {
+	font-size: 1rem;
+	opacity: 0.9;
+}
+
+/* Ura v glavi */
+.snipi__clock-value {
+	font-size: 1rem;
+	font-weight: 500;
+}
+
+/* ------------------------------
+   LOGOTIP
+   ------------------------------ */
 .snipi__logo {
 	max-height: 60px;
 	width: auto;
 }
 
+/* ------------------------------
+   TABELA
+   ------------------------------ */
 .snipi__table-wrapper {
 	padding: 0 16px 16px;
 }
@@ -59,6 +123,7 @@
 	background: rgba(0,0,0,0.03);
 }
 
+/* časovna celica (label + ura) */
 .snipi__day-label {
 	display: block;
 	font-size: 0.75rem;
@@ -74,6 +139,9 @@
 	font-weight: 600;
 }
 
+/* ------------------------------
+   SPODNJA VRSTICA (sticky)
+   ------------------------------ */
 .snipi__bottom-row {
 	position: sticky;
 	bottom: 0;
@@ -86,48 +154,4 @@
 
 .snipi__bottom-row--hidden {
 	display: none;
-}
-
-/* ===========================================
-   Večji, odebeljen naslov v sredini headerja
-   =========================================== */
-.snipi__title--large {
-	font-size: 2rem; /* prilagodite po želji v svoji temi/override CSS */
-	font-weight: 700;
-	display: block;
-	text-align: center;
-	margin-bottom: 0.25rem;
-}
-
-/* ===========================================
-   Središčni del glave – naslov + datum + paginacija
-   =========================================== */
-.snipi__header-center {
-	flex-direction: column;   /* naslov zgoraj, datum + paginacija spodaj */
-	align-items: center;
-}
-
-/* ===========================================
-   Podnaslov (datum + paginacija)
-   =========================================== */
-.snipi__subheader {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: flex-start;
-	line-height: 1.2;
-}
-
-/* Datum (prikazan prek JS, npr. "sreda, 26. november 2025") */
-.snipi__date {
-	font-size: 1.3rem;
-	font-weight: 500;
-	text-transform: none;
-	margin-bottom: 0.35rem; /* razmik pred paginacijo */
-}
-
-/* Paginacija pod datumom – nekoliko manjša in subtilna */
-.snipi__pagination {
-	font-size: 1.1rem;
-	opacity: 0.8;
 }

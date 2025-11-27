@@ -44,8 +44,8 @@ class SNIPI_Renderer {
 		<div class="snipi snipi--shell">
 
 			<!-- ===============================
-			     HEADER (NEW LAYOUT)
-			     Logo left | Title + Date + Pagination center | Clock right
+			     HEADER
+			     Logo levo | Naslov + datum na sredini | Paginacija + ura desno
 			     =============================== -->
 			<div class="snipi__header">
 
@@ -54,25 +54,25 @@ class SNIPI_Renderer {
 					<?php echo $logo_html; ?>
 				</div>
 
-				<!-- CENTER: TITLE + DATE + PAGINATION -->
+				<!-- CENTER: NASLOV + DATUM -->
 				<div class="snipi__header-center">
 					<span class="snipi__title snipi__title--large">Urnik izobraževanj</span>
 
 					<div class="snipi__subheader">
-						<span class="snipi__date"><!-- Datum se osveži v JS --></span>
-						<span class="snipi__pagination">1/1</span>
+						<span class="snipi__date"><!-- Datum se dinamično osveži v JS --></span>
 					</div>
 				</div>
 
-				<!-- RIGHT: CLOCK -->
-				<div class="snipi__header-right snipi__clock">
-					<!-- Ura se osveži v JS -->
+				<!-- RIGHT: PAGINACIJA + URA -->
+				<div class="snipi__header-right">
+					<span class="snipi__pagination">stran 1/1</span>
+					<span class="snipi__clock-value"><!-- Ura se osveži v JS --></span>
 				</div>
 
 			</div>
 
 			<!-- ===============================
-			     TABLE WRAPPER
+			     TABELA
 			     =============================== -->
 			<div class="snipi__table-wrapper">
 				<table class="snipi__table">
@@ -88,7 +88,6 @@ class SNIPI_Renderer {
 							<th data-snipi-col="floor">NADSTROPJE</th>
 						</tr>
 					</thead>
-
 					<tbody>
 						<tr>
 							<td colspan="<?php echo $show_program ? '6' : '5'; ?>" style="text-align:center;padding:20px;">
@@ -100,10 +99,10 @@ class SNIPI_Renderer {
 			</div>
 
 			<!-- ===============================
-			     BOTTOM ROW (optional)
+			     SPODNJA VRSTICA
 			     =============================== -->
 			<div class="<?php echo esc_attr( implode( ' ', $bottom_classes ) ); ?>" data-snipi-bottom-row>
-				<?php echo $bottom_content; ?>
+				<?php echo $bottom_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</div>
 
 		</div>
@@ -114,9 +113,9 @@ class SNIPI_Renderer {
 	/**
 	 * Used for admin preview to render full table (with rows).
 	 *
-	 * @param array       $items
-	 * @param array|mixed $style
-	 * @param int         $post_id
+	 * @param array       $items   Normalized items array.
+	 * @param array|mixed $style   Optional style payload (custom CSS).
+	 * @param int         $post_id Post ID.
 	 * @return string
 	 */
 	public static function render_preview_fragment( $items, $style, $post_id ) {
@@ -161,16 +160,18 @@ class SNIPI_Renderer {
 
 				<div class="snipi__header-center">
 					<span class="snipi__title snipi__title--large">Urnik izobraževanj</span>
-
 					<div class="snipi__subheader">
-						<span class="snipi__pagination">1/1</span>
+						<span class="snipi__date">
+							<?php echo esc_html( $today->format( 'D, d.m.Y' ) ); ?>
+						</span>
 					</div>
-
-					<?php echo $logo_html; ?>
 				</div>
 
 				<div class="snipi__header-right">
-					<?php echo esc_html( current_time( 'H:i:s' ) ); ?>
+					<span class="snipi__pagination">stran 1/1</span>
+					<span class="snipi__clock-value">
+						<?php echo esc_html( current_time( 'H:i:s' ) ); ?>
+					</span>
 				</div>
 
 			</div>
@@ -182,56 +183,58 @@ class SNIPI_Renderer {
 			<div class="snipi__table-wrapper">
 				<table class="snipi__table">
 					<thead>
-					<tr>
-						<th>ČAS</th>
-						<th>IZOBRAŽEVANJE</th>
-						<?php if ( $show_program ) : ?>
-							<th data-snipi-program>PROGRAM</th>
-						<?php endif; ?>
-						<th>PREDAVATELJ</th>
-						<th>UČILNICA</th>
-						<th>NADSTROPJE</th>
-					</tr>
+						<tr>
+							<th data-snipi-col="time">ČAS</th>
+							<th data-snipi-col="name">IZOBRAŽEVANJE</th>
+							<?php if ( $show_program ) : ?>
+								<th data-snipi-col="program" data-snipi-program>PROGRAM</th>
+							<?php endif; ?>
+							<th data-snipi-col="teacher">PREDAVATELJ</th>
+							<th data-snipi-col="room">UČILNICA</th>
+							<th data-snipi-col="floor">NADSTROPJE</th>
+						</tr>
 					</thead>
 					<tbody>
-					<?php if ( empty( $items ) ) : ?>
-						<tr>
-							<td colspan="<?php echo $show_program ? '6' : '5'; ?>" style="text-align:center;padding:20px;">
-								<?php esc_html_e( 'Danes ni predvidenih izobraževanj.', 'snipi-ekrani' ); ?>
-							</td>
-						</tr>
-					<?php else : ?>
-						<?php foreach ( $items as $it ) : ?>
-							<?php
-							$time = '';
-							if ( isset( $it['start_iso'], $it['end_iso'] ) ) {
-								try {
-									$sd = new DateTime( $it['start_iso'] );
-									$ed = new DateTime( $it['end_iso'] );
-									$time = $sd->format( 'H:i' ) . ' - ' . $ed->format( 'H:i' );
-								} catch ( Exception $e ) {
-									$time = '';
-								}
-							}
-							?>
+						<?php if ( empty( $items ) ) : ?>
 							<tr>
-								<td><?php echo esc_html( $time ); ?></td>
-								<td><?php echo esc_html( isset( $it['name'] ) ? $it['name'] : '' ); ?></td>
-								<?php
-								$program_value = '';
-								if ( isset( $it['program_display'] ) ) {
-									$program_value = $it['program_display'];
-								}
-								if ( $show_program ) :
-									?>
-									<td><?php echo esc_html( $program_value ); ?></td>
-								<?php endif; ?>
-								<td><?php echo esc_html( isset( $it['teacher'] ) ? $it['teacher'] : '' ); ?></td>
-								<td><?php echo esc_html( isset( $it['room'] ) ? $it['room'] : '' ); ?></td>
-								<td><?php echo esc_html( isset( $it['floor'] ) ? $it['floor'] : '' ); ?></td>
+								<td colspan="<?php echo $show_program ? '6' : '5'; ?>" style="text-align:center;padding:20px;">
+									<?php esc_html_e( 'Danes ni predvidenih izobraževanj.', 'snipi-ekrani' ); ?>
+								</td>
 							</tr>
-						<?php endforeach; ?>
-					<?php endif; ?>
+						<?php else : ?>
+							<?php foreach ( $items as $it ) : ?>
+								<?php
+								$time = '';
+								if ( isset( $it['start_iso'], $it['end_iso'] ) ) {
+									try {
+										$sd = new DateTime( $it['start_iso'] );
+										$ed = new DateTime( $it['end_iso'] );
+										$time = $sd->format( 'H:i' ) . ' - ' . $ed->format( 'H:i' );
+									} catch ( Exception $e ) {
+										$time = '';
+									}
+								}
+								?>
+								<tr>
+									<td><?php echo esc_html( $time ); ?></td>
+									<td><?php echo esc_html( isset( $it['name'] ) ? $it['name'] : '' ); ?></td>
+									<?php
+									$program_value = '';
+									if ( isset( $it['program_display'] ) && ! empty( $it['program_display'] ) ) {
+										$program_value = $it['program_display'];
+									} elseif ( isset( $it['project'] ) && ! empty( $it['project'] ) ) {
+										$program_value = $it['project'];
+									}
+									if ( $show_program ) :
+										?>
+										<td><?php echo esc_html( $program_value ); ?></td>
+									<?php endif; ?>
+									<td><?php echo esc_html( isset( $it['teacher'] ) ? $it['teacher'] : '' ); ?></td>
+									<td><?php echo esc_html( isset( $it['room'] ) ? $it['room'] : '' ); ?></td>
+									<td><?php echo esc_html( isset( $it['floor'] ) ? $it['floor'] : '' ); ?></td>
+								</tr>
+							<?php endforeach; ?>
+						<?php endif; ?>
 					</tbody>
 				</table>
 			</div>

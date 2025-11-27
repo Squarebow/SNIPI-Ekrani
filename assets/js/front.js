@@ -1,7 +1,6 @@
 // front.js - REST-based frontend (vanilla JS)
-// Hybrid filtering: server returns normalized ISO (with Europe/Ljubljana offset).
-// Client re-checks to be extra-safe. Shows all events for the requested date (today)
-// and hides only events whose end < now (client local time converted to Ljubljana).
+// Hybrid filtering: server returns normalized ISO with Europe/Ljubljana offset.
+// Client re-checks to hide only events, ki so zares že končani danes.
 
 (function () {
 	'use strict';
@@ -10,11 +9,11 @@
 		return;
 	}
 
-	var restRoot = SNIPI_FRONT_REST.rest_root.replace( /\/$/, '' );
-	var postId = SNIPI_FRONT_REST.post_id;
-var rowsPerPage = parseInt( SNIPI_FRONT_REST.rowsPerPage || 8, 10 );
-var autoplayInterval = parseInt( SNIPI_FRONT_REST.autoplayInterval || 10, 10 );
-var showProgramColumn = SNIPI_FRONT_REST.showProgramColumn === '1';
+	var restRoot         = SNIPI_FRONT_REST.rest_root.replace( /\/$/, '' );
+	var postId           = SNIPI_FRONT_REST.post_id;
+	var rowsPerPage      = parseInt( SNIPI_FRONT_REST.rowsPerPage || 8, 10 );
+	var autoplayInterval = parseInt( SNIPI_FRONT_REST.autoplayInterval || 10, 10 );
+	var showProgramColumn = SNIPI_FRONT_REST.showProgramColumn === '1';
 
 	function parseISOToMs( isoString ) {
 		if ( ! isoString ) return NaN;
@@ -24,7 +23,7 @@ var showProgramColumn = SNIPI_FRONT_REST.showProgramColumn === '1';
 		}
 		var normalized = isoString.replace( ' ', 'T' );
 		if ( ! /Z$/i.test( normalized ) && ! /[+-]\d{2}:\d{2}$/.test( normalized ) ) {
-normalized += 'Z';
+			normalized += 'Z';
 		}
 		var d2 = new Date( normalized );
 		return d2.getTime();
@@ -40,22 +39,23 @@ normalized += 'Z';
 			hour: '2-digit',
 			minute: '2-digit',
 			second: '2-digit',
-			hour12: false,
+			hour12: false
 		} );
 
 		var parts = formatter.formatToParts( now );
-		var map = {};
+		var map   = {};
 		for ( var i = 0; i < parts.length; i++ ) {
 			map[ parts[ i ].type ] = parts[ i ].value;
 		}
 
-		var year = parseInt( map.year, 10 );
-		var month = parseInt( map.month, 10 ) - 1;
-		var day = parseInt( map.day, 10 );
-		var hour = parseInt( map.hour, 10 );
+		var year   = parseInt( map.year, 10 );
+		var month  = parseInt( map.month, 10 ) - 1;
+		var day    = parseInt( map.day, 10 );
+		var hour   = parseInt( map.hour, 10 );
 		var minute = parseInt( map.minute, 10 );
 		var second = parseInt( map.second, 10 );
 
+		// Date objekt z lokalnim časom za Europe/Ljubljana
 		return new Date( year, month, day, hour, minute, second );
 	}
 
@@ -78,10 +78,10 @@ normalized += 'Z';
 	function getDayKey( isoString ) {
 		var ms = parseISOToMs( isoString );
 		if ( isNaN( ms ) ) return '';
-		var d = new Date( ms );
+		var d     = new Date( ms );
 		var month = String( d.getMonth() + 1 ).padStart( 2, '0' );
-		var day = String( d.getDate() ).padStart( 2, '0' );
-		var year = d.getFullYear();
+		var day   = String( d.getDate() ).padStart( 2, '0' );
+		var year  = d.getFullYear();
 		return year + '-' + month + '-' + day;
 	}
 
@@ -89,7 +89,7 @@ normalized += 'Z';
 		var map = {};
 		items.forEach( function ( it ) {
 			var startIso = it.start_iso || it.start || '';
-			var key = getDayKey( startIso );
+			var key      = getDayKey( startIso );
 			if ( ! key ) return;
 			if ( ! map[ key ] ) {
 				map[ key ] = [];
@@ -114,11 +114,17 @@ normalized += 'Z';
 		if ( it.program && typeof it.program === 'string' ) {
 			return it.program;
 		}
+		if ( it.program_display && typeof it.program_display === 'string' ) {
+			return it.program_display;
+		}
 		if ( it.program_name && typeof it.program_name === 'string' ) {
 			return it.program_name;
 		}
 		if ( it.programTitle && typeof it.programTitle === 'string' ) {
 			return it.programTitle;
+		}
+		if ( it.project && typeof it.project === 'string' ) {
+			return it.project;
 		}
 		return '';
 	}
@@ -130,54 +136,59 @@ normalized += 'Z';
 		}
 
 		shells.forEach( function ( container ) {
-				var headerDate = container.querySelector( '.snipi__date' );
-				var headerClock = container.querySelector( '.snipi__clock' );
-var table = container.querySelector( '.snipi__table' );
-var tbody = container.querySelector( 'tbody' );
-var paginationEl = container.querySelector( '.snipi__pagination' );
-var bottomRowEl = container.querySelector( '[data-snipi-bottom-row]' );
-var logoEl = container.querySelector( '.snipi__logo' );
 
-			var items = [];
-			var currentPage = 1;
-			var totalPages = 1;
+			var headerDate   = container.querySelector( '.snipi__date' );
+			var headerClock  = container.querySelector( '.snipi__clock-value' );
+			var table        = container.querySelector( '.snipi__table' );
+			var tbody        = container.querySelector( 'tbody' );
+			var paginationEl = container.querySelector( '.snipi__pagination' );
+			var bottomRowEl  = container.querySelector( '[data-snipi-bottom-row]' );
+			var logoEl       = container.querySelector( '.snipi__logo' );
+
+			var items         = [];
+			var currentPage   = 1;
+			var totalPages    = 1;
 			var autoplayTimer = null;
-			var fetchTimer = null;
+			var fetchTimer    = null;
 
-function syncHeaderColumns( shouldShowProgram ) {
-if ( ! table ) {
-return;
-}
+			function syncHeaderColumns( shouldShowProgram ) {
+				if ( ! table ) {
+					return;
+				}
 
-var headRow = table.querySelector( 'thead tr' );
-if ( ! headRow ) {
-return;
-}
+				var headRow = table.querySelector( 'thead tr' );
+				if ( ! headRow ) {
+					return;
+				}
 
-var programTh = headRow.querySelector( '[data-snipi-program]' );
+				var programTh = headRow.querySelector( '[data-snipi-program]' );
 
-if ( shouldShowProgram && ! programTh ) {
-var newTh = document.createElement( 'th' );
-newTh.setAttribute( 'data-snipi-col', 'program' );
-newTh.setAttribute( 'data-snipi-program', '1' );
-newTh.textContent = 'PROGRAM';
+				if ( shouldShowProgram && ! programTh ) {
+					var newTh = document.createElement( 'th' );
+					newTh.setAttribute( 'data-snipi-col', 'program' );
+					newTh.setAttribute( 'data-snipi-program', '1' );
+					newTh.textContent = 'PROGRAM';
 
-var teacherTh = headRow.querySelector( '[data-snipi-col="teacher"]' );
-if ( teacherTh ) {
-headRow.insertBefore( newTh, teacherTh );
-} else {
-headRow.appendChild( newTh );
-}
-} else if ( ! shouldShowProgram && programTh ) {
-headRow.removeChild( programTh );
-}
-}
+					var teacherTh = headRow.querySelector( '[data-snipi-col="teacher"]' );
+					if ( teacherTh ) {
+						headRow.insertBefore( newTh, teacherTh );
+					} else {
+						headRow.appendChild( newTh );
+					}
+				} else if ( ! shouldShowProgram && programTh ) {
+					headRow.removeChild( programTh );
+				}
+			}
 
-syncHeaderColumns( showProgramColumn );
+			syncHeaderColumns( showProgramColumn );
 
-function setHeaderNow() {
+			// =========================
+			// Datum + ura v glavi
+			// =========================
+			function setHeaderNow() {
 				try {
 					var d = nowLjubljana();
+
 					if ( headerDate ) {
 						var formattedDate = new Intl.DateTimeFormat( 'sl-SI', {
 							weekday: 'long',
@@ -187,6 +198,7 @@ function setHeaderNow() {
 						} ).format( d );
 						headerDate.textContent = formattedDate.toLowerCase();
 					}
+
 					if ( headerClock ) {
 						headerClock.textContent = d.toLocaleTimeString( 'sl-SI', { hour12: false } );
 					}
@@ -196,26 +208,46 @@ function setHeaderNow() {
 					}
 				}
 			}
+
 			setHeaderNow();
 			setInterval( setHeaderNow, 1000 );
 
+			// =========================
+			// Filtriranje dogodkov:
+			// - današnji: skrije tiste, ki so se že končali
+			// - prihodnji: vedno prikaže (vikend / +3 logika ostane)
+			// =========================
 			function clientFilter( rawItems ) {
-				var now = nowLjubljana();
+				var now   = nowLjubljana();
+
+				var todayYear  = now.getFullYear();
+				var todayMonth = String( now.getMonth() + 1 ).padStart( 2, '0' );
+				var todayDay   = String( now.getDate() ).padStart( 2, '0' );
+				var todayKey   = todayYear + '-' + todayMonth + '-' + todayDay;
 
 				var keep = rawItems.filter( function ( it ) {
 					var startIso = it.start_iso || it.start || '';
-					var endIso = it.end_iso || it.end || '';
+					var endIso   = it.end_iso || it.end || '';
+
 					var s = new Date( parseISOToMs( startIso ) );
 					var e = new Date( parseISOToMs( endIso ) );
 
 					if ( isNaN( s ) || isNaN( e ) ) {
+						// Če ni veljavnega časa, ne tvegamo – prikažemo.
 						return true;
 					}
 
-					if ( e < now ) {
-						return false;
+					var eventKey = getDayKey( startIso );
+					if ( ! eventKey ) {
+						return true;
 					}
 
+					// Današnji dogodki: skrij samo tiste, ki so se res že končali
+					if ( eventKey === todayKey ) {
+						return e >= now;
+					}
+
+					// Prihodnji dnevi (+ vikend način / +3) – ne filtriramo
 					return true;
 				} );
 
@@ -261,16 +293,14 @@ function setHeaderNow() {
 				}
 
 				if ( paginationEl ) {
-					paginationEl.textContent = currentPage + '/' + totalPages;
+					paginationEl.textContent = 'stran ' + currentPage + '/' + totalPages;
 				}
 
 				var startIndex = ( currentPage - 1 ) * rowsPerPage;
-				var endIndex = startIndex + rowsPerPage;
-				var pageItems = items.slice( startIndex, endIndex );
+				var endIndex   = startIndex + rowsPerPage;
+				var pageItems  = items.slice( startIndex, endIndex );
 
-				if ( tbody ) {
-					tbody.innerHTML = '';
-				}
+				tbody.innerHTML = '';
 
 				pageItems.forEach( function ( it, index ) {
 					var tr = document.createElement( 'tr' );
@@ -279,7 +309,7 @@ function setHeaderNow() {
 					}
 
 					var timeText = formatTimeRange( it.start_iso || it.start || '', it.end_iso || it.end || '' ) || '';
-					var tdTime = document.createElement( 'td' );
+					var tdTime   = document.createElement( 'td' );
 
 					if ( it._dayLabel ) {
 						var dayLabel = document.createElement( 'div' );
@@ -287,38 +317,40 @@ function setHeaderNow() {
 						dayLabel.textContent = it._dayLabel;
 						tdTime.appendChild( dayLabel );
 					}
+
 					var timeSpan = document.createElement( 'div' );
 					timeSpan.className = 'snipi__time';
 					timeSpan.textContent = timeText;
 					tdTime.appendChild( timeSpan );
 
-var tdName = document.createElement( 'td' );
-tdName.textContent = it.name || '';
-var tdProgram = null;
+					var tdName    = document.createElement( 'td' );
+					tdName.textContent = it.name || '';
 
-if ( showProgramColumn ) {
-tdProgram = document.createElement( 'td' );
-tdProgram.textContent = resolveProgram( it );
-}
-var tdTeacher = document.createElement( 'td' );
-tdTeacher.textContent = it.teacher || '';
+					var tdProgram = null;
+					if ( showProgramColumn ) {
+						tdProgram = document.createElement( 'td' );
+						tdProgram.textContent = resolveProgram( it );
+					}
 
-var tdRoom = document.createElement( 'td' );
-tdRoom.textContent = it.room || '';
+					var tdTeacher = document.createElement( 'td' );
+					tdTeacher.textContent = it.teacher || '';
 
-var tdFloor = document.createElement( 'td' );
-tdFloor.textContent = it.floor || '';
+					var tdRoom = document.createElement( 'td' );
+					tdRoom.textContent = it.room || '';
 
-tr.appendChild( tdTime );
-tr.appendChild( tdName );
-if ( tdProgram ) {
-tr.appendChild( tdProgram );
-}
-tr.appendChild( tdTeacher );
-tr.appendChild( tdRoom );
-tr.appendChild( tdFloor );
+					var tdFloor = document.createElement( 'td' );
+					tdFloor.textContent = it.floor || '';
 
-tbody.appendChild( tr );
+					tr.appendChild( tdTime );
+					tr.appendChild( tdName );
+					if ( tdProgram ) {
+						tr.appendChild( tdProgram );
+					}
+					tr.appendChild( tdTeacher );
+					tr.appendChild( tdRoom );
+					tr.appendChild( tdFloor );
+
+					tbody.appendChild( tr );
 				} );
 
 				if ( bottomRowEl ) {
@@ -355,10 +387,10 @@ tbody.appendChild( tr );
 				}
 			}
 
-function fetchData() {
-fetch( getEndpoint(), {
-credentials: 'same-origin'
-} )
+			function fetchData() {
+				fetch( getEndpoint(), {
+					credentials: 'same-origin'
+				} )
 					.then( function ( response ) {
 						if ( ! response.ok ) {
 							throw new Error( 'Network error: ' + response.status );
@@ -374,9 +406,11 @@ credentials: 'same-origin'
 
 						var rawItems = payload.items || [];
 						var filtered = clientFilter( rawItems );
-						items = filtered;
+						items        = filtered;
 
-						if ( payload.bottom_row_html ) {
+						if ( payload.bottom_row ) {
+							updateBottomRow( payload.bottom_row );
+						} else if ( payload.bottom_row_html ) {
 							updateBottomRow( payload.bottom_row_html );
 						} else {
 							updateBottomRow( '' );
@@ -386,7 +420,10 @@ credentials: 'same-origin'
 							updateLogo( payload.logo_url );
 						}
 
-						if ( typeof payload.show_program === 'boolean' ) {
+						if ( typeof payload.show_program_column === 'boolean' ) {
+							showProgramColumn = payload.show_program_column;
+							syncHeaderColumns( showProgramColumn );
+						} else if ( typeof payload.show_program === 'boolean' ) {
 							showProgramColumn = payload.show_program;
 							syncHeaderColumns( showProgramColumn );
 						}
