@@ -14,33 +14,61 @@
 	var postId = SNIPI_FRONT_REST.post_id;
 var rowsPerPage = parseInt( SNIPI_FRONT_REST.rowsPerPage || 8, 10 );
 var autoplayInterval = parseInt( SNIPI_FRONT_REST.autoplayInterval || 10, 10 );
-var noEventsMessage = SNIPI_FRONT_REST.noEventsMessage || 'Danes ni predvidenih izobraževanj.';
-var showProgramColumn = !!SNIPI_FRONT_REST.showProgramColumn;
+var showProgramColumn = SNIPI_FRONT_REST.showProgramColumn === '1';
 
 	function parseISOToMs( isoString ) {
 		if ( ! isoString ) return NaN;
-		var t = Date.parse( isoString );
-		return isNaN( t ) ? NaN : t;
+		var d = new Date( isoString );
+		if ( ! isNaN( d.getTime() ) ) {
+			return d.getTime();
+		}
+		var normalized = isoString.replace( ' ', 'T' );
+		if ( ! /Z$/i.test( normalized ) && ! /[+-]\d{2}:\d{2}$/.test( normalized ) ) {
+normalized += 'Z';
+		}
+		var d2 = new Date( normalized );
+		return d2.getTime();
 	}
 
 	function nowLjubljana() {
-		// Use Intl to get Ljubljana time based on current time
 		var now = new Date();
-		var str = now.toLocaleString( 'en-CA', { timeZone: 'Europe/Ljubljana' } );
-		return new Date( str );
+		var formatter = new Intl.DateTimeFormat( 'en-US', {
+			timeZone: 'Europe/Ljubljana',
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: false,
+		} );
+
+		var parts = formatter.formatToParts( now );
+		var map = {};
+		for ( var i = 0; i < parts.length; i++ ) {
+			map[ parts[ i ].type ] = parts[ i ].value;
+		}
+
+		var year = parseInt( map.year, 10 );
+		var month = parseInt( map.month, 10 ) - 1;
+		var day = parseInt( map.day, 10 );
+		var hour = parseInt( map.hour, 10 );
+		var minute = parseInt( map.minute, 10 );
+		var second = parseInt( map.second, 10 );
+
+		return new Date( year, month, day, hour, minute, second );
 	}
 
 	function formatTimeRange( startIso, endIso ) {
-		try {
-			var s = new Date( parseISOToMs( startIso ) );
-			var e = new Date( parseISOToMs( endIso ) );
-			if ( isNaN( s ) || isNaN( e ) ) return '';
-			var sH = s.toLocaleTimeString( 'sl-SI', { hour: '2-digit', minute: '2-digit', hour12: false } );
-			var eH = e.toLocaleTimeString( 'sl-SI', { hour: '2-digit', minute: '2-digit', hour12: false } );
-			return sH + ' - ' + eH;
-		} catch ( e ) {
+		if ( ! startIso || ! endIso ) {
 			return '';
 		}
+		var s = new Date( parseISOToMs( startIso ) );
+		var e = new Date( parseISOToMs( endIso ) );
+		if ( isNaN( s ) || isNaN( e ) ) return '';
+		var sH = s.toLocaleTimeString( 'sl-SI', { hour: '2-digit', minute: '2-digit', hour12: false } );
+		var eH = e.toLocaleTimeString( 'sl-SI', { hour: '2-digit', minute: '2-digit', hour12: false } );
+		return sH + ' - ' + eH;
 	}
 
 	function getEndpoint() {
@@ -53,31 +81,55 @@ var showProgramColumn = !!SNIPI_FRONT_REST.showProgramColumn;
 		var d = new Date( ms );
 		var month = String( d.getMonth() + 1 ).padStart( 2, '0' );
 		var day = String( d.getDate() ).padStart( 2, '0' );
-		return d.getFullYear() + '-' + month + '-' + day;
+		var year = d.getFullYear();
+		return year + '-' + month + '-' + day;
 	}
 
-	function formatDayLabel( isoString ) {
-		try {
-			var ms = parseISOToMs( isoString );
-			if ( isNaN( ms ) ) return '';
-			return new Intl.DateTimeFormat( 'sl-SI', {
-				weekday: 'long',
-				day: 'numeric',
-				month: 'long',
-				year: 'numeric'
-			} ).format( new Date( ms ) );
-		} catch ( e ) {
-			return '';
+	function groupByDay( items ) {
+		var map = {};
+		items.forEach( function ( it ) {
+			var startIso = it.start_iso || it.start || '';
+			var key = getDayKey( startIso );
+			if ( ! key ) return;
+			if ( ! map[ key ] ) {
+				map[ key ] = [];
+			}
+			map[ key ].push( it );
+		} );
+		return map;
+	}
+
+	function sortItems( items ) {
+		return items.slice().sort( function ( a, b ) {
+			var as = parseISOToMs( a.start_iso || a.start || '' );
+			var bs = parseISOToMs( b.start_iso || b.start || '' );
+			if ( isNaN( as ) && isNaN( bs ) ) return 0;
+			if ( isNaN( as ) ) return 1;
+			if ( isNaN( bs ) ) return -1;
+			return as - bs;
+		} );
+	}
+
+	function resolveProgram( it ) {
+		if ( it.program && typeof it.program === 'string' ) {
+			return it.program;
 		}
+		if ( it.program_name && typeof it.program_name === 'string' ) {
+			return it.program_name;
+		}
+		if ( it.programTitle && typeof it.programTitle === 'string' ) {
+			return it.programTitle;
+		}
+		return '';
 	}
 
-document.addEventListener( 'DOMContentLoaded', function () {
-var containers = document.querySelectorAll( '.snipi' );
-if ( ! containers.length ) {
-return;
-}
+	document.addEventListener( 'DOMContentLoaded', function () {
+		var shells = document.querySelectorAll( '.snipi--shell' );
+		if ( ! shells.length ) {
+			return;
+		}
 
-			containers.forEach( function ( container ) {
+		shells.forEach( function ( container ) {
 				var headerDate = container.querySelector( '.snipi__date' );
 				var headerClock = container.querySelector( '.snipi__clock' );
 var table = container.querySelector( '.snipi__table' );
@@ -127,12 +179,13 @@ function setHeaderNow() {
 				try {
 					var d = nowLjubljana();
 					if ( headerDate ) {
-						headerDate.textContent = new Intl.DateTimeFormat( 'sl-SI', {
+						var formattedDate = new Intl.DateTimeFormat( 'sl-SI', {
 							weekday: 'long',
 							day: 'numeric',
 							month: 'long',
 							year: 'numeric'
 						} ).format( d );
+						headerDate.textContent = formattedDate.toLowerCase();
 					}
 					if ( headerClock ) {
 						headerClock.textContent = d.toLocaleTimeString( 'sl-SI', { hour12: false } );
@@ -172,46 +225,113 @@ function setHeaderNow() {
 					if ( isNaN( as ) && isNaN( bs ) ) return 0;
 					if ( isNaN( as ) ) return 1;
 					if ( isNaN( bs ) ) return -1;
-					if ( as === bs ) {
-						var ae = parseISOToMs( a.end_iso || a.end || '' );
-						var be = parseISOToMs( b.end_iso || b.end || '' );
-						return ( ae || 0 ) - ( be || 0 );
-					}
 					return as - bs;
 				} );
 
-				var dayKeys = keep.map( function ( it ) {
-					return getDayKey( it.start_iso || it.start || '' );
-				} ).filter( function ( key ) {
-					return key !== '';
-				} );
-				var uniqueDayCount = Array.from( new Set( dayKeys ) ).length;
-				var annotateDays = uniqueDayCount > 1;
-				var lastDayKey = '';
-
-				return keep.map( function ( it ) {
-					var clone = Object.assign( {}, it );
-					if ( annotateDays ) {
-						var dayKey = getDayKey( clone.start_iso || clone.start || '' );
-						if ( dayKey && dayKey !== lastDayKey ) {
-							clone._dayLabel = formatDayLabel( clone.start_iso || clone.start || '' );
-							lastDayKey = dayKey;
-						} else {
-							clone._dayLabel = '';
-						}
-					} else {
-						clone._dayLabel = '';
-					}
-					return clone;
-				} );
+				return keep;
 			}
 
-			function updateBottomRow( shouldDisplay, html ) {
+			function renderPage() {
+				if ( ! tbody ) {
+					return;
+				}
+
+				tbody.innerHTML = '';
+
+				if ( ! items.length ) {
+					var trEmpty = document.createElement( 'tr' );
+					var tdEmpty = document.createElement( 'td' );
+					tdEmpty.colSpan = showProgramColumn ? 6 : 5;
+					tdEmpty.style.textAlign = 'center';
+					tdEmpty.style.padding = '20px';
+					tdEmpty.textContent = 'Ni podatkov za izbrani dan.';
+					trEmpty.appendChild( tdEmpty );
+					tbody.appendChild( trEmpty );
+
+					if ( bottomRowEl ) {
+						bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
+						bottomRowEl.innerHTML = '';
+					}
+					return;
+				}
+
+				totalPages = Math.max( 1, Math.ceil( items.length / rowsPerPage ) );
+				if ( currentPage > totalPages ) {
+					currentPage = 1;
+				}
+
+				if ( paginationEl ) {
+					paginationEl.textContent = currentPage + '/' + totalPages;
+				}
+
+				var startIndex = ( currentPage - 1 ) * rowsPerPage;
+				var endIndex = startIndex + rowsPerPage;
+				var pageItems = items.slice( startIndex, endIndex );
+
+				if ( tbody ) {
+					tbody.innerHTML = '';
+				}
+
+				pageItems.forEach( function ( it, index ) {
+					var tr = document.createElement( 'tr' );
+					if ( index % 2 === 1 ) {
+						tr.classList.add( 'snipi__row--alt' );
+					}
+
+					var timeText = formatTimeRange( it.start_iso || it.start || '', it.end_iso || it.end || '' ) || '';
+					var tdTime = document.createElement( 'td' );
+
+					if ( it._dayLabel ) {
+						var dayLabel = document.createElement( 'div' );
+						dayLabel.className = 'snipi__day-label';
+						dayLabel.textContent = it._dayLabel;
+						tdTime.appendChild( dayLabel );
+					}
+					var timeSpan = document.createElement( 'div' );
+					timeSpan.className = 'snipi__time';
+					timeSpan.textContent = timeText;
+					tdTime.appendChild( timeSpan );
+
+var tdName = document.createElement( 'td' );
+tdName.textContent = it.name || '';
+var tdProgram = null;
+
+if ( showProgramColumn ) {
+tdProgram = document.createElement( 'td' );
+tdProgram.textContent = resolveProgram( it );
+}
+var tdTeacher = document.createElement( 'td' );
+tdTeacher.textContent = it.teacher || '';
+
+var tdRoom = document.createElement( 'td' );
+tdRoom.textContent = it.room || '';
+
+var tdFloor = document.createElement( 'td' );
+tdFloor.textContent = it.floor || '';
+
+tr.appendChild( tdTime );
+tr.appendChild( tdName );
+if ( tdProgram ) {
+tr.appendChild( tdProgram );
+}
+tr.appendChild( tdTeacher );
+tr.appendChild( tdRoom );
+tr.appendChild( tdFloor );
+
+tbody.appendChild( tr );
+				} );
+
+				if ( bottomRowEl ) {
+					bottomRowEl.classList.remove( 'snipi__bottom-row--hidden' );
+				}
+			}
+
+			function updateBottomRow( html ) {
 				if ( ! bottomRowEl ) {
 					return;
 				}
 
-				if ( ! shouldDisplay || ! html ) {
+				if ( ! html ) {
 					bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
 					bottomRowEl.innerHTML = '';
 					return;
@@ -239,160 +359,54 @@ function fetchData() {
 fetch( getEndpoint(), {
 credentials: 'same-origin'
 } )
-					.then( function ( resp ) {
-						if ( ! resp.ok ) {
-							throw new Error( 'HTTP ' + resp.status );
+					.then( function ( response ) {
+						if ( ! response.ok ) {
+							throw new Error( 'Network error: ' + response.status );
 						}
-						return resp.json();
+						return response.json();
 					} )
-					.then( function ( data ) {
-if ( data ) {
-if ( Object.prototype.hasOwnProperty.call( data, 'show_program_column' ) ) {
-showProgramColumn = !! data.show_program_column;
-syncHeaderColumns( showProgramColumn );
-}
-updateBottomRow( data.display_bottom, data.bottom_row );
-if ( Object.prototype.hasOwnProperty.call( data, 'logo_url' ) ) {
-updateLogo( data.logo_url );
-}
-}
-
-						if ( ! data || ! Array.isArray( data.items ) ) {
-							renderNoEvents();
+					.then( function ( payload ) {
+						if ( ! payload || ! Array.isArray( payload.items ) ) {
+							items = [];
+							renderPage();
 							return;
 						}
 
-						items = clientFilter( data.items );
-						currentPage = 1;
+						var rawItems = payload.items || [];
+						var filtered = clientFilter( rawItems );
+						items = filtered;
 
+						if ( payload.bottom_row_html ) {
+							updateBottomRow( payload.bottom_row_html );
+						} else {
+							updateBottomRow( '' );
+						}
+
+						if ( typeof payload.logo_url === 'string' ) {
+							updateLogo( payload.logo_url );
+						}
+
+						if ( typeof payload.show_program === 'boolean' ) {
+							showProgramColumn = payload.show_program;
+							syncHeaderColumns( showProgramColumn );
+						}
+
+						currentPage = 1;
 						renderPage();
 					} )
-					.catch( function ( err ) {
-						console.error( 'SNIPI REST error', err );
-						renderNoEvents();
+					.catch( function () {
+						items = [];
+						renderPage();
+						updateBottomRow( '' );
 					} );
-			}
-
-			function renderPage() {
-				if ( ! tbody ) {
-					return;
-				}
-
-				totalPages = Math.max( 1, Math.ceil( items.length / rowsPerPage ) );
-				if ( currentPage > totalPages ) {
-					currentPage = 1;
-				}
-
-				if ( paginationEl ) {
-					paginationEl.textContent = currentPage + '/' + totalPages;
-				}
-
-				var startIndex = ( currentPage - 1 ) * rowsPerPage;
-				var endIndex = startIndex + rowsPerPage;
-				var pageItems = items.slice( startIndex, endIndex );
-
-				if ( ! pageItems.length ) {
-					renderNoEvents();
-					return;
-				}
-
-				renderRows( pageItems );
-			}
-
-function resolveProgram( item ) {
-if ( item.program_display ) {
-return item.program_display;
-}
-if ( item.project ) {
-return item.project;
-}
-if ( item.studyName ) {
-return item.studyName;
-}
-if ( Array.isArray( item.subjects ) ) {
-for ( var i = 0; i < item.subjects.length; i++ ) {
-if ( item.subjects[i] && item.subjects[i].studyName ) {
-return item.subjects[i].studyName;
-}
-}
-}
-return '';
-}
-
-function renderRows( rows ) {
-if ( ! tbody ) {
-return;
-}
-				tbody.innerHTML = '';
-
-rows.forEach( function ( it, index ) {
-var tr = document.createElement( 'tr' );
-if ( index % 2 === 1 ) {
-tr.classList.add( 'snipi__row--alt' );
-}
-
-					var tdTime = document.createElement( 'td' );
-					var timeText = formatTimeRange( it.start_iso || it.start, it.end_iso || it.end );
-					if ( it._dayLabel ) {
-						var dayLabel = document.createElement( 'div' );
-						dayLabel.className = 'snipi__day-label';
-						dayLabel.textContent = it._dayLabel;
-						tdTime.appendChild( dayLabel );
-					}
-					var timeSpan = document.createElement( 'div' );
-					timeSpan.className = 'snipi__time';
-					timeSpan.textContent = timeText;
-					tdTime.appendChild( timeSpan );
-
-var tdName = document.createElement( 'td' );
-tdName.textContent = it.name || '';
-var tdProgram = null;
-
-if ( showProgramColumn ) {
-tdProgram = document.createElement( 'td' );
-tdProgram.textContent = resolveProgram( it );
-}
-
-var tdTeacher = document.createElement( 'td' );
-tdTeacher.textContent = it.teacher || '';
-
-					var tdRoom = document.createElement( 'td' );
-					tdRoom.textContent = it.room || '';
-
-					var tdFloor = document.createElement( 'td' );
-					tdFloor.textContent = it.floor || '';
-
-tr.appendChild( tdTime );
-tr.appendChild( tdName );
-if ( showProgramColumn && tdProgram ) {
-tr.appendChild( tdProgram );
-}
-tr.appendChild( tdTeacher );
-tr.appendChild( tdRoom );
-tr.appendChild( tdFloor );
-
-					tbody.appendChild( tr );
-				} );
-			}
-
-function renderNoEvents() {
-if ( ! tbody ) {
-return;
-}
-tbody.innerHTML = '';
-var tr = document.createElement( 'tr' );
-var td = document.createElement( 'td' );
-td.colSpan = showProgramColumn ? 6 : 5;
-td.style.textAlign = 'center';
-				td.style.padding = '20px';
-				td.textContent = noEventsMessage;
-				tr.appendChild( td );
-				tbody.appendChild( tr );
 			}
 
 			function startAutoplay() {
 				if ( autoplayTimer ) {
 					clearInterval( autoplayTimer );
+				}
+				if ( totalPages <= 1 ) {
+					return;
 				}
 				autoplayTimer = setInterval( function () {
 					currentPage++;

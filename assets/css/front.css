@@ -87,3 +87,47 @@
 .snipi__bottom-row--hidden {
 	display: none;
 }
+
+/* ===========================================
+   Večji, odebeljen naslov v sredini headerja
+   =========================================== */
+.snipi__title--large {
+	font-size: 2rem; /* prilagodite po želji v svoji temi/override CSS */
+	font-weight: 700;
+	display: block;
+	text-align: center;
+	margin-bottom: 0.25rem;
+}
+
+/* ===========================================
+   Središčni del glave – naslov + datum + paginacija
+   =========================================== */
+.snipi__header-center {
+	flex-direction: column;   /* naslov zgoraj, datum + paginacija spodaj */
+	align-items: center;
+}
+
+/* ===========================================
+   Podnaslov (datum + paginacija)
+   =========================================== */
+.snipi__subheader {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	line-height: 1.2;
+}
+
+/* Datum (prikazan prek JS, npr. "sreda, 26. november 2025") */
+.snipi__date {
+	font-size: 1.3rem;
+	font-weight: 500;
+	text-transform: none;
+	margin-bottom: 0.35rem; /* razmik pred paginacijo */
+}
+
+/* Paginacija pod datumom – nekoliko manjša in subtilna */
+.snipi__pagination {
+	font-size: 1.1rem;
+	opacity: 0.8;
+}
