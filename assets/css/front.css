@@ -71,8 +71,6 @@
 	line-height: 1.1;
 }
 
-
-
 /* ============================================================
    DATUM
    ============================================================ */
@@ -91,8 +89,6 @@
 	white-space: nowrap; /* ne dovoli preloma */
 }
 
-
-
 /* ============================================================
    PAGINACIJA + URA
    ============================================================ */
@@ -105,7 +101,6 @@
 }
 
 
-
 /* ============================================================
    LOGO
    ============================================================ */
@@ -114,8 +109,6 @@
 	max-height: 70px; /* sprejme večje logotipe kot na screenshotu */
 	width: auto;
 }
-
-
 
 /* ============================================================
    TABELA
@@ -161,8 +154,6 @@
 	font-weight: 600;
 }
 
-
-
 /* ============================================================
    SPODNJA VRSTICA – vedno fiksno na dnu zaslona
    (STYLING OSTANE IDENTIČEN)
@@ -186,4 +177,86 @@
 
 .snipi__bottom-row--hidden {
 	display: none;
+}
+
+/* ============================================================
+   COLUMN WIDTH LOGIC – only IZOBRAŽEVANJE expands
+   ============================================================ */
+
+/* Make ALL table columns auto-sized by content */
+.snipi__table th,
+.snipi__table td {
+    width: auto !important;
+    white-space: nowrap;     /* prevent wrapping in narrow cells */
+}
+
+/* Allow wrapping ONLY in IZOBRAŽEVANJE */
+.snipi__table td:nth-child(2),
+.snipi__table th:nth-child(2) {
+    width: 100% !important;  /* consume remaining table width */
+    white-space: normal !important; /* allow long text to wrap */
+}
+
+/* Optional: ensure text doesn’t cling to right edge */
+.snipi__table td:nth-child(2) {
+    padding-right: 24px;
+}
+
+/* ============================================================
+   LIVE EVENT INDICATOR — smooth pulse with soft fading
+   ============================================================ */
+
+.snipi__live-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 8px;
+    background-image: url('../Pulse.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+/* Outer ripple layers */
+.snipi__live-indicator::before,
+.snipi__live-indicator::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(178, 4, 4, 0.25); /* soft red glow */
+    opacity: 0;
+}
+
+/* First ripple */
+.snipi__live-indicator::before {
+    animation: snipi-live-ripple 2.4s ease-out infinite;
+}
+
+/* Second ripple (offset) */
+.snipi__live-indicator::after {
+    animation: snipi-live-ripple 2.4s ease-out 1.2s infinite;
+}
+
+@keyframes snipi-live-ripple {
+    0% {
+        transform: translate(-50%, -50%) scale(0.20);
+        opacity: 0.55;
+    }
+    30% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.35;
+    }
+    60% {
+        transform: translate(-50%, -50%) scale(1.9);
+        opacity: 0.20;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
 }

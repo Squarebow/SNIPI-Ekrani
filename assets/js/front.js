@@ -323,6 +323,17 @@
 					timeSpan.textContent = timeText;
 					tdTime.appendChild( timeSpan );
 
+					/* LIVE INDICATOR: check if event is ongoing */
+					var now = nowLjubljana();
+					var startMs = parseISOToMs(it.start_iso);
+					var endMs   = parseISOToMs(it.end_iso);
+
+					if (startMs <= now.getTime() && endMs > now.getTime()) {
+    					var live = document.createElement('span');
+    					live.className = 'snipi__live-indicator';
+    					tdTime.appendChild(live);
+					}
+
 					var tdName    = document.createElement( 'td' );
 					tdName.textContent = it.name || '';
 
