@@ -1,106 +1,148 @@
-/* front.css - basic front-end styling (BEM-ish) */
+/* ============================================================
+   SNIPI Ekrani – Front-end CSS (FINAL)
+   Vsebuje popravke za:
+   - stabilen header (brez “jitterja” v Chrome / Edge)
+   - enotno oblikovanje datuma in ure v vseh brskalnikih
+   - trajno fiksirano spodnjo vrstico na dnu zaslona
+   - dodatni prostor pod tabelo, da zadnja vrstica ni prekrita
+   ============================================================ */
 
+
+/* ------------------------------------------------------------
+   GLOBAL STYLING
+   ------------------------------------------------------------ */
 .snipi {
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 	color: #111;
 }
 
-/* ------------------------------
-   HEADER WRAPPER
-   ------------------------------ */
+
+
+/* ============================================================
+   ░█░█░█▀█░█░█░█▀▀░█▀▀░█▀▄░█▀▀
+   ░█▀█░█▀█░█░█░█░█░█▀▀░█▀▄░█▀▀
+   ░▀░▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀
+   HEADER – stabilna 3-stolpčna GRID postavitev
+   (PREPREČI “jitter” premikanje naslovnega bloka)
+   ============================================================ */
+
 .snipi__header {
-	display: flex;
+	/* ★ NOVO: namesto flex uporabimo 3-stolpčni grid */
+	display: grid;
+
+	/* Levo = fleksibilno, sredina = fiksno, desno = fiksno */
+	grid-template-columns: 1fr 260px 260px;
+
 	align-items: center;
-	justify-content: space-between;
+	column-gap: 16px;
 	padding: 10px 16px;
 }
 
-/* Posamezni deli glave */
-.snipi__header-left,
-.snipi__header-center,
-.snipi__header-right {
+/* LEVA STRAN (LOGO) */
+.snipi__header-left {
 	display: flex;
 	align-items: center;
 	gap: 8px;
 }
 
-/* CENTER: postavimo vse v stolpec (naslov + datum) */
+/* SREDINSKI BLOK (NASLOV + DATUM) – fiksna širina */
 .snipi__header-center {
+	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-content: center;
+
+	/* ★ NOVO: fiksna širina za stabilnost */
+	width: 260px;
 }
 
-/* RIGHT: paginacija + ura v eni vrstici */
+/* DESNA STRAN (PAGINACIJA + URA) – fiksna širina */
 .snipi__header-right {
 	display: flex;
 	align-items: center;
-	gap: 12px; /* razmik med "stran X/Y" in uro */
+	justify-content: flex-end;
+	gap: 12px;
+
+	/* ★ NOVO: fiksna širina za preprečitev premikanja */
+	width: 260px;
+	flex-shrink: 0;
 }
 
-/* ------------------------------
+
+
+/* ============================================================
    NASLOV
-   ------------------------------ */
+   ============================================================ */
+
 .snipi__title {
 	font-weight: 600;
 	font-size: 1.1rem;
 }
 
-/* Večji, odebeljen naslov na sredini */
 .snipi__title--large {
-	font-size: 2rem; /* po želji prilagodite */
+	font-size: 2rem; /* urejeno po zahtevi */
 	font-weight: 700;
-	display: block;
 	text-align: center;
 	margin-bottom: 0.25rem;
 }
 
-/* ------------------------------
+
+
+/* ============================================================
    DATUM POD NASLOVOM
-   ------------------------------ */
+   ============================================================ */
+
 .snipi__subheader {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: flex-start;
 	line-height: 1.2;
 }
 
-/* Datum, npr. "sreda, 26. november 2025" */
 .snipi__date {
 	font-size: 1.3rem;
-	font-weight: 500;
+	font-weight: 500 !important; /* ★ NOVO: enotno v vseh brskalnikih */
 	text-transform: none;
 }
 
-/* ------------------------------
-   PAGINACIJA + URA (desno)
-   ------------------------------ */
 
-/* Paginacija v glavi – enaka velikost kot ura */
+
+/* ============================================================
+   PAGINACIJA + URA (desno)
+   ============================================================ */
+
 .snipi__pagination {
 	font-size: 1rem;
 	opacity: 0.9;
+	white-space: nowrap; /* ★ NOVO: prepreči prelom vrstice */
 }
 
-/* Ura v glavi */
 .snipi__clock-value {
 	font-size: 1rem;
-	font-weight: 500;
+	font-weight: 500 !important; /* ★ NOVO: Chrome/Edge normalizacija */
+	white-space: nowrap; /* ★ NOVO: prepreči prelom vrstice */
 }
 
-/* ------------------------------
+
+
+/* ============================================================
    LOGOTIP
-   ------------------------------ */
+   ============================================================ */
+
 .snipi__logo {
 	max-height: 60px;
 	width: auto;
 }
 
-/* ------------------------------
+
+
+/* ============================================================
    TABELA
-   ------------------------------ */
+   ============================================================ */
+
 .snipi__table-wrapper {
-	padding: 0 16px 16px;
+	padding: 0 16px 60px; 
+	/* ★ NOVO: več paddinga spodaj, da spodnja vrstica ne prekrije zadnje vrstice */
 }
 
 .snipi__table {
@@ -123,7 +165,12 @@
 	background: rgba(0,0,0,0.03);
 }
 
-/* časovna celica (label + ura) */
+
+
+/* ============================================================
+   CASOVNI STOLPEC (dan + ura)
+   ============================================================ */
+
 .snipi__day-label {
 	display: block;
 	font-size: 0.75rem;
@@ -139,19 +186,8 @@
 	font-weight: 600;
 }
 
-/* ------------------------------
-   SPODNJA VRSTICA (sticky)
-   ------------------------------ */
-.snipi__bottom-row {
-	position: sticky;
-	bottom: 0;
-	width: 100%;
-	background: #222;
-	color: #fff;
-	padding: 8px 16px;
-	font-size: 0.9rem;
-}
 
-.snipi__bottom-row--hidden {
-	display: none;
-}
+
+/* ============================================================
+   SPODNJA VRSTICA – vedno na dnu zaslona
+   =================================================
