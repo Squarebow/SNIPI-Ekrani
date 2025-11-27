@@ -180,46 +180,28 @@
 }
 
 /* ============================================================
-   COLUMN WIDTH LOGIC – only IZOBRAŽEVANJE expands
-   ============================================================ */
-
-/* Make ALL table columns auto-sized by content */
-.snipi__table th,
-.snipi__table td {
-    width: auto !important;
-    white-space: nowrap;     /* prevent wrapping in narrow cells */
-}
-
-/* Allow wrapping ONLY in IZOBRAŽEVANJE */
-.snipi__table td:nth-child(2),
-.snipi__table th:nth-child(2) {
-    width: 100% !important;  /* consume remaining table width */
-    white-space: normal !important; /* allow long text to wrap */
-}
-
-/* Optional: ensure text doesn’t cling to right edge */
-.snipi__table td:nth-child(2) {
-    padding-right: 24px;
-}
-
-/* ============================================================
    LIVE EVENT INDICATOR — smooth pulse with soft fading
    ============================================================ */
 
+/* Base icon (Pulse.svg is the dot in the middle) */
 .snipi__live-indicator {
     display: inline-block;
+    vertical-align: middle;
+    margin-left: 8px;
     width: 12px;
     height: 12px;
-    margin-left: 8px;
+    position: relative;
     background-image: url('../Pulse.svg');
     background-size: contain;
+    background-position: center;
     background-repeat: no-repeat;
-    position: relative;
+    white-space: nowrap; /* keeps it on same line */
 }
 
-/* Outer ripple layers */
+/* Radar rings (3 layers) */
 .snipi__live-indicator::before,
-.snipi__live-indicator::after {
+.snipi__live-indicator::after,
+.snipi__live-indicator .snipi__ring {
     content: "";
     position: absolute;
     left: 50%;
@@ -228,35 +210,60 @@
     height: 12px;
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(178, 4, 4, 0.25); /* soft red glow */
+    background: rgba(255, 0, 0, 0.25); /* red glow */
     opacity: 0;
 }
 
-/* First ripple */
+/* First pulse */
 .snipi__live-indicator::before {
-    animation: snipi-live-ripple 2.4s ease-out infinite;
+    animation: snipi-radar 2.4s ease-out infinite;
 }
 
-/* Second ripple (offset) */
+/* Second pulse (delay) */
 .snipi__live-indicator::after {
-    animation: snipi-live-ripple 2.4s ease-out 1.2s infinite;
+    animation: snipi-radar 2.4s ease-out 0.8s infinite;
 }
 
-@keyframes snipi-live-ripple {
+/* Third pulse (delay) */
+.snipi__live-indicator .snipi__ring {
+    animation: snipi-radar 2.4s ease-out 1.6s infinite;
+}
+
+/* Pulse animation – radar style */
+@keyframes snipi-radar {
     0% {
-        transform: translate(-50%, -50%) scale(0.20);
-        opacity: 0.55;
+        transform: translate(-50%, -50%) scale(0.4);
+        opacity: 0.7;
     }
-    30% {
-        transform: translate(-50%, -50%) scale(1.2);
-        opacity: 0.35;
+    40% {
+        transform: translate(-50%, -50%) scale(1.6);
+        opacity: 0.5;
     }
-    60% {
-        transform: translate(-50%, -50%) scale(1.9);
-        opacity: 0.20;
+    70% {
+        transform: translate(-50%, -50%) scale(2.1);
+        opacity: 0.25;
     }
     100% {
-        transform: translate(-50%, -50%) scale(2.5);
+        transform: translate(-50%, -50%) scale(2.6);
         opacity: 0;
     }
 }
+
+	/* Ensures time + pulse are always in ONE horizontal line */
+	.snipi__time-wrapper {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    gap: 6px;
+	}
+
+	/* Convert snipi__time to inline element instead of block */
+	.snipi__time {
+    display: inline-block;
+    white-space: nowrap;
+	}
+
+	/* Prevent TD from wrapping onto new lines */
+	.snipi__table td:first-child {
+    white-space: nowrap;
+	}

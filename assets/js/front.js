@@ -318,10 +318,13 @@
 						tdTime.appendChild( dayLabel );
 					}
 
-					var timeSpan = document.createElement( 'div' );
+					var timeWrapper = document.createElement('div');
+					timeWrapper.className = 'snipi__time-wrapper';
+					var timeSpan = document.createElement('span');
 					timeSpan.className = 'snipi__time';
 					timeSpan.textContent = timeText;
-					tdTime.appendChild( timeSpan );
+
+					timeWrapper.appendChild(timeSpan);
 
 					/* LIVE INDICATOR: check if event is ongoing */
 					var now = nowLjubljana();
@@ -329,10 +332,17 @@
 					var endMs   = parseISOToMs(it.end_iso);
 
 					if (startMs <= now.getTime() && endMs > now.getTime()) {
-    					var live = document.createElement('span');
-    					live.className = 'snipi__live-indicator';
-    					tdTime.appendChild(live);
+    				var live = document.createElement('span');
+    				live.className = 'snipi__live-indicator';
+
+   					var ring = document.createElement('span');
+    				ring.className = 'snipi__ring';
+    				live.appendChild(ring);
+
+    				timeWrapper.appendChild(live);
 					}
+
+					tdTime.appendChild(timeWrapper);
 
 					var tdName    = document.createElement( 'td' );
 					tdName.textContent = it.name || '';
