@@ -81,7 +81,7 @@
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	width: 100%;
+	width: auto;
 }
 
 /* Gumb za kopiranje (na strani ekrana) in v seznamu Vsi ekrani */
