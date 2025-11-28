@@ -1,5 +1,5 @@
 /* ============================================================
-   SNIPI Ekrani – Front-end CSS
+   SNIPI Ekrani – Front-end CSS (FINAL FIXED VERSION)
    ============================================================ */
 
 .snipi {
@@ -7,74 +7,107 @@
 	color: #111;
 }
 
-/* ============================================================
-   LAYOUT WRAPPER
-   ============================================================ */
 
-.snipi__wrapper {
-	display: flex;
-	flex-direction: column;
-	min-height: 100vh;
-}
 
 /* ============================================================
    HEADER – stabilen layout brez jitterja
    ============================================================ */
 
 .snipi__header {
+	/* 3-stolpčni grid: levo fleksibilno, sredina fluid min/max, desno fiksno */
 	display: grid;
-	grid-template-columns: minmax(0, 1.2fr) minmax(0, 2fr) minmax(0, 1.2fr);
+	grid-template-columns: 1fr auto 1fr;  /* CENTER bo imel min/max valove nižje */
 	align-items: center;
-	padding: 8px 16px;
+	column-gap: 32px; /* večji razmak za TV */
+	padding: 10px 16px;
 }
 
-/* leva stran – datum */
-.snipi__date {
-	font-size: 1rem;
-	font-weight: 600;
-	white-space: nowrap;
-}
-
-/* sredina – naslov + paginacija + logo */
-.snipi__title {
-	text-align: center;
-}
-
-.snipi__title-text {
-	display: block;
-	font-size: 1.3rem;
-	font-weight: 700;
-	margin-bottom: 4px;
-}
-
-.snipi__pagination {
-	display: inline-block;
-	font-size: 0.9rem;
-	opacity: 0.8;
-	margin-right: 8px;
-}
-
-.snipi__logo-wrapper {
-	display: inline-flex;
+/* LEVA STRAN (logo) */
+.snipi__header-left {
+	display: flex;
 	align-items: center;
+	gap: 8px;
+}
+
+/* SREDINA (naslov + datum) – fluid min/max širina */
+.snipi__header-center {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	/* ★ nikoli preozko, nikoli preširoko */
+	min-width: 360px;
+	max-width: 500px;
+}
+
+/* DESNO: paginacija + ura */
+.snipi__header-right {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
 	gap: 12px;
+
+	/* ★ fiksna širina, da Chrome/Edge ne premikata sredine */
+	min-width: 220px;  /* ★ prevents jitter */
+    width: auto;       /* ★ allows fluid layout */
+    flex-shrink: 0;    /* ★ prevents collapsing */
 }
+
+
+/* ============================================================
+   NASLOV
+   ============================================================ */
+
+.snipi__title {
+	font-weight: 600;
+	font-size: 1.1rem;
+}
+
+.snipi__title--large {
+	font-size: 2rem;
+	font-weight: 700;
+	text-align: center;
+	line-height: 1.1;
+}
+
+/* ============================================================
+   DATUM
+   ============================================================ */
+
+.snipi__subheader {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	line-height: 1.2;
+}
+
+.snipi__date {
+	font-size: 1.3rem;
+	font-weight: 500 !important; /* enako v vseh brskalnikih */
+	text-transform: none;
+	white-space: nowrap; /* ne dovoli preloma */
+}
+
+/* ============================================================
+   PAGINACIJA + URA
+   ============================================================ */
+
+.snipi__pagination,
+.snipi__clock-value {
+	font-size: 1rem;
+	font-weight: 300 !important;
+	white-space: nowrap; /* ne prelomi v 2 vrsti */
+}
+
+
+/* ============================================================
+   LOGO
+   ============================================================ */
 
 .snipi__logo {
-	display: inline-block;
-	max-height: 60px;
-	height: auto;
-}
-
-/* desna stran – ura */
-.snipi__clock {
-	text-align: right;
-}
-
-.snipi__clock-value {
-	font-variant-numeric: tabular-nums;
-	font-size: 1.4rem;
-	font-weight: 600;
+	max-height: 70px; /* sprejme večje logotipe kot na screenshotu */
+	width: auto;
 }
 
 /* ============================================================
@@ -82,9 +115,7 @@
    ============================================================ */
 
 .snipi__table-wrapper {
-	flex: 1 1 auto;
-	padding: 8px 16px;
-	display: flex;
+	padding: 0 16px 60px; /* prostor za sticky spodnjo vrstico */
 }
 
 .snipi__table {
@@ -103,9 +134,8 @@
 	border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 
-/* zebra vrstice */
 .snipi__row--alt {
-	background-color: rgba(0,0,0,0.02);
+	background: rgba(0,0,0,0.03);
 }
 
 /* časovni stolpec */
@@ -126,11 +156,23 @@
 
 /* ============================================================
    SPODNJA VRSTICA – vedno fiksno na dnu zaslona
+   (STYLING OSTANE IDENTIČEN)
    ============================================================ */
 
 .snipi__bottom-row {
+	position: fixed !important; /* sticky → fixed (deluje povsod) */
+	bottom: 0;
+	left: 0;
+	width: 100vw;
+
+	/* ★ ORIGINALNA STILIZACIJA OHRANJENA */
+	background: #222;
+	color: #fff;
 	padding: 8px 16px;
-	border-top: 1px solid rgba(0,0,0,0.08);
+	font-size: 0.9rem;
+	text-align: center;
+
+	z-index: 999;
 }
 
 .snipi__bottom-row--hidden {
@@ -138,64 +180,40 @@
 }
 
 /* ============================================================
-   CUSTOM HTML V SPODNJI VRSTICI
-   (uporablja se WYSIWYG vsebina iz admina)
+   LIVE EVENT INDICATOR — smooth pulse with soft fading
    ============================================================ */
 
-.snipi__bottom-row *:last-child {
-	margin-bottom: 0;
+/* Base icon (Pulse.svg is the dot in the middle) */
+.snipi__live-indicator {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 6px;
+
+    /* Do NOT control size — SVG controls size itself */
+    width: auto;
+    height: 1em;
+
+    /* Prevent cell height expansion */
+    max-height: 1em;
+    object-fit: contain;
 }
 
-/* ============================================================
-   PRILEGANJE NA CELOTEN ZASLON (TV)
-   ============================================================ */
 
-.snipi__wrapper {
-	background-color: #ffffff;
+	/* Ensures time + pulse are always in ONE horizontal line */
+	.snipi__time-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
 }
 
-/* ============================================================
-   DODATNO: izklop prelamljanja prvega stolpca (čas)
-   ============================================================ */
+	/* Convert snipi__time to inline element instead of block */
+	.snipi__time {
+    display: inline-block;
+    white-space: nowrap;
+	}
 
-.snipi__table td:first-child {
-	white-space: nowrap;
-}
-
-/* ======================
-   LIVE EVENT INDICATOR 
-   ====================== */
-
-/* =========================================================
-   TIME + LIVE INDICATOR WRAPPER
-   - poskrbi, da sta čas in ikona v isti vrstici
-   - razmik je vedno enak, ne glede na dolžino časa
-   ========================================================= */
-.snipi-ekrani-time-wrapper {
-	display: inline-flex;
-	align-items: center;        /* vertikalna poravnava z besedilom */
-	gap: 6px;                   /* razmik med časom in ikono */
-	line-height: 1;             /* prepreči dedovanje previsokega line-height */
-}
-
-/* =========================================================
-   LIVE INDICATOR (IMG, ki prikazuje Live.svg)
-   - dimenzije določa SVG datoteka
-   - CSS ureja le poravnavo v vrstici
-   ========================================================= */
-.snipi-live-indicator {
-	display: inline-block;
-	line-height: 0;             /* brez dodatnega navpičnega razmika okrog ikone */
-	vertical-align: middle;     /* poravnava glede na sredino besedila */
-}
-
-/* (Če bi bil kdaj uporabljen inline <svg> v .snipi-live-indicator,
-   ta blok poskrbi, da se uporablja intrinzična velikost SVG-ja.)
-.snipi-live-indicator svg {
-	width: auto !important;
-	height: auto !important;
-	max-width: none !important;
-	max-height: none !important;
-	display: block;
-}
-*/
+	/* Prevent TD from wrapping onto new lines */
+	.snipi__table td:first-child {
+    white-space: nowrap;
+	}

@@ -5,26 +5,16 @@
 (function () {
 	'use strict';
 
-	// Če front-end podatki niso na voljo, se skripta ne izvaja.
 	if ( typeof SNIPI_FRONT_REST === 'undefined' ) {
 		return;
 	}
 
-	// Osnovne nastavitve z lokaliziranega objekta.
 	var restRoot         = SNIPI_FRONT_REST.rest_root.replace( /\/$/, '' );
 	var postId           = SNIPI_FRONT_REST.post_id;
 	var rowsPerPage      = parseInt( SNIPI_FRONT_REST.rowsPerPage || 8, 10 );
 	var autoplayInterval = parseInt( SNIPI_FRONT_REST.autoplayInterval || 10, 10 );
 	var showProgramColumn = SNIPI_FRONT_REST.showProgramColumn === '1';
 
-	// URL vtičnika, uporabljen za pot do Live.svg (nastavljen v PHP preko wp_localize_script).
-	var pluginUrl        = ( typeof SNIPI_FRONT_REST.pluginUrl !== 'undefined' )
-		? SNIPI_FRONT_REST.pluginUrl
-		: '';
-
-	// ------------------------------------------------------------
-	// Parsanje ISO datuma v milisekunde
-	// ------------------------------------------------------------
 	function parseISOToMs( isoString ) {
 		if ( ! isoString ) return NaN;
 		var d = new Date( isoString );
@@ -39,9 +29,6 @@
 		return d2.getTime();
 	}
 
-	// ------------------------------------------------------------
-	// Trenutni čas v časovnem pasu Europe/Ljubljana
-	// ------------------------------------------------------------
 	function nowLjubljana() {
 		var now = new Date();
 		var formatter = new Intl.DateTimeFormat( 'en-US', {
@@ -72,9 +59,6 @@
 		return new Date( year, month, day, hour, minute, second );
 	}
 
-	// ------------------------------------------------------------
-	// Formatiranje časovnega intervala (HH:MM - HH:MM)
-	// ------------------------------------------------------------
 	function formatTimeRange( startIso, endIso ) {
 		if ( ! startIso || ! endIso ) {
 			return '';
@@ -87,16 +71,10 @@
 		return sH + ' - ' + eH;
 	}
 
-	// ------------------------------------------------------------
-	// REST endpoint za timeslots
-	// ------------------------------------------------------------
 	function getEndpoint() {
 		return restRoot + '/snipi/v1/ekrani/timeslots?post_id=' + encodeURIComponent( postId );
 	}
 
-	// ------------------------------------------------------------
-	// Izračun "ključ dneva" YYYY-MM-DD
-	// ------------------------------------------------------------
 	function getDayKey( isoString ) {
 		var ms = parseISOToMs( isoString );
 		if ( isNaN( ms ) ) return '';
@@ -107,9 +85,20 @@
 		return year + '-' + month + '-' + day;
 	}
 
-	// ------------------------------------------------------------
-	// Sortiranje dogodkov po začetku
-	// ------------------------------------------------------------
+	function groupByDay( items ) {
+		var map = {};
+		items.forEach( function ( it ) {
+			var startIso = it.start_iso || it.start || '';
+			var key      = getDayKey( startIso );
+			if ( ! key ) return;
+			if ( ! map[ key ] ) {
+				map[ key ] = [];
+			}
+			map[ key ].push( it );
+		} );
+		return map;
+	}
+
 	function sortItems( items ) {
 		return items.slice().sort( function ( a, b ) {
 			var as = parseISOToMs( a.start_iso || a.start || '' );
@@ -121,9 +110,6 @@
 		} );
 	}
 
-	// ------------------------------------------------------------
-	// Resolucija imena programa (ker lahko pride iz različnih polj)
-	// ------------------------------------------------------------
 	function resolveProgram( it ) {
 		if ( it.program && typeof it.program === 'string' ) {
 			return it.program;
@@ -143,9 +129,6 @@
 		return '';
 	}
 
-	// ------------------------------------------------------------
-	// DOMContentLoaded: inicializacija vseh .snipi--shell
-	// ------------------------------------------------------------
 	document.addEventListener( 'DOMContentLoaded', function () {
 		var shells = document.querySelectorAll( '.snipi--shell' );
 		if ( ! shells.length ) {
@@ -168,9 +151,40 @@
 			var autoplayTimer = null;
 			var fetchTimer    = null;
 
-			// ------------------------------------------------------------
-			// Posodobitev glave (datum + ura v živo)
-			// ------------------------------------------------------------
+			function syncHeaderColumns( shouldShowProgram ) {
+				if ( ! table ) {
+					return;
+				}
+
+				var headRow = table.querySelector( 'thead tr' );
+				if ( ! headRow ) {
+					return;
+				}
+
+				var programTh = headRow.querySelector( '[data-snipi-program]' );
+
+				if ( shouldShowProgram && ! programTh ) {
+					var newTh = document.createElement( 'th' );
+					newTh.setAttribute( 'data-snipi-col', 'program' );
+					newTh.setAttribute( 'data-snipi-program', '1' );
+					newTh.textContent = 'PROGRAM';
+
+					var teacherTh = headRow.querySelector( '[data-snipi-col="teacher"]' );
+					if ( teacherTh ) {
+						headRow.insertBefore( newTh, teacherTh );
+					} else {
+						headRow.appendChild( newTh );
+					}
+				} else if ( ! shouldShowProgram && programTh ) {
+					headRow.removeChild( programTh );
+				}
+			}
+
+			syncHeaderColumns( showProgramColumn );
+
+			// =========================
+			// Datum + ura v glavi
+			// =========================
 			function setHeaderNow() {
 				try {
 					var d = nowLjubljana();
@@ -198,11 +212,11 @@
 			setHeaderNow();
 			setInterval( setHeaderNow, 1000 );
 
-			// ------------------------------------------------------------
-			// Filtriranje dogodkov na strani klienta:
-			// - današnji: skrije le že končane
-			// - prihodnji: pusti vse (vikend/+3 logika ostane na strežniku)
-			// ------------------------------------------------------------
+			// =========================
+			// Filtriranje dogodkov:
+			// - današnji: skrije tiste, ki so se že končali
+			// - prihodnji: vedno prikaže (vikend / +3 logika ostane)
+			// =========================
 			function clientFilter( rawItems ) {
 				var now   = nowLjubljana();
 
@@ -219,7 +233,7 @@
 					var e = new Date( parseISOToMs( endIso ) );
 
 					if ( isNaN( s ) || isNaN( e ) ) {
-						// Če ni veljavnega časa, raje prikažemo kot skrijemo.
+						// Če ni veljavnega časa, ne tvegamo – prikažemo.
 						return true;
 					}
 
@@ -228,12 +242,12 @@
 						return true;
 					}
 
-					// Današnji dogodki: skrij samo tiste, ki so se že končali
+					// Današnji dogodki: skrij samo tiste, ki so se res že končali
 					if ( eventKey === todayKey ) {
 						return e >= now;
 					}
 
-					// Prihodnji dnevi – vedno prikažemo
+					// Prihodnji dnevi (+ vikend način / +3) – ne filtriramo
 					return true;
 				} );
 
@@ -249,9 +263,6 @@
 				return keep;
 			}
 
-			// ------------------------------------------------------------
-			// Glavni izris strani z upoštevanjem paginacije
-			// ------------------------------------------------------------
 			function renderPage() {
 				if ( ! tbody ) {
 					return;
@@ -259,7 +270,6 @@
 
 				tbody.innerHTML = '';
 
-				// Če ni dogodkov, prikažemo sporočilo + skrijemo spodnjo vrstico
 				if ( ! items.length ) {
 					var trEmpty = document.createElement( 'tr' );
 					var tdEmpty = document.createElement( 'td' );
@@ -292,19 +302,15 @@
 
 				tbody.innerHTML = '';
 
-				// --------------------------------------------------------
-				// Izris posamezne vrstice
-				// --------------------------------------------------------
 				pageItems.forEach( function ( it, index ) {
 					var tr = document.createElement( 'tr' );
 					if ( index % 2 === 1 ) {
 						tr.classList.add( 'snipi__row--alt' );
 					}
 
-					// ---------------- ČASOVNI STOLPEC + LIVE IKONA ----------------
+					var timeText = formatTimeRange( it.start_iso || it.start || '', it.end_iso || it.end || '' ) || '';
 					var tdTime   = document.createElement( 'td' );
 
-					// Oznaka dneva (če je prisotna)
 					if ( it._dayLabel ) {
 						var dayLabel = document.createElement( 'div' );
 						dayLabel.className = 'snipi__day-label';
@@ -312,44 +318,32 @@
 						tdTime.appendChild( dayLabel );
 					}
 
-					// Formatiran čas dogodka
-					var formattedTime = formatTimeRange(
-						it.start_iso || it.start || '',
-						it.end_iso || it.end || ''
-					) || '';
-
-					// Wrapper za čas + live indikator (postavitev, ne velikost)
-					var timeWrapper = document.createElement( 'span' );
-					timeWrapper.classList.add( 'snipi-ekrani-time-wrapper' );
-
-					// Časovni tekst
-					var timeSpan = document.createElement( 'span' );
+					var timeWrapper = document.createElement('div');
+					timeWrapper.className = 'snipi__time-wrapper';
+					var timeSpan = document.createElement('span');
 					timeSpan.className = 'snipi__time';
-					timeSpan.textContent = formattedTime;
-					timeWrapper.appendChild( timeSpan );
+					timeSpan.textContent = timeText;
 
-					// Live indikator: preverimo, ali je dogodek trenutno v teku
-					var now     = nowLjubljana();
-					var startMs = parseISOToMs( it.start_iso || it.start || '' );
-					var endMs   = parseISOToMs( it.end_iso || it.end || '' );
+					timeWrapper.appendChild(timeSpan);
 
-					if (
-						! isNaN( startMs ) &&
-						! isNaN( endMs ) &&
-						startMs <= now.getTime() &&
-						endMs > now.getTime()
-					) {
-						var liveImg = document.createElement( 'img' );
-						liveImg.className = 'snipi-live-indicator';
-						// Pot do Live.svg – dimenzije določa SVG sam, CSS ureja le poravnavo
-						liveImg.src = pluginUrl + 'assets/Live.svg';
-						liveImg.alt = 'V živo';
-						timeWrapper.appendChild( liveImg );
+					/* LIVE INDICATOR: check if event is ongoing */
+					var now = nowLjubljana();
+					var startMs = parseISOToMs(it.start_iso);
+					var endMs   = parseISOToMs(it.end_iso);
+
+					if (startMs <= now.getTime() && endMs > now.getTime()) {
+
+    					var liveImg = document.createElement('img');
+						liveImg.className = 'snipi__live-indicator';
+						liveImg.src = SNIPI_FRONT_REST.pluginUrl + 'assets/Live.svg';
+						liveImg.alt = 'live';
+
+						timeWrapper.appendChild(liveImg);
 					}
 
-					tdTime.appendChild( timeWrapper );
 
-					// ---------------- OSTALI STOLPCI ----------------
+					tdTime.appendChild(timeWrapper);
+
 					var tdName    = document.createElement( 'td' );
 					tdName.textContent = it.name || '';
 
@@ -385,9 +379,6 @@
 				}
 			}
 
-			// ------------------------------------------------------------
-			// Spodnja vrstica (custom HTML iz admina)
-			// ------------------------------------------------------------
 			function updateBottomRow( html ) {
 				if ( ! bottomRowEl ) {
 					return;
@@ -403,9 +394,6 @@
 				bottomRowEl.innerHTML = html;
 			}
 
-			// ------------------------------------------------------------
-			// Posodabljanje logotipa v glavi
-			// ------------------------------------------------------------
 			function updateLogo( url ) {
 				if ( ! logoEl ) {
 					return;
@@ -413,17 +401,13 @@
 
 				if ( url ) {
 					logoEl.setAttribute( 'src', url );
-					lo
-goEl.style.display = '';
+					logoEl.style.display = '';
 				} else {
 					logoEl.removeAttribute( 'src' );
 					logoEl.style.display = 'none';
 				}
 			}
 
-			// ------------------------------------------------------------
-			// Fetch podatkov iz REST API in render
-			// ------------------------------------------------------------
 			function fetchData() {
 				fetch( getEndpoint(), {
 					credentials: 'same-origin'
@@ -459,8 +443,10 @@ goEl.style.display = '';
 
 						if ( typeof payload.show_program_column === 'boolean' ) {
 							showProgramColumn = payload.show_program_column;
+							syncHeaderColumns( showProgramColumn );
 						} else if ( typeof payload.show_program === 'boolean' ) {
 							showProgramColumn = payload.show_program;
+							syncHeaderColumns( showProgramColumn );
 						}
 
 						currentPage = 1;
@@ -473,9 +459,6 @@ goEl.style.display = '';
 					} );
 			}
 
-			// ------------------------------------------------------------
-			// Avtomatsko preklapljanje strani (avtoplay)
-			// ------------------------------------------------------------
 			function startAutoplay() {
 				if ( autoplayTimer ) {
 					clearInterval( autoplayTimer );
@@ -492,14 +475,11 @@ goEl.style.display = '';
 				}, autoplayInterval * 1000 );
 			}
 
-			// Prvi fetch + zagon avtoplay
 			fetchData();
 			startAutoplay();
 
-			// Redni refetch na 60 s
 			fetchTimer = setInterval( fetchData, 60 * 1000 );
 
-			// Počistimo timerje ob zapiranju strani
 			window.addEventListener( 'beforeunload', function () {
 				if ( fetchTimer ) {
 					clearInterval( fetchTimer );
