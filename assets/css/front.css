@@ -179,38 +179,60 @@
 	display: none;
 }
 
-/* ============================================================
-   LIVE EVENT INDICATOR — smooth pulse with soft fading
-   ============================================================ */
+/* ======================
+   LIVE EVENT INDICATOR 
+   ====================== */
 
-/* Base icon (Pulse.svg is the dot in the middle) */
-.snipi__live-indicator {
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 8px;
-    width: 12px;
-    height: 12px;
-    position: relative;
-    background-image: url('../Live.svg');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    white-space: nowrap; /* keeps it on same line */
+/* =========================================================
+   TIME + LIVE INDICATOR WRAPPER
+   - poskrbi, da je čas vedno poravnan levo
+   - ikona vedno poravnana desno, na isti višini
+   - razmik je vedno enak, ne glede na dolžino časa (11:00 vs 12:00)
+   ========================================================= */
+.snipi-ekrani-time-wrapper {
+	display: inline-flex;
+	align-items: center;        /* vertikalna poravnava */
+	gap: 6px;                   /* razmik med časom in ikono */
+	line-height: 1;             /* prepreči dvigovanje/dedovanje višine */
 }
 
-	/* Ensures time + pulse are always in ONE horizontal line */
-	.snipi__time-wrapper {
-    display: inline-flex;
-    align-items: center;
-    white-space: nowrap;
-    gap: 6px;
-	}
+/* =========================================================
+   LIVE INDICATOR CONTAINER
+   - ne omejuje dimenzij SVG
+   - vedno centriran glede na čas
+   ========================================================= */
+.snipi-live-indicator {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	vertical-align: middle;
+}
 
-	/* Convert snipi__time to inline element instead of block */
-	.snipi__time {
-    display: inline-block;
-    white-space: nowrap;
-	}
+
+/* =========================================================
+   INLINE SVG RESET
+   - izklop vseh morebitnih prejšnjih omejitev
+   - inline SVG *sam določa svoje dimenzije*
+   ========================================================= */
+.snipi-live-indicator svg {
+	width: auto !important;
+	height: auto !important;
+	max-width: none !important;
+	max-height: none !important;
+	display: block;            /* prepreči baseline offset SVG elementov */
+}
+
+
+/* =========================================================
+   OPTIONAL: kadar tabela ustvari prevelik padding
+   ========================================================= */
+/*
+.snipi-ekrani td {
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+*/
 
 	/* Prevent TD from wrapping onto new lines */
 	.snipi__table td:first-child {
