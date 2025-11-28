@@ -85,10 +85,41 @@
 		return year + '-' + month + '-' + day;
 	}
 
-	function groupByDay( items ) {
-		var map = {};
-		items.forEach( function ( it ) {
-			var startIso = it.start_iso || it.start || '';
+	// Added: helper to format future-day labels for weekend mode and upcoming events.
+	function formatDayLabel( isoString ) {
+		var ms = parseISOToMs( isoString );
+		if ( isNaN( ms ) ) {
+			return '';
+		}
+
+		return new Date( ms ).toLocaleDateString( 'sl-SI', {
+			weekday: 'long',
+			day: 'numeric',
+			month: 'long'
+		} );
+	}
+
+	// Added: stamp each item with its day key/label so pagination can show day headers.
+	function decorateDayMetadata( orderedItems ) {
+		var todayKey = getDayKey( nowLjubljana().toISOString() );
+
+		orderedItems.forEach( function ( item ) {
+			var startIso = item.start_iso || item.start || '';
+			var dayKey   = getDayKey( startIso );
+
+			item._dayKey   = dayKey;
+			item._dayLabel = '';
+
+			if ( dayKey && dayKey !== todayKey ) {
+				item._dayLabel = formatDayLabel( startIso );
+			}
+		} );
+	}
+
+       function groupByDay( items ) {
+               var map = {};
+               items.forEach( function ( it ) {
+                       var startIso = it.start_iso || it.start || '';
 			var key      = getDayKey( startIso );
 			if ( ! key ) return;
 			if ( ! map[ key ] ) {
@@ -292,31 +323,39 @@
 					currentPage = 1;
 				}
 
-				if ( paginationEl ) {
-					paginationEl.textContent = 'stran ' + currentPage + '/' + totalPages;
-				}
+                                if ( paginationEl ) {
+                                        paginationEl.textContent = 'stran ' + currentPage + '/' + totalPages;
+                                }
 
-				var startIndex = ( currentPage - 1 ) * rowsPerPage;
-				var endIndex   = startIndex + rowsPerPage;
-				var pageItems  = items.slice( startIndex, endIndex );
+                                var startIndex = ( currentPage - 1 ) * rowsPerPage;
+                                var endIndex   = startIndex + rowsPerPage;
+                                var pageItems  = items.slice( startIndex, endIndex );
 
-				tbody.innerHTML = '';
+                                tbody.innerHTML = '';
 
-				pageItems.forEach( function ( it, index ) {
-					var tr = document.createElement( 'tr' );
-					if ( index % 2 === 1 ) {
-						tr.classList.add( 'snipi__row--alt' );
-					}
+                                var todayKey = getDayKey( nowLjubljana().toISOString() );
+                                var previousKey = null;
 
-					var timeText = formatTimeRange( it.start_iso || it.start || '', it.end_iso || it.end || '' ) || '';
-					var tdTime   = document.createElement( 'td' );
+                                pageItems.forEach( function ( it, index ) {
+                                        var tr = document.createElement( 'tr' );
+                                        if ( index % 2 === 1 ) {
+                                                tr.classList.add( 'snipi__row--alt' );
+                                        }
 
-					if ( it._dayLabel ) {
-						var dayLabel = document.createElement( 'div' );
-						dayLabel.className = 'snipi__day-label';
-						dayLabel.textContent = it._dayLabel;
-						tdTime.appendChild( dayLabel );
-					}
+                                        var timeText = formatTimeRange( it.start_iso || it.start || '', it.end_iso || it.end || '' ) || '';
+                                        var tdTime   = document.createElement( 'td' );
+
+                                        var dayKey   = it._dayKey || getDayKey( it.start_iso || it.start || '' );
+                                        var showDayLabel = dayKey && dayKey !== todayKey && dayKey !== previousKey && it._dayLabel;
+
+                                        if ( showDayLabel ) {
+                                                var dayLabel = document.createElement( 'div' );
+                                                dayLabel.className = 'snipi__day-label';
+                                                dayLabel.textContent = it._dayLabel;
+                                                tdTime.appendChild( dayLabel );
+                                        }
+
+                                        previousKey = dayKey;
 
 					var timeWrapper = document.createElement('div');
 					timeWrapper.className = 'snipi__time-wrapper';
@@ -408,75 +447,81 @@
 				}
 			}
 
-			function fetchData() {
-				fetch( getEndpoint(), {
-					credentials: 'same-origin'
+		function fetchData() {
+			fetch( getEndpoint(), {
+				credentials: 'same-origin'
+			} )
+				.then( function ( response ) {
+					if ( ! response.ok ) {
+						throw new Error( 'Network error: ' + response.status );
+					}
+					return response.json();
 				} )
-					.then( function ( response ) {
-						if ( ! response.ok ) {
-							throw new Error( 'Network error: ' + response.status );
-						}
-						return response.json();
-					} )
-					.then( function ( payload ) {
-						if ( ! payload || ! Array.isArray( payload.items ) ) {
-							items = [];
-							renderPage();
-							return;
-						}
-
-						var rawItems = payload.items || [];
-						var filtered = clientFilter( rawItems );
-						items        = filtered;
-
-						if ( payload.bottom_row ) {
-							updateBottomRow( payload.bottom_row );
-						} else if ( payload.bottom_row_html ) {
-							updateBottomRow( payload.bottom_row_html );
-						} else {
-							updateBottomRow( '' );
-						}
-
-						if ( typeof payload.logo_url === 'string' ) {
-							updateLogo( payload.logo_url );
-						}
-
-						if ( typeof payload.show_program_column === 'boolean' ) {
-							showProgramColumn = payload.show_program_column;
-							syncHeaderColumns( showProgramColumn );
-						} else if ( typeof payload.show_program === 'boolean' ) {
-							showProgramColumn = payload.show_program;
-							syncHeaderColumns( showProgramColumn );
-						}
-
-						currentPage = 1;
-						renderPage();
-					} )
-					.catch( function () {
+				.then( function ( payload ) {
+					if ( ! payload || ! Array.isArray( payload.items ) ) {
 						items = [];
 						renderPage();
-						updateBottomRow( '' );
-					} );
-			}
-
-			function startAutoplay() {
-				if ( autoplayTimer ) {
-					clearInterval( autoplayTimer );
-				}
-				if ( totalPages <= 1 ) {
-					return;
-				}
-				autoplayTimer = setInterval( function () {
-					currentPage++;
-					if ( currentPage > totalPages ) {
-						currentPage = 1;
+						return;
 					}
+
+					var rawItems = payload.items || [];
+					var filtered = clientFilter( rawItems );
+					items        = filtered;
+
+					// Added: enrich events with day metadata so future days are visible across pagination.
+					decorateDayMetadata( items );
+
+					if ( payload.bottom_row ) {
+						updateBottomRow( payload.bottom_row );
+					} else if ( payload.bottom_row_html ) {
+						updateBottomRow( payload.bottom_row_html );
+					} else {
+						updateBottomRow( '' );
+					}
+
+					if ( typeof payload.logo_url === 'string' ) {
+						updateLogo( payload.logo_url );
+					}
+
+					if ( typeof payload.show_program_column === 'boolean' ) {
+						showProgramColumn = payload.show_program_column;
+						syncHeaderColumns( showProgramColumn );
+					} else if ( typeof payload.show_program === 'boolean' ) {
+						showProgramColumn = payload.show_program;
+						syncHeaderColumns( showProgramColumn );
+					}
+
+					currentPage = 1;
 					renderPage();
-				}, autoplayInterval * 1000 );
+					startAutoplay();
+				} )
+				.catch( function () {
+					items = [];
+					renderPage();
+					updateBottomRow( '' );
+				} );
+		}
+
+		function startAutoplay() {
+			if ( autoplayTimer ) {
+				clearInterval( autoplayTimer );
+				autoplayTimer = null;
+			}
+			if ( totalPages <= 1 ) {
+				return;
 			}
 
-			fetchData();
-			startAutoplay();
+			// Added: restart autoplay with fresh totals so all paginated days rotate.
+			autoplayTimer = setInterval( function () {
+				currentPage++;
+				if ( currentPage > totalPages ) {
+					currentPage = 1;
+				}
+				renderPage();
+			}, autoplayInterval * 1000 );
+		}
+
+fetchData();
 
 			fetchTimer = setInterval( fetchData, 60 * 1000 );
 
