@@ -1,37 +1,43 @@
-// front.js - REST-based frontend (vanilla JS)
-// Hybrid filtering: server returns normalized ISO with Europe/Ljubljana offset.
-// Client re-checks to hide only events, ki so zares že končani danes.
+// ================================================================
+// SNIPI EKRANI — FRONTEND JS (REST-based)
+// ZADNJA POPRAVLJENA VERZIJA Z LIVE SVG + POPRAVLJENO ČASOVNO POLJE
+// ================================================================
 
 (function () {
 	'use strict';
 
-	if ( typeof SNIPI_FRONT_REST === 'undefined' ) {
+	// ================================================================
+	// 0. PREVERI, ČE SO FRONT-END PODATKI NA VOLJO
+	// ================================================================
+	if (typeof SNIPI_FRONT_REST === 'undefined') {
 		return;
 	}
 
-	var restRoot         = SNIPI_FRONT_REST.rest_root.replace( /\/$/, '' );
+	var restRoot         = SNIPI_FRONT_REST.rest_root.replace(/\/$/, '');
 	var postId           = SNIPI_FRONT_REST.post_id;
-	var rowsPerPage      = parseInt( SNIPI_FRONT_REST.rowsPerPage || 8, 10 );
-	var autoplayInterval = parseInt( SNIPI_FRONT_REST.autoplayInterval || 10, 10 );
+	var rowsPerPage      = parseInt(SNIPI_FRONT_REST.rowsPerPage || 8, 10);
+	var autoplayInterval = parseInt(SNIPI_FRONT_REST.autoplayInterval || 10, 10);
 	var showProgramColumn = SNIPI_FRONT_REST.showProgramColumn === '1';
 
-	function parseISOToMs( isoString ) {
-		if ( ! isoString ) return NaN;
-		var d = new Date( isoString );
-		if ( ! isNaN( d.getTime() ) ) {
-			return d.getTime();
-		}
-		var normalized = isoString.replace( ' ', 'T' );
-		if ( ! /Z$/i.test( normalized ) && ! /[+-]\d{2}:\d{2}$/.test( normalized ) ) {
+	// ================================================================
+	// 1. FUNKCIJE ZA DATUME, PARSING IN FORMATIRANJE ČASA
+	// ================================================================
+	function parseISOToMs(isoString) {
+		if (!isoString) return NaN;
+		var d = new Date(isoString);
+		if (!isNaN(d.getTime())) return d.getTime();
+
+		var normalized = isoString.replace(' ', 'T');
+		if (!/Z$/i.test(normalized) && !/[+-]\d{2}:\d{2}$/.test(normalized)) {
 			normalized += 'Z';
 		}
-		var d2 = new Date( normalized );
+		var d2 = new Date(normalized);
 		return d2.getTime();
 	}
 
 	function nowLjubljana() {
 		var now = new Date();
-		var formatter = new Intl.DateTimeFormat( 'en-US', {
+		var formatter = new Intl.DateTimeFormat('en-US', {
 			timeZone: 'Europe/Ljubljana',
 			year: 'numeric',
 			month: '2-digit',
@@ -40,110 +46,120 @@
 			minute: '2-digit',
 			second: '2-digit',
 			hour12: false
-		} );
+		});
 
-		var parts = formatter.formatToParts( now );
-		var map   = {};
-		for ( var i = 0; i < parts.length; i++ ) {
-			map[ parts[ i ].type ] = parts[ i ].value;
+		var parts = formatter.formatToParts(now);
+		var map = {};
+		for (var i = 0; i < parts.length; i++) {
+			map[parts[i].type] = parts[i].value;
 		}
 
-		var year   = parseInt( map.year, 10 );
-		var month  = parseInt( map.month, 10 ) - 1;
-		var day    = parseInt( map.day, 10 );
-		var hour   = parseInt( map.hour, 10 );
-		var minute = parseInt( map.minute, 10 );
-		var second = parseInt( map.second, 10 );
-
-		// Date objekt z lokalnim časom za Europe/Ljubljana
-		return new Date( year, month, day, hour, minute, second );
+		return new Date(
+			parseInt(map.year, 10),
+			parseInt(map.month, 10) - 1,
+			parseInt(map.day, 10),
+			parseInt(map.hour, 10),
+			parseInt(map.minute, 10),
+			parseInt(map.second, 10)
+		);
 	}
 
-	function formatTimeRange( startIso, endIso ) {
-		if ( ! startIso || ! endIso ) {
-			return '';
-		}
-		var s = new Date( parseISOToMs( startIso ) );
-		var e = new Date( parseISOToMs( endIso ) );
-		if ( isNaN( s ) || isNaN( e ) ) return '';
-		var sH = s.toLocaleTimeString( 'sl-SI', { hour: '2-digit', minute: '2-digit', hour12: false } );
-		var eH = e.toLocaleTimeString( 'sl-SI', { hour: '2-digit', minute: '2-digit', hour12: false } );
+	function formatTimeRange(startIso, endIso) {
+		if (!startIso || !endIso) return '';
+
+		var s = new Date(parseISOToMs(startIso));
+		var e = new Date(parseISOToMs(endIso));
+		if (isNaN(s) || isNaN(e)) return '';
+
+		var sH = s.toLocaleTimeString('sl-SI', { hour: '2-digit', minute: '2-digit', hour12: false });
+		var eH = e.toLocaleTimeString('sl-SI', { hour: '2-digit', minute: '2-digit', hour12: false });
+
 		return sH + ' - ' + eH;
 	}
 
+	// ================================================================
+	// 2. REST ENDPOINTS
+	// ================================================================
 	function getEndpoint() {
-		return restRoot + '/snipi/v1/ekrani/timeslots?post_id=' + encodeURIComponent( postId );
+		return restRoot + '/snipi/v1/ekrani/timeslots?post_id=' + encodeURIComponent(postId);
 	}
 
-	function getDayKey( isoString ) {
-		var ms = parseISOToMs( isoString );
-		if ( isNaN( ms ) ) return '';
-		var d     = new Date( ms );
-		var month = String( d.getMonth() + 1 ).padStart( 2, '0' );
-		var day   = String( d.getDate() ).padStart( 2, '0' );
-		var year  = d.getFullYear();
-		return year + '-' + month + '-' + day;
+	// ================================================================
+	// 3. SORTIRANJE, GROUPANJE IN FILTRIRANJE DOGODKOV
+	// ================================================================
+	function getDayKey(isoString) {
+		var ms = parseISOToMs(isoString);
+		if (isNaN(ms)) return '';
+		var d = new Date(ms);
+
+		return (
+			d.getFullYear() + '-' +
+			String(d.getMonth() + 1).padStart(2, '0') + '-' +
+			String(d.getDate()).padStart(2, '0')
+		);
 	}
 
-	function groupByDay( items ) {
-		var map = {};
-		items.forEach( function ( it ) {
+	function clientFilter(rawItems) {
+		var now = nowLjubljana();
+
+		var todayYear  = now.getFullYear();
+		var todayMonth = String(now.getMonth() + 1).padStart(2, '0');
+		var todayDay   = String(now.getDate()).padStart(2, '0');
+		var todayKey   = todayYear + '-' + todayMonth + '-' + todayDay;
+
+		var keep = rawItems.filter(function (it) {
 			var startIso = it.start_iso || it.start || '';
-			var key      = getDayKey( startIso );
-			if ( ! key ) return;
-			if ( ! map[ key ] ) {
-				map[ key ] = [];
+			var endIso   = it.end_iso || it.end || '';
+
+			var s = new Date(parseISOToMs(startIso));
+			var e = new Date(parseISOToMs(endIso));
+
+			if (isNaN(s) || isNaN(e)) return true;
+
+			var eventKey = getDayKey(startIso);
+			if (!eventKey) return true;
+
+			if (eventKey === todayKey) {
+				return e >= now;
 			}
-			map[ key ].push( it );
-		} );
-		return map;
-	}
 
-	function sortItems( items ) {
-		return items.slice().sort( function ( a, b ) {
-			var as = parseISOToMs( a.start_iso || a.start || '' );
-			var bs = parseISOToMs( b.start_iso || b.start || '' );
-			if ( isNaN( as ) && isNaN( bs ) ) return 0;
-			if ( isNaN( as ) ) return 1;
-			if ( isNaN( bs ) ) return -1;
+			return true;
+		});
+
+		keep.sort(function (a, b) {
+			var as = parseISOToMs(a.start_iso || a.start || '');
+			var bs = parseISOToMs(b.start_iso || b.start || '');
 			return as - bs;
-		} );
+		});
+
+		return keep;
 	}
 
-	function resolveProgram( it ) {
-		if ( it.program && typeof it.program === 'string' ) {
-			return it.program;
-		}
-		if ( it.program_display && typeof it.program_display === 'string' ) {
-			return it.program_display;
-		}
-		if ( it.program_name && typeof it.program_name === 'string' ) {
-			return it.program_name;
-		}
-		if ( it.programTitle && typeof it.programTitle === 'string' ) {
-			return it.programTitle;
-		}
-		if ( it.project && typeof it.project === 'string' ) {
-			return it.project;
-		}
-		return '';
+	function resolveProgram(it) {
+		return it.program
+			|| it.program_display
+			|| it.program_name
+			|| it.programTitle
+			|| it.project
+			|| '';
 	}
 
-	document.addEventListener( 'DOMContentLoaded', function () {
-		var shells = document.querySelectorAll( '.snipi--shell' );
-		if ( ! shells.length ) {
-			return;
-		}
+	// ================================================================
+	// 4. RENDERER — IZRIS TABELE
+	// ================================================================
+	document.addEventListener('DOMContentLoaded', function () {
+		var shells = document.querySelectorAll('.snipi--shell');
+		if (!shells.length) return;
 
-		shells.forEach( function ( container ) {
+		shells.forEach(function (container) {
 
-			var headerDate   = container.querySelector( '.snipi__date' );
-			var headerClock  = container.querySelector( '.snipi__clock-value' );
-			var table        = container.querySelector( '.snipi__table' );
-			var tbody        = container.querySelector( 'tbody' );
-			var paginationEl = container.querySelector( '.snipi__pagination' );
-			var bottomRowEl  = container.querySelector( '[data-snipi-bottom-row]' );
-			var logoEl       = container.querySelector( '.snipi__logo' );
+			var headerDate   = container.querySelector('.snipi__date');
+			var headerClock  = container.querySelector('.snipi__clock-value');
+			var table        = container.querySelector('.snipi__table');
+			var tbody        = container.querySelector('tbody');
+			var paginationEl = container.querySelector('.snipi__pagination');
+			var bottomRowEl  = container.querySelector('[data-snipi-bottom-row]');
+			var logoEl       = container.querySelector('.snipi__logo');
 
 			var items         = [];
 			var currentPage   = 1;
@@ -151,359 +167,261 @@
 			var autoplayTimer = null;
 			var fetchTimer    = null;
 
-			function syncHeaderColumns( shouldShowProgram ) {
-				if ( ! table ) {
-					return;
-				}
-
-				var headRow = table.querySelector( 'thead tr' );
-				if ( ! headRow ) {
-					return;
-				}
-
-				var programTh = headRow.querySelector( '[data-snipi-program]' );
-
-				if ( shouldShowProgram && ! programTh ) {
-					var newTh = document.createElement( 'th' );
-					newTh.setAttribute( 'data-snipi-col', 'program' );
-					newTh.setAttribute( 'data-snipi-program', '1' );
-					newTh.textContent = 'PROGRAM';
-
-					var teacherTh = headRow.querySelector( '[data-snipi-col="teacher"]' );
-					if ( teacherTh ) {
-						headRow.insertBefore( newTh, teacherTh );
-					} else {
-						headRow.appendChild( newTh );
-					}
-				} else if ( ! shouldShowProgram && programTh ) {
-					headRow.removeChild( programTh );
-				}
-			}
-
-			syncHeaderColumns( showProgramColumn );
-
-			// =========================
-			// Datum + ura v glavi
-			// =========================
+			// ================================================================
+			// 4A. POSODOBITEV GLAVE (datum + ura)
+			// ================================================================
 			function setHeaderNow() {
 				try {
 					var d = nowLjubljana();
 
-					if ( headerDate ) {
-						var formattedDate = new Intl.DateTimeFormat( 'sl-SI', {
+					if (headerDate) {
+						headerDate.textContent = new Intl.DateTimeFormat('sl-SI', {
 							weekday: 'long',
 							day: 'numeric',
 							month: 'long',
 							year: 'numeric'
-						} ).format( d );
-						headerDate.textContent = formattedDate.toLowerCase();
+						}).format(d).toLowerCase();
 					}
 
-					if ( headerClock ) {
-						headerClock.textContent = d.toLocaleTimeString( 'sl-SI', { hour12: false } );
+					if (headerClock) {
+						headerClock.textContent = d.toLocaleTimeString('sl-SI', { hour12: false });
 					}
-				} catch ( e ) {
-					if ( headerClock ) {
-						headerClock.textContent = ( new Date() ).toLocaleTimeString();
+
+				} catch (e) {
+					if (headerClock) {
+						headerClock.textContent = (new Date()).toLocaleTimeString();
 					}
 				}
 			}
 
 			setHeaderNow();
-			setInterval( setHeaderNow, 1000 );
+			setInterval(setHeaderNow, 1000);
 
-			// =========================
-			// Filtriranje dogodkov:
-			// - današnji: skrije tiste, ki so se že končali
-			// - prihodnji: vedno prikaže (vikend / +3 logika ostane)
-			// =========================
-			function clientFilter( rawItems ) {
-				var now   = nowLjubljana();
-
-				var todayYear  = now.getFullYear();
-				var todayMonth = String( now.getMonth() + 1 ).padStart( 2, '0' );
-				var todayDay   = String( now.getDate() ).padStart( 2, '0' );
-				var todayKey   = todayYear + '-' + todayMonth + '-' + todayDay;
-
-				var keep = rawItems.filter( function ( it ) {
-					var startIso = it.start_iso || it.start || '';
-					var endIso   = it.end_iso || it.end || '';
-
-					var s = new Date( parseISOToMs( startIso ) );
-					var e = new Date( parseISOToMs( endIso ) );
-
-					if ( isNaN( s ) || isNaN( e ) ) {
-						// Če ni veljavnega časa, ne tvegamo – prikažemo.
-						return true;
-					}
-
-					var eventKey = getDayKey( startIso );
-					if ( ! eventKey ) {
-						return true;
-					}
-
-					// Današnji dogodki: skrij samo tiste, ki so se res že končali
-					if ( eventKey === todayKey ) {
-						return e >= now;
-					}
-
-					// Prihodnji dnevi (+ vikend način / +3) – ne filtriramo
-					return true;
-				} );
-
-				keep.sort( function ( a, b ) {
-					var as = parseISOToMs( a.start_iso || a.start || '' );
-					var bs = parseISOToMs( b.start_iso || b.start || '' );
-					if ( isNaN( as ) && isNaN( bs ) ) return 0;
-					if ( isNaN( as ) ) return 1;
-					if ( isNaN( bs ) ) return -1;
-					return as - bs;
-				} );
-
-				return keep;
-			}
-
+			// ================================================================
+			// 4B. GLAVNI IZRIS STRANI
+			// ================================================================
 			function renderPage() {
-				if ( ! tbody ) {
-					return;
-				}
+
+				if (!tbody) return;
 
 				tbody.innerHTML = '';
 
-				if ( ! items.length ) {
-					var trEmpty = document.createElement( 'tr' );
-					var tdEmpty = document.createElement( 'td' );
+				// Če ni podatkov
+				if (!items.length) {
+					var trEmpty = document.createElement('tr');
+					var tdEmpty = document.createElement('td');
 					tdEmpty.colSpan = showProgramColumn ? 6 : 5;
 					tdEmpty.style.textAlign = 'center';
 					tdEmpty.style.padding = '20px';
 					tdEmpty.textContent = 'Ni podatkov za izbrani dan.';
-					trEmpty.appendChild( tdEmpty );
-					tbody.appendChild( trEmpty );
+					trEmpty.appendChild(tdEmpty);
+					tbody.appendChild(trEmpty);
 
-					if ( bottomRowEl ) {
-						bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
+					if (bottomRowEl) {
+						bottomRowEl.classList.add('snipi__bottom-row--hidden');
 						bottomRowEl.innerHTML = '';
 					}
 					return;
 				}
 
-				totalPages = Math.max( 1, Math.ceil( items.length / rowsPerPage ) );
-				if ( currentPage > totalPages ) {
-					currentPage = 1;
-				}
+				totalPages = Math.max(1, Math.ceil(items.length / rowsPerPage));
+				if (currentPage > totalPages) currentPage = 1;
 
-				if ( paginationEl ) {
+				if (paginationEl) {
 					paginationEl.textContent = 'stran ' + currentPage + '/' + totalPages;
 				}
 
-				var startIndex = ( currentPage - 1 ) * rowsPerPage;
+				var startIndex = (currentPage - 1) * rowsPerPage;
 				var endIndex   = startIndex + rowsPerPage;
-				var pageItems  = items.slice( startIndex, endIndex );
+				var pageItems  = items.slice(startIndex, endIndex);
 
-				tbody.innerHTML = '';
 
-				pageItems.forEach( function ( it, index ) {
-					var tr = document.createElement( 'tr' );
-					if ( index % 2 === 1 ) {
-						tr.classList.add( 'snipi__row--alt' );
-					}
+				// ================================================================
+				// 4C. IZRIS POSAMEZNE VRSTICE
+				// ================================================================
+				pageItems.forEach(function (it, index) {
 
-					var timeText = formatTimeRange( it.start_iso || it.start || '', it.end_iso || it.end || '' ) || '';
-					var tdTime   = document.createElement( 'td' );
+					var tr = document.createElement('tr');
+					if (index % 2 === 1) tr.classList.add('snipi__row--alt');
 
-					if ( it._dayLabel ) {
-						var dayLabel = document.createElement( 'div' );
+					// ---------------- TIME CELL (POPOLNOMA PRENOVLJENO) ----------------
+					var tdTime = document.createElement('td');
+
+					// DAY LABEL (če je prisoten)
+					if (it._dayLabel) {
+						var dayLabel = document.createElement('div');
 						dayLabel.className = 'snipi__day-label';
 						dayLabel.textContent = it._dayLabel;
-						tdTime.appendChild( dayLabel );
+						tdTime.appendChild(dayLabel);
 					}
 
-					var timeWrapper = document.createElement('div');
-					timeWrapper.className = 'snipi__time-wrapper';
-					var timeSpan = document.createElement('span');
-					timeSpan.className = 'snipi__time';
-					timeSpan.textContent = timeText;
+					// Formatiran čas
+					var formattedTime = formatTimeRange(it.start_iso || it.start || '', it.end_iso || it.end || '');
 
-					timeWrapper.appendChild(timeSpan);
+					var timeWrapper = document.createElement('span');
+					timeWrapper.classList.add('snipi-ekrani-time-wrapper');
 
-					
-					/* ===== LIVE INDICATOR ===== */
-										
+					var timeTextEl = document.createElement('span');
+					timeTextEl.textContent = formattedTime;
+					timeWrapper.appendChild(timeTextEl);
+
+					// LIVE indikator
 					var now = nowLjubljana();
 					var startMs = parseISOToMs(it.start_iso);
 					var endMs   = parseISOToMs(it.end_iso);
 
-					// Create wrapper
-					var timeWrapper = document.createElement('span');
-					timeWrapper.classList.add('snipi-ekrani-time-wrapper');
-
-					// Add time text
-					var timeText = document.createElement('span');
-					timeText.textContent = tdTime.textContent.trim();
-					timeWrapper.appendChild(timeText);
-
-					// Check if event is live
 					if (startMs <= now.getTime() && endMs > now.getTime()) {
-
-						var live = document.createElement('img');
-						live.className = 'snipi-live-indicator';
-						live.src = snipiEkraniData.plugin_url + 'assets/icons/Live.svg';
-						live.alt = 'V živo';
-						
-						timeWrapper.appendChild(live);
+						var liveIcon = document.createElement('img');
+						liveIcon.className = 'snipi-live-indicator';
+						liveIcon.src = snipiEkraniData.plugin_url + 'assets/icons/Live.svg';
+						liveIcon.alt = 'V živo';
+						timeWrapper.appendChild(liveIcon);
 					}
 
-					// Rewrite cell
-					tdTime.textContent = "";
 					tdTime.appendChild(timeWrapper);
 
 
-					/* HEAD TABLE */
-
-					var tdName    = document.createElement( 'td' );
+					// ---------------- DRUGI STOLPCI ----------------
+					var tdName    = document.createElement('td');
 					tdName.textContent = it.name || '';
 
 					var tdProgram = null;
-					if ( showProgramColumn ) {
-						tdProgram = document.createElement( 'td' );
-						tdProgram.textContent = resolveProgram( it );
+					if (showProgramColumn) {
+						tdProgram = document.createElement('td');
+						tdProgram.textContent = resolveProgram(it);
 					}
 
-					var tdTeacher = document.createElement( 'td' );
+					var tdTeacher = document.createElement('td');
 					tdTeacher.textContent = it.teacher || '';
 
-					var tdRoom = document.createElement( 'td' );
+					var tdRoom = document.createElement('td');
 					tdRoom.textContent = it.room || '';
 
-					var tdFloor = document.createElement( 'td' );
+					var tdFloor = document.createElement('td');
 					tdFloor.textContent = it.floor || '';
 
-					tr.appendChild( tdTime );
-					tr.appendChild( tdName );
-					if ( tdProgram ) {
-						tr.appendChild( tdProgram );
-					}
-					tr.appendChild( tdTeacher );
-					tr.appendChild( tdRoom );
-					tr.appendChild( tdFloor );
 
-					tbody.appendChild( tr );
-				} );
+					// ---------------- APPEND TO ROW ----------------
+					tr.appendChild(tdTime);
+					tr.appendChild(tdName);
+					if (tdProgram) tr.appendChild(tdProgram);
+					tr.appendChild(tdTeacher);
+					tr.appendChild(tdRoom);
+					tr.appendChild(tdFloor);
 
-				if ( bottomRowEl ) {
-					bottomRowEl.classList.remove( 'snipi__bottom-row--hidden' );
+					tbody.appendChild(tr);
+				});
+
+				if (bottomRowEl) {
+					bottomRowEl.classList.remove('snipi__bottom-row--hidden');
 				}
 			}
 
-			function updateBottomRow( html ) {
-				if ( ! bottomRowEl ) {
-					return;
-				}
+			// ================================================================
+			// 5. Posodobi spodnjo vrstico
+			// ================================================================
+			function updateBottomRow(html) {
+				if (!bottomRowEl) return;
 
-				if ( ! html ) {
-					bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
+				if (!html) {
+					bottomRowEl.classList.add('snipi__bottom-row--hidden');
 					bottomRowEl.innerHTML = '';
 					return;
 				}
 
-				bottomRowEl.classList.remove( 'snipi__bottom-row--hidden' );
+				bottomRowEl.classList.remove('snipi__bottom-row--hidden');
 				bottomRowEl.innerHTML = html;
 			}
 
-			function updateLogo( url ) {
-				if ( ! logoEl ) {
-					return;
-				}
+			// ================================================================
+			// 6. Posodobitev logotipa
+			// ================================================================
+			function updateLogo(url) {
+				if (!logoEl) return;
 
-				if ( url ) {
-					logoEl.setAttribute( 'src', url );
+				if (url) {
+					logoEl.setAttribute('src', url);
 					logoEl.style.display = '';
 				} else {
-					logoEl.removeAttribute( 'src' );
+					logoEl.removeAttribute('src');
 					logoEl.style.display = 'none';
 				}
 			}
 
+			// ================================================================
+			// 7. FETCH LOGIKA — KLIC REST APIJA IN POSODOBITEV TABELE
+			// ================================================================
 			function fetchData() {
-				fetch( getEndpoint(), {
-					credentials: 'same-origin'
-				} )
-					.then( function ( response ) {
-						if ( ! response.ok ) {
-							throw new Error( 'Network error: ' + response.status );
-						}
+				fetch(getEndpoint(), { credentials: 'same-origin' })
+					.then(function (response) {
+						if (!response.ok) throw new Error('Network error: ' + response.status);
 						return response.json();
-					} )
-					.then( function ( payload ) {
-						if ( ! payload || ! Array.isArray( payload.items ) ) {
+					})
+					.then(function (payload) {
+
+						if (!payload || !Array.isArray(payload.items)) {
 							items = [];
 							renderPage();
 							return;
 						}
 
 						var rawItems = payload.items || [];
-						var filtered = clientFilter( rawItems );
-						items        = filtered;
+						items = clientFilter(rawItems);
 
-						if ( payload.bottom_row ) {
-							updateBottomRow( payload.bottom_row );
-						} else if ( payload.bottom_row_html ) {
-							updateBottomRow( payload.bottom_row_html );
+						if (payload.bottom_row) {
+							updateBottomRow(payload.bottom_row);
+						} else if (payload.bottom_row_html) {
+							updateBottomRow(payload.bottom_row_html);
 						} else {
-							updateBottomRow( '' );
+							updateBottomRow('');
 						}
 
-						if ( typeof payload.logo_url === 'string' ) {
-							updateLogo( payload.logo_url );
+						if (typeof payload.logo_url === 'string') {
+							updateLogo(payload.logo_url);
 						}
 
-						if ( typeof payload.show_program_column === 'boolean' ) {
+						// Program column toggle
+						if (typeof payload.show_program_column === 'boolean') {
 							showProgramColumn = payload.show_program_column;
-							syncHeaderColumns( showProgramColumn );
-						} else if ( typeof payload.show_program === 'boolean' ) {
-							showProgramColumn = payload.show_program;
-							syncHeaderColumns( showProgramColumn );
 						}
 
 						currentPage = 1;
 						renderPage();
-					} )
-					.catch( function () {
+					})
+					.catch(function () {
 						items = [];
 						renderPage();
-						updateBottomRow( '' );
-					} );
+						updateBottomRow('');
+					});
 			}
 
+			// ================================================================
+			// 8. Samodejno preklapljanje strani (avtoplay)
+			// ================================================================
 			function startAutoplay() {
-				if ( autoplayTimer ) {
-					clearInterval( autoplayTimer );
-				}
-				if ( totalPages <= 1 ) {
-					return;
-				}
-				autoplayTimer = setInterval( function () {
+				if (autoplayTimer) clearInterval(autoplayTimer);
+
+				if (totalPages <= 1) return;
+
+				autoplayTimer = setInterval(function () {
 					currentPage++;
-					if ( currentPage > totalPages ) {
-						currentPage = 1;
-					}
+					if (currentPage > totalPages) currentPage = 1;
 					renderPage();
-				}, autoplayInterval * 1000 );
+				}, autoplayInterval * 1000);
 			}
 
+			// ================================================================
+			// 9. ZAGON SISTEMA
+			// ================================================================
 			fetchData();
 			startAutoplay();
+			fetchTimer = setInterval(fetchData, 60 * 1000);
 
-			fetchTimer = setInterval( fetchData, 60 * 1000 );
-
-			window.addEventListener( 'beforeunload', function () {
-				if ( fetchTimer ) {
-					clearInterval( fetchTimer );
-				}
-				if ( autoplayTimer ) {
-					clearInterval( autoplayTimer );
-				}
-			} );
-		} );
-	} );
+			// Ob zapiranju strani počisti timerje
+			window.addEventListener('beforeunload', function () {
+				if (fetchTimer) clearInterval(fetchTimer);
+				if (autoplayTimer) clearInterval(autoplayTimer);
+			});
+		});
+	});
 })();
