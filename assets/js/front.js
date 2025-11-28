@@ -447,78 +447,81 @@
 				}
 			}
 
-			function fetchData() {
-				fetch( getEndpoint(), {
-					credentials: 'same-origin'
+		function fetchData() {
+			fetch( getEndpoint(), {
+				credentials: 'same-origin'
+			} )
+				.then( function ( response ) {
+					if ( ! response.ok ) {
+						throw new Error( 'Network error: ' + response.status );
+					}
+					return response.json();
 				} )
-					.then( function ( response ) {
-						if ( ! response.ok ) {
-							throw new Error( 'Network error: ' + response.status );
-						}
-						return response.json();
-					} )
-					.then( function ( payload ) {
-						if ( ! payload || ! Array.isArray( payload.items ) ) {
-							items = [];
-							renderPage();
-							return;
-						}
+				.then( function ( payload ) {
+					if ( ! payload || ! Array.isArray( payload.items ) ) {
+						items = [];
+						renderPage();
+						return;
+					}
 
-                                                var rawItems = payload.items || [];
-                                                var filtered = clientFilter( rawItems );
-                                                items        = filtered;
+					var rawItems = payload.items || [];
+					var filtered = clientFilter( rawItems );
+					items        = filtered;
 
 					// Added: enrich events with day metadata so future days are visible across pagination.
 					decorateDayMetadata( items );
 
-                                                if ( payload.bottom_row ) {
-                                                        updateBottomRow( payload.bottom_row );
-                                                } else if ( payload.bottom_row_html ) {
-                                                        updateBottomRow( payload.bottom_row_html );
-						} else {
-							updateBottomRow( '' );
-						}
-
-						if ( typeof payload.logo_url === 'string' ) {
-							updateLogo( payload.logo_url );
-						}
-
-						if ( typeof payload.show_program_column === 'boolean' ) {
-							showProgramColumn = payload.show_program_column;
-							syncHeaderColumns( showProgramColumn );
-						} else if ( typeof payload.show_program === 'boolean' ) {
-							showProgramColumn = payload.show_program;
-							syncHeaderColumns( showProgramColumn );
-						}
-
-						currentPage = 1;
-						renderPage();
-					} )
-					.catch( function () {
-						items = [];
-						renderPage();
+					if ( payload.bottom_row ) {
+						updateBottomRow( payload.bottom_row );
+					} else if ( payload.bottom_row_html ) {
+						updateBottomRow( payload.bottom_row_html );
+					} else {
 						updateBottomRow( '' );
-					} );
-			}
-
-			function startAutoplay() {
-				if ( autoplayTimer ) {
-					clearInterval( autoplayTimer );
-				}
-				if ( totalPages <= 1 ) {
-					return;
-				}
-				autoplayTimer = setInterval( function () {
-					currentPage++;
-					if ( currentPage > totalPages ) {
-						currentPage = 1;
 					}
+
+					if ( typeof payload.logo_url === 'string' ) {
+						updateLogo( payload.logo_url );
+					}
+
+					if ( typeof payload.show_program_column === 'boolean' ) {
+						showProgramColumn = payload.show_program_column;
+						syncHeaderColumns( showProgramColumn );
+					} else if ( typeof payload.show_program === 'boolean' ) {
+						showProgramColumn = payload.show_program;
+						syncHeaderColumns( showProgramColumn );
+					}
+
+					currentPage = 1;
 					renderPage();
-				}, autoplayInterval * 1000 );
+					startAutoplay();
+				} )
+				.catch( function () {
+					items = [];
+					renderPage();
+					updateBottomRow( '' );
+				} );
+		}
+
+		function startAutoplay() {
+			if ( autoplayTimer ) {
+				clearInterval( autoplayTimer );
+				autoplayTimer = null;
+			}
+			if ( totalPages <= 1 ) {
+				return;
 			}
 
-			fetchData();
-			startAutoplay();
+			// Added: restart autoplay with fresh totals so all paginated days rotate.
+			autoplayTimer = setInterval( function () {
+				currentPage++;
+				if ( currentPage > totalPages ) {
+					currentPage = 1;
+				}
+				renderPage();
+			}, autoplayInterval * 1000 );
+		}
+
+fetchData();
 
 			fetchTimer = setInterval( fetchData, 60 * 1000 );
 

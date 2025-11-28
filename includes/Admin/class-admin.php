@@ -22,6 +22,8 @@ add_action( 'admin_post_snipi_save_styling', array( __CLASS__, 'handle_custom_sa
 add_action( 'admin_post_snipi_save_navodila', array( __CLASS__, 'handle_custom_save' ) );
 add_action( 'save_post', array( __CLASS__, 'save_meta' ) );
 add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_assets' ) );
+// Added: display WordPress native success notice after saving SNIPI screens.
+add_action( 'admin_notices', array( __CLASS__, 'render_updated_notice' ) );
 add_filter( 'manage_ekran_posts_columns', array( __CLASS__, 'add_custom_columns' ) );
 add_action( 'manage_ekran_posts_custom_column', array( __CLASS__, 'render_custom_columns' ), 10, 2 );
 }
@@ -189,6 +191,24 @@ array(
 );
 }
 }
+
+// Added: native success notice on plugin subpages to confirm saving.
+	public static function render_updated_notice() {
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		$screen_page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
+		if ( ! in_array( $screen_page, array( 'snipi-nastavitve', 'snipi-oblikovanje', 'snipi-navodila' ), true ) ) {
+			return;
+		}
+
+		if ( ! isset( $_GET['updated'] ) || ! absint( $_GET['updated'] ) ) {
+			return;
+		}
+
+		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Nastavitve so bile shranjene.', 'snipi-ekrani' ) . '</p></div>';
+	}
 
 public static function render_settings_page() {
 	$post_id = isset( $_GET['post'] ) ? absint( $_GET['post'] ) : 0;
