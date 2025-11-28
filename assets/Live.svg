@@ -1,5 +1,6 @@
-<svg width="64" height="64" viewBox="0 0 64 64"
-     xmlns="http://www.w3.org/2000/svg">
+<svg width="30" height="30" viewBox="0 0 64 64"
+     xmlns="http://www.w3.org/2000/svg"
+     style="display:block; min-width:30px; min-height:30px;">
 
   <style>
     .center-dot {
@@ -9,7 +10,7 @@
     .pulse-circle {
       fill: none;
       stroke: #ff0000;
-      stroke-width: 4px;            /* 4 px stroke */
+      stroke-width: 6px;            /* 6 px stroke */
       opacity: 0;
       transform-origin: 50% 50%;
       transform-box: fill-box;
