@@ -45,6 +45,10 @@ Vtičnik administratorjem omogoča dodajanje več ekranov, konfiguriranje obdobj
 
 ## Changelog
 
+v1.0.3
+- Odpravljen prikaz napake pri shranjevanju nastavitev in posodobljen predogled na dejansko stran s kratko kodo.
+- Vikend način ponovno uporablja obseg Danes + 3 dni, prihodnji dnevi imajo oznake datuma na vseh straneh.
+
 v2.7
 - Popravljene povezave za nastavitvene strani SNIPI ekranov, da se ob urejanju obstoječega ekrana stran Nastavitve pravilno naloži brez napake "Napaka pri nalaganju snipi-nastavitve".
 

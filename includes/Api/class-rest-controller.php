@@ -199,17 +199,23 @@ return new WP_REST_Response( array(
 
 		return new WP_REST_Response( array( 'html' => $html ), 200 );
 	}
-	protected static function resolve_date_range( $post_id ) {
-		$tz    = new DateTimeZone( 'Europe/Ljubljana' );
-		$today = new DateTime( 'now', $tz );
-		
-		$future_days = intval( get_post_meta( $post_id, '_snipi_future_days', true ) );
-		$future_days = max( 0, min( 3, $future_days ) );
-		
-		$date_from = $today->format( 'Y-m-d' );
-		$date_to_dt = clone $today;
-		$date_to_dt->modify( '+' . $future_days . ' day' );
-		$date_to = $date_to_dt->format( 'Y-m-d' );
+protected static function resolve_date_range( $post_id ) {
+                $tz    = new DateTimeZone( 'Europe/Ljubljana' );
+                $today = new DateTime( 'now', $tz );
+
+                $future_days = intval( get_post_meta( $post_id, '_snipi_future_days', true ) );
+                $future_days = max( 0, min( 3, $future_days ) );
+$weekend_mode = get_post_meta( $post_id, '_snipi_weekend_mode', true ) === '1';
+
+// Added: weekend mode guarantees a three-day window so future events surface during off-days.
+if ( $weekend_mode ) {
+$future_days = max( $future_days, 3 );
+}
+
+                $date_from = $today->format( 'Y-m-d' );
+                $date_to_dt = clone $today;
+                $date_to_dt->modify( '+' . $future_days . ' day' );
+                $date_to = $date_to_dt->format( 'Y-m-d' );
 		
 		return array(
 		'from' => $date_from,

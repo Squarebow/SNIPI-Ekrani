@@ -97,8 +97,8 @@ if ( isset( $_GET['post'], $_GET['action'] ) && 'edit' === $_GET['action'] ) {
 $post_id = absint( $_GET['post'] );
 $post    = get_post( $post_id );
 if ( $post && 'ekran' === $post->post_type && ! isset( $_GET['page'] ) ) {
+// Added: keep legacy edit redirect inside CPT submenu to prevent load errors.
 wp_safe_redirect( self::get_page_url( 'snipi-nastavitve', $post_id ) );
-wp_safe_redirect( admin_url( 'admin.php?page=snipi-nastavitve&post=' . $post_id ) );
 exit;
 }
 }
@@ -107,8 +107,8 @@ exit;
 public static function filter_edit_link( $link, $post_id, $context ) {
 $post = get_post( $post_id );
 if ( $post && 'ekran' === $post->post_type ) {
+// Added: ensure edit links point to CPT submenu URL instead of orphan admin.php page.
 return self::get_page_url( 'snipi-nastavitve', $post_id );
-return admin_url( 'admin.php?page=snipi-nastavitve&post=' . $post_id );
 }
 return $link;
 }
@@ -117,8 +117,8 @@ public static function redirect_after_save( $location, $post_id ) {
 $post = get_post( $post_id );
 if ( $post && 'ekran' === $post->post_type ) {
 $section  = isset( $_POST['snipi_section'] ) ? sanitize_key( $_POST['snipi_section'] ) : 'snipi-nastavitve';
+// Added: redirect back to scoped CPT submenu with updated flag after saving.
 $location = add_query_arg( 'updated', 1, self::get_page_url( $section, $post_id ) );
-$location = admin_url( 'admin.php?page=' . $section . '&post=' . $post_id . '&updated=1' );
 }
 return $location;
 }
@@ -247,14 +247,15 @@ public static function render_settings_page() {
 	echo '<input type="text" id="snipi_post_title" name="snipi_post_title" class="snipi-admin-input regular-text" value="' . esc_attr( $post->post_title ) . '" />';
 	echo '</div>';
 
-	// 2. Gumb Predogled strani.
-	echo '<div class="snipi-admin-col">';
-	$preview_url = get_permalink( $post_id );
-	if ( $preview_url ) {
-		echo '<label class="snipi-admin-label" for="snipi_preview_button">&nbsp;</label>';
-		echo '<a id="snipi_preview_button" href="' . esc_url( $preview_url ) . '" target="_blank" class="button button-secondary">Predogled strani</a>';
-	}
-	echo '</div>';
+        // 2. Gumb Predogled strani.
+        echo '<div class="snipi-admin-col">';
+        $preview_url = self::resolve_preview_url( $post_id );
+        if ( $preview_url ) {
+                echo '<label class="snipi-admin-label" for="snipi_preview_button">&nbsp;</label>';
+                // Added: preview now targets the page containing this shortcode instead of the generic permalink.
+                echo '<a id="snipi_preview_button" href="' . esc_url( $preview_url ) . '" target="_blank" class="button button-secondary">Predogled strani</a>';
+        }
+        echo '</div>';
 
 	// 3. prazno
 	echo '<div class="snipi-admin-col"></div>';
@@ -552,8 +553,8 @@ wp_update_post( array(
 }
 
 $section = isset( $_POST['snipi_section'] ) ? sanitize_key( $_POST['snipi_section'] ) : 'snipi-nastavitve';
+// Added: send user back to the correct SNIPI submenu with confirmation flag.
 wp_safe_redirect( add_query_arg( 'updated', 1, self::get_page_url( $section, $post_id ) ) );
-wp_safe_redirect( admin_url( 'admin.php?page=' . $section . '&post=' . $post_id . '&updated=1' ) );
 exit;
 }
 
@@ -640,6 +641,32 @@ return array(
 );
 }
 
+protected static function resolve_preview_url( $post_id ) {
+$shortcode = '[snipi_ekran id="' . intval( $post_id ) . '"]';
+
+$query = new WP_Query(
+array(
+'s'              => $shortcode,
+'post_type'      => 'any',
+'post_status'    => 'publish',
+'posts_per_page' => 1,
+'fields'         => 'ids',
+)
+);
+
+if ( $query->have_posts() ) {
+// Added: point preview to the first published page containing this shortcode.
+$target_id = (int) $query->posts[0];
+wp_reset_postdata();
+return get_permalink( $target_id );
+}
+
+wp_reset_postdata();
+
+// Added: fallback to ekran permalink if shortcode location is not found.
+return get_permalink( $post_id );
+}
+
 private static function get_page_url( $slug, $post_id = 0 ) {
 $base_url = add_query_arg(
 array(
@@ -669,8 +696,8 @@ $classes = 'button button-secondary snipi-tab-btn';
 if ( $active === $slug ) {
 $classes .= ' button-primary';
 }
+// Added: single, canonical link to submenu to avoid duplicate anchors and broken routes.
 echo '<a class="' . esc_attr( $classes ) . '" href="' . esc_url( self::get_page_url( $slug, $post_id ) ) . '">' . esc_html( $label ) . '</a>';
-echo '<a class="' . esc_attr( $classes ) . '" href="' . esc_url( admin_url( 'admin.php?page=' . $slug . '&post=' . intval( $post_id ) ) ) . '">' . esc_html( $label ) . '</a>';
 }
 echo '</div>';
 }
