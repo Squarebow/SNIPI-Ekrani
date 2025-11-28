@@ -179,62 +179,22 @@
 	display: none;
 }
 
-/* ======================
-   LIVE EVENT INDICATOR 
-   ====================== */
-
-/* =========================================================
-   TIME + LIVE INDICATOR WRAPPER
-   - poskrbi, da je čas vedno poravnan levo
-   - ikona vedno poravnana desno, na isti višini
-   - razmik je vedno enak, ne glede na dolžino časa (11:00 vs 12:00)
-   ========================================================= */
+   /* ===== TIME + LIVE INDICATOR WRAPPER ===== */
 .snipi-ekrani-time-wrapper {
-	display: inline-flex;
-	align-items: center;        /* vertikalna poravnava */
-	gap: 6px;                   /* razmik med časom in ikono */
-	line-height: 1;             /* prepreči dvigovanje/dedovanje višine */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1;
+    white-space: nowrap; /* nič prelomov! */
 }
 
-/* =========================================================
-   LIVE INDICATOR CONTAINER
-   - ne omejuje dimenzij SVG
-   - vedno centriran glede na čas
-   ========================================================= */
+/* ===== LIVE ICON (from external SVG file) ===== */
 .snipi-live-indicator {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	line-height: 1;
-	vertical-align: middle;
+    display: inline-block;
+    width: auto;
+    height: 1em;            /* >>> ključni trik: višina = višina besedila <<< */
+    object-fit: contain;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
 }
-
-
-/* =========================================================
-   INLINE SVG RESET
-   - izklop vseh morebitnih prejšnjih omejitev
-   - inline SVG *sam določa svoje dimenzije*
-   ========================================================= */
-.snipi-live-indicator svg {
-	width: auto !important;
-	height: auto !important;
-	max-width: none !important;
-	max-height: none !important;
-	display: block;            /* prepreči baseline offset SVG elementov */
-}
-
-
-/* =========================================================
-   OPTIONAL: kadar tabela ustvari prevelik padding
-   ========================================================= */
-/*
-.snipi-ekrani td {
-	padding-top: 4px;
-	padding-bottom: 4px;
-}
-*/
-
-	/* Prevent TD from wrapping onto new lines */
-	.snipi__table td:first-child {
-    white-space: nowrap;
-	}

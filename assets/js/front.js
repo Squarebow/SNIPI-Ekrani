@@ -328,71 +328,37 @@
 
 					
 					/* ===== LIVE INDICATOR ===== */
-
+										
 					var now = nowLjubljana();
 					var startMs = parseISOToMs(it.start_iso);
 					var endMs   = parseISOToMs(it.end_iso);
 
-					// Ustvarimo wrapper za čas in ikono (vedno popolnoma poravnano)
+					// Create wrapper
 					var timeWrapper = document.createElement('span');
 					timeWrapper.classList.add('snipi-ekrani-time-wrapper');
 
-					// Dodamo časovni tekst
+					// Add time text
 					var timeText = document.createElement('span');
 					timeText.textContent = tdTime.textContent.trim();
 					timeWrapper.appendChild(timeText);
 
-					// Preverimo, ali je dogodek trenutno v teku
+					// Check if event is live
 					if (startMs <= now.getTime() && endMs > now.getTime()) {
 
-						// Live indikator container
-						var live = document.createElement('span');
+						var live = document.createElement('img');
 						live.className = 'snipi-live-indicator';
-
-						// Inline SVG – velikost ostane iz SVG datoteke
-						live.innerHTML = `
-							<svg width="32" height="32" viewBox="0 0 32 32"
-								xmlns="http://www.w3.org/2000/svg">
-
-								<style>
-									.center-dot {
-										fill: #ff0000;
-									}
-									.pulse-circle {
-										fill: none;
-										stroke: #ff0000;
-										stroke-width: 4px;
-										opacity: 0;
-										transform-origin: 50% 50%;
-										transform-box: fill-box;
-										animation: pulse 2s infinite;
-									}
-									.pulse2 { animation-delay: 0.4s; }
-									.pulse3 { animation-delay: 0.8s; }
-
-									@keyframes pulse {
-										0%   { transform: scale(0.3); opacity: 0.9; }
-										70%  { opacity: 0; }
-										100% { transform: scale(1.6); opacity: 0; }
-									}
-								</style>
-
-								<circle class="center-dot" cx="32" cy="32" r="4" />
-								<circle class="pulse-circle pulse1" cx="32" cy="32" r="10" />
-								<circle class="pulse-circle pulse2" cx="32" cy="32" r="10" />
-								<circle class="pulse-circle pulse3" cx="32" cy="32" r="10" />
-							</svg>
-						`;
-
+						live.src = snipiEkraniData.plugin_url + 'assets/icons/Live.svg';
+						live.alt = 'V živo';
+						
 						timeWrapper.appendChild(live);
 					}
 
-					// Očisti celico in vstavi wrapper
+					// Rewrite cell
 					tdTime.textContent = "";
 					tdTime.appendChild(timeWrapper);
 
 
-					tdTime.appendChild(timeWrapper);
+					/* HEAD TABLE */
 
 					var tdName    = document.createElement( 'td' );
 					tdName.textContent = it.name || '';
