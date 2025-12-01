@@ -203,19 +203,30 @@ protected static function resolve_date_range( $post_id ) {
                 $tz    = new DateTimeZone( 'Europe/Ljubljana' );
                 $today = new DateTime( 'now', $tz );
 
-                $future_days = intval( get_post_meta( $post_id, '_snipi_future_days', true ) );
-                $future_days = max( 0, min( 3, $future_days ) );
+$future_days = intval( get_post_meta( $post_id, '_snipi_future_days', true ) );
+$future_days = max( 0, min( 3, $future_days ) );
 $weekend_mode = get_post_meta( $post_id, '_snipi_weekend_mode', true ) === '1';
 
-// Added: weekend mode guarantees a three-day window so future events surface during off-days.
+$date_from = $today->format( 'Y-m-d' );
+$date_to_dt = clone $today;
+
 if ( $weekend_mode ) {
-$future_days = max( $future_days, 3 );
+$day_of_week = intval( $today->format( 'N' ) );
+
+// Petek (5), sobota (6) in nedelja (7) vedno raztegnejo časovno
+// okno do naslednjega torka, da se na zaslonu vidijo ponedeljkovi
+// in torkovi dogodki. V ponedeljek ob polnoči se obnašanje
+// vrne na običajni razpon prihodnjih dni.
+if ( $day_of_week >= 5 ) {
+$date_to_dt->modify( 'next tuesday' );
+} else {
+$date_to_dt->modify( '+' . $future_days . ' day' );
+}
+} else {
+$date_to_dt->modify( '+' . $future_days . ' day' );
 }
 
-                $date_from = $today->format( 'Y-m-d' );
-                $date_to_dt = clone $today;
-                $date_to_dt->modify( '+' . $future_days . ' day' );
-                $date_to = $date_to_dt->format( 'Y-m-d' );
+$date_to = $date_to_dt->format( 'Y-m-d' );
 		
 		return array(
 		'from' => $date_from,

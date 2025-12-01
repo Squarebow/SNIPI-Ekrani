@@ -418,16 +418,22 @@
 				}
 			}
 
-			function updateBottomRow( html ) {
-				if ( ! bottomRowEl ) {
-					return;
-				}
+function updateBottomRow( html, shouldDisplay ) {
+if ( ! bottomRowEl ) {
+return;
+}
 
-				if ( ! html ) {
-					bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
-					bottomRowEl.innerHTML = '';
-					return;
-				}
+if ( shouldDisplay === false ) {
+bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
+bottomRowEl.innerHTML = '';
+return;
+}
+
+if ( ! html ) {
+bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
+bottomRowEl.innerHTML = '';
+return;
+}
 
 				bottomRowEl.classList.remove( 'snipi__bottom-row--hidden' );
 				bottomRowEl.innerHTML = html;
@@ -471,13 +477,15 @@
 					// Added: enrich events with day metadata so future days are visible across pagination.
 					decorateDayMetadata( items );
 
-					if ( payload.bottom_row ) {
-						updateBottomRow( payload.bottom_row );
-					} else if ( payload.bottom_row_html ) {
-						updateBottomRow( payload.bottom_row_html );
-					} else {
-						updateBottomRow( '' );
-					}
+var shouldDisplayBottom = payload.display_bottom === true || payload.display_bottom === '1';
+
+if ( payload.bottom_row ) {
+updateBottomRow( payload.bottom_row, shouldDisplayBottom );
+} else if ( payload.bottom_row_html ) {
+updateBottomRow( payload.bottom_row_html, shouldDisplayBottom );
+} else {
+updateBottomRow( '', shouldDisplayBottom );
+}
 
 					if ( typeof payload.logo_url === 'string' ) {
 						updateLogo( payload.logo_url );
@@ -495,11 +503,11 @@
 					renderPage();
 					startAutoplay();
 				} )
-				.catch( function () {
-					items = [];
-					renderPage();
-					updateBottomRow( '' );
-				} );
+.catch( function () {
+items = [];
+renderPage();
+updateBottomRow( '', false );
+} );
 		}
 
 		function startAutoplay() {

@@ -394,46 +394,63 @@ public static function render_settings_page() {
 	 * 3) Prikaži nogo tabele (z novim opisom)
 	 */
 
-	echo '<div class="snipi-admin-row snipi-admin-row--thirds">';
+echo '<div class="snipi-admin-row snipi-admin-row--thirds">';
 
-	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label">';
-	echo '<input type="checkbox" name="snipi_weekend_mode" value="1" ' . checked( $data['weekend_mode'], '1', false ) . ' /> Vikend način';
-	echo '</label>';
-	echo '<p class="description">Vključi prikaz dogodkov v vikend načinu.</p>';
-	echo '</div>';
+echo '<div class="snipi-admin-col">';
+echo '<div class="snipi-switch">';
+echo '<input type="checkbox" id="snipi_weekend_mode" class="snipi-switch__input" name="snipi_weekend_mode" value="1" ' . checked( $data['weekend_mode'], '1', false ) . ' />';
+echo '<label class="snipi-switch__label" for="snipi_weekend_mode">';
+echo '<span class="snipi-switch__track" aria-hidden="true"></span>';
+echo '<span class="snipi-switch__text">Vikend način</span>';
+echo '</label>';
+echo '</div>';
+echo '<p class="description">Vključi prikaz dogodkov v vikend načinu.</p>';
+echo '</div>';
 
-	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label">';
-	echo '<input type="checkbox" name="snipi_show_program_column" value="1" ' . checked( $data['show_program_column'], '1', false ) . ' /> Prikaz dodatnega stolpca v tabeli';
-	echo '</label>';
-	echo '<p class="description">SNIPI API podpira prikaz dodatnega stolpca PROGRAM. Če želite prikazati stolpec program, izberite to možnost in shranite/posodobite ekran.</p>';
-	echo '</div>';
+echo '<div class="snipi-admin-col">';
+echo '<div class="snipi-switch">';
+echo '<input type="checkbox" id="snipi_show_program_column" class="snipi-switch__input" name="snipi_show_program_column" value="1" ' . checked( $data['show_program_column'], '1', false ) . ' />';
+echo '<label class="snipi-switch__label" for="snipi_show_program_column">';
+echo '<span class="snipi-switch__track" aria-hidden="true"></span>';
+echo '<span class="snipi-switch__text">Prikaz dodatnega stolpca v tabeli</span>';
+echo '</label>';
+echo '</div>';
+echo '<p class="description">SNIPI API podpira prikaz dodatnega stolpca PROGRAM. Če želite prikazati stolpec program, izberite to možnost in shranite/posodobite ekran.</p>';
+echo '</div>';
 
-	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label">';
-	echo '<input type="checkbox" name="snipi_display_bottom" value="1" ' . checked( $data['display_bottom'], '1', false ) . ' /> Prikaži nogo tabele';
-	echo '</label>';
-	echo '<p class="description">V spodnjo vrstico lahko vnesete poljubno vsebino (npr. legendo). Podpira kratke kode in HTML!</p>';
-	echo '</div>';
+echo '<div class="snipi-admin-col">';
+echo '<div class="snipi-switch">';
+echo '<input type="checkbox" id="snipi_display_bottom" class="snipi-switch__input" name="snipi_display_bottom" value="1" ' . checked( $data['display_bottom'], '1', false ) . ' />';
+echo '<label class="snipi-switch__label" for="snipi_display_bottom">';
+echo '<span class="snipi-switch__track" aria-hidden="true"></span>';
+echo '<span class="snipi-switch__text">Prikaži nogo tabele</span>';
+echo '</label>';
+echo '</div>';
+echo '<p class="description">V spodnjo vrstico lahko vnesete poljubno vsebino (npr. legendo). Podpira kratke kode in HTML!</p>';
+echo '</div>';
 
-	echo '</div>'; // /ROW 4
+echo '</div>'; // /ROW 4
 
 	/*
 	 * WYSIWYG za spodnjo vrstico + Shrani
 	 */
 
-	echo '<div class="snipi-admin-row snipi-admin-row--full">';
-	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label">Vsebina spodnje vrstice</label>';
-	$editor_settings = array(
-		'textarea_name' => 'snipi_bottom_row',
-		'media_buttons' => false,
-		'textarea_rows' => 4,
-	);
-	wp_editor( wp_kses_post( $data['bottom_row'] ), 'snipi_bottom_row_editor', $editor_settings );
-	echo '</div>';
-	echo '</div>';
+$bottom_editor_classes = 'snipi-admin-row snipi-admin-row--full snipi-bottom-row-editor';
+if ( '1' !== $data['display_bottom'] ) {
+$bottom_editor_classes .= ' snipi-bottom-editor--hidden';
+}
+
+echo '<div class="' . esc_attr( $bottom_editor_classes ) . '" data-snipi-bottom-editor>';
+echo '<div class="snipi-admin-col">';
+echo '<label class="snipi-admin-label">Vsebina spodnje vrstice</label>';
+$editor_settings = array(
+'textarea_name' => 'snipi_bottom_row',
+'media_buttons' => false,
+'textarea_rows' => 4,
+);
+wp_editor( wp_kses_post( $data['bottom_row'] ), 'snipi_bottom_row_editor', $editor_settings );
+echo '</div>';
+echo '</div>';
 
 	echo '<p class="submit"><button type="submit" class="button button-primary">Shrani nastavitve</button></p>';
 	echo '</form>';
