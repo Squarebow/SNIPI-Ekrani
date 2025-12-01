@@ -238,54 +238,61 @@ color: #135E96;
 
 /* Info ikona pri naslovih (tooltip) */
 .snipi-info-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		position: relative;
-		width: 20px;
-		height: 20px;
-		color: #2271b1;
-		margin-left: 6px;
-		vertical-align: middle;
-		cursor: help;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+position: relative;
+width: 20px;
+height: 20px;
+color: #2271b1;
+margin-left: 6px;
+vertical-align: middle;
+cursor: help;
+flex-shrink: 0;
 }
 
 .snipi-info-icon .dashicons {
-		width: 16px;
-		height: 16px;
-		font-size: 18px;
-		line-height: 1;
+width: 18px;
+height: 18px;
+font-size: 20px;
+line-height: 1;
 }
 
-/* Tooltip bubble on info icon hover */
+/* Tooltip bubble above info icon (200–250px wide, black background, white text) */
 .snipi-info-icon::after {
-		content: attr(data-snipi-tooltip);
-		position: absolute;
-		top: 28px;
-		left: 50%;
-		transform: translateX(-50%);
-		min-width: 200px;
-		max-width: 250px;
-		padding: 8px 10px;
-		background: #000;
-		color: #fff;
-		border: 0;
-		border-radius: 4px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-		font-size: 13px;
-		line-height: 1.4;
-		white-space: normal;
-		text-align: left;
-		opacity: 0;
-		pointer-events: none;
-		transition: opacity 0.15s ease, transform 0.15s ease;
+content: attr(data-snipi-tooltip);
+position: absolute;
+bottom: 28px;
+left: 50%;
+transform: translate(-50%, -4px);
+min-width: 200px;
+max-width: 250px;
+padding: 10px 12px;
+background: #000;
+color: #fff;
+border: 0;
+border-radius: 4px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+font-size: 13px;
+font-weight: 300;
+line-height: 1.5;
+white-space: normal;
+text-align: left;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .snipi-info-icon:hover::after,
 .snipi-info-icon:focus::after,
 .snipi-info-icon:focus-visible::after {
-		opacity: 1;
-		transform: translate(-50%, 0);
+opacity: 1;
+transform: translate(-50%, -8px);
+}
+
+.snipi-admin-label .snipi-info-icon,
+.snipi-switch__text .snipi-info-icon {
+margin-left: 6px;
 }
 
 /* Opisi pod polji */

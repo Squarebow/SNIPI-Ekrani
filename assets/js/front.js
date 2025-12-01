@@ -71,9 +71,10 @@
 		return sH + ' - ' + eH;
 	}
 
-	function getEndpoint() {
-		return restRoot + '/snipi/v1/ekrani/timeslots?post_id=' + encodeURIComponent( postId );
-	}
+		function getEndpoint() {
+			var url = restRoot + '/snipi/v1/ekrani/timeslots?post_id=' + encodeURIComponent( postId );
+			return url + '&_cb=' + Date.now();
+		}
 
 	function getDayKey( isoString ) {
 		var ms = parseISOToMs( isoString );
@@ -420,19 +421,19 @@
 
 function updateBottomRow( html, shouldDisplay ) {
 if ( ! bottomRowEl ) {
-return;
+				return;
 }
 
 if ( shouldDisplay === false ) {
 bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
 bottomRowEl.innerHTML = '';
-return;
+				return;
 }
 
 if ( ! html ) {
 bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
 bottomRowEl.innerHTML = '';
-return;
+				return;
 }
 
 				bottomRowEl.classList.remove( 'snipi__bottom-row--hidden' );
@@ -470,6 +471,20 @@ return;
 						return;
 					}
 
+					if ( typeof payload.rows_per_page !== 'undefined' ) {
+						var parsedRows = parseInt( payload.rows_per_page, 10 );
+						if ( ! isNaN( parsedRows ) && parsedRows > 0 ) {
+							rowsPerPage = parsedRows;
+						}
+					}
+
+					if ( typeof payload.autoplay_interval !== 'undefined' ) {
+						var parsedAutoplay = parseInt( payload.autoplay_interval, 10 );
+						if ( ! isNaN( parsedAutoplay ) && parsedAutoplay > 0 ) {
+							autoplayInterval = parsedAutoplay;
+						}
+					}
+
 					var rawItems = payload.items || [];
 					var filtered = clientFilter( rawItems );
 					items        = filtered;
@@ -480,11 +495,11 @@ return;
 var shouldDisplayBottom = payload.display_bottom === true || payload.display_bottom === '1';
 
 if ( payload.bottom_row ) {
-updateBottomRow( payload.bottom_row, shouldDisplayBottom );
+					updateBottomRow( payload.bottom_row, shouldDisplayBottom );
 } else if ( payload.bottom_row_html ) {
-updateBottomRow( payload.bottom_row_html, shouldDisplayBottom );
-} else {
-updateBottomRow( '', shouldDisplayBottom );
+					updateBottomRow( payload.bottom_row_html, shouldDisplayBottom );
+					} else {
+					updateBottomRow( '', shouldDisplayBottom );
 }
 
 					if ( typeof payload.logo_url === 'string' ) {
@@ -502,45 +517,45 @@ updateBottomRow( '', shouldDisplayBottom );
 					currentPage = 1;
 					renderPage();
 					startAutoplay();
-				} )
-.catch( function () {
-items = [];
-renderPage();
-updateBottomRow( '', false );
+} )
+				.catch( function () {
+					items = [];
+					renderPage();
+					updateBottomRow( '', false );
 } );
-		}
+}
 
 		function startAutoplay() {
 			if ( autoplayTimer ) {
 				clearInterval( autoplayTimer );
 				autoplayTimer = null;
-			}
+}
 			if ( totalPages <= 1 ) {
 				return;
-			}
+}
 
 			// Added: restart autoplay with fresh totals so all paginated days rotate.
 			autoplayTimer = setInterval( function () {
 				currentPage++;
 				if ( currentPage > totalPages ) {
 					currentPage = 1;
-				}
-				renderPage();
+}
+					renderPage();
 			}, autoplayInterval * 1000 );
-		}
+}
 
-fetchData();
+		fetchData();
 
-			fetchTimer = setInterval( fetchData, 60 * 1000 );
+		fetchTimer = setInterval( fetchData, 60 * 1000 );
 
-			window.addEventListener( 'beforeunload', function () {
-				if ( fetchTimer ) {
-					clearInterval( fetchTimer );
-				}
-				if ( autoplayTimer ) {
-					clearInterval( autoplayTimer );
-				}
-			} );
-		} );
-	} );
+		window.addEventListener( 'beforeunload', function () {
+			if ( fetchTimer ) {
+				clearInterval( fetchTimer );
+}
+			if ( autoplayTimer ) {
+				clearInterval( autoplayTimer );
+}
+} );
+} );
+} );
 })();

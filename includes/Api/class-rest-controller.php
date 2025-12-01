@@ -93,18 +93,20 @@ class SNIPI_REST_Controller {
 	 *    display_bottom: true/false
 	 *  }
 	 */
-	public static function handle_get_timeslots( $request ) {
-		$post_id = $request->get_param( 'post_id' );
-		if ( ! $post_id ) {
-		return new WP_REST_Response( array( 'error' => 'Manjka post_id' ), 400 );
-		}
-		
-		$show_program = get_post_meta( $post_id, '_snipi_show_program_column', true ) === '1';
-		
-		$api_key = get_post_meta( $post_id, '_snipi_api_key', true );
-		$range   = self::resolve_date_range( $post_id );
-		$date_from = $range['from'];
-		$date_to   = $range['to'];
+public static function handle_get_timeslots( $request ) {
+$post_id = $request->get_param( 'post_id' );
+if ( ! $post_id ) {
+return new WP_REST_Response( array( 'error' => 'Manjka post_id' ), 400 );
+}
+
+$show_program = get_post_meta( $post_id, '_snipi_show_program_column', true ) === '1';
+$rows_per_page = intval( get_post_meta( $post_id, '_snipi_rows_per_page', true ) ?: 8 );
+$autoplay_interval = intval( get_post_meta( $post_id, '_snipi_autoplay_interval', true ) ?: 10 );
+
+$api_key = get_post_meta( $post_id, '_snipi_api_key', true );
+$range   = self::resolve_date_range( $post_id );
+$date_from = $range['from'];
+$date_to   = $range['to'];
 		
 		if ( ! class_exists( 'SNIPI_Data_Service' ) ) {
 			return new WP_REST_Response( array( 'error' => 'Data service missing' ), 500 );
@@ -191,15 +193,17 @@ class SNIPI_REST_Controller {
 		$logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'full' ) : '';
 		
 		$bottom_row     = get_post_meta( $post_id, '_snipi_bottom_row', true );
-		$display_bottom = get_post_meta( $post_id, '_snipi_display_bottom', true ) === '1';
-		
-		return new WP_REST_Response( array(
-		'items' => array_values( $items ),
-		'logo_url' => $logo_url,
-		'bottom_row' => $bottom_row,
-		'display_bottom' => $display_bottom,
-		'show_program_column' => $show_program,
-		), 200 );
+$display_bottom = get_post_meta( $post_id, '_snipi_display_bottom', true ) === '1';
+
+return new WP_REST_Response( array(
+'items' => array_values( $items ),
+'logo_url' => $logo_url,
+'bottom_row' => $bottom_row,
+'display_bottom' => $display_bottom,
+'show_program_column' => $show_program,
+'rows_per_page' => $rows_per_page,
+'autoplay_interval' => $autoplay_interval,
+), 200 );
 		}
 	public static function handle_preview( $request ) {
 		$params = $request->get_json_params();

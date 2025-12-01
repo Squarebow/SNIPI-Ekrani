@@ -186,35 +186,38 @@
 
 /* Base icon (Pulse.svg is the dot in the middle) */
 .snipi__live-indicator {
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 6px;
-
-    /* Do NOT control size — SVG controls size itself */
-    width: auto;
-    height: 1em;
-
-    /* Prevent cell height expansion */
-    max-height: 1em;
-    object-fit: contain;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+vertical-align: middle;
+margin-left: 8px;
+width: 20px;
+height: 20px;
+object-fit: contain;
+flex-shrink: 0;
+position: relative;
+z-index: 1;
 }
 
 
-	/* Ensures time + pulse are always in ONE horizontal line */
-	.snipi__time-wrapper {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
+/* Ensures time + pulse are always in ONE horizontal line */
+.snipi__time-wrapper {
+display: inline-flex;
+align-items: center;
+gap: 8px;
+white-space: nowrap;
+line-height: 1.1;
 }
 
-	/* Convert snipi__time to inline element instead of block */
-	.snipi__time {
-    display: inline-block;
-    white-space: nowrap;
-	}
+/* Convert snipi__time to inline element instead of block */
+.snipi__time {
+display: inline-block;
+white-space: nowrap;
+line-height: 1.1;
+}
 
-	/* Prevent TD from wrapping onto new lines */
-	.snipi__table td:first-child {
-    white-space: nowrap;
-	}
+/* Prevent TD from wrapping onto new lines */
+.snipi__table td:first-child {
+white-space: nowrap;
+width: 1%;
+}
