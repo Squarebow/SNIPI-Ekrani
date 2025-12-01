@@ -14,6 +14,7 @@ class SNIPI_Admin {
 public static function init() {
 add_action( 'init', array( __CLASS__, 'register_cpt' ) );
 add_action( 'admin_menu', array( __CLASS__, 'register_pages' ) );
+add_action( 'admin_menu', array( __CLASS__, 'hide_submenu_pages' ), 99 );
 add_action( 'admin_init', array( __CLASS__, 'maybe_redirect_legacy_edit' ) );
 add_filter( 'get_edit_post_link', array( __CLASS__, 'filter_edit_link' ), 10, 3 );
 add_filter( 'redirect_post_location', array( __CLASS__, 'redirect_after_save' ), 10, 2 );
@@ -88,6 +89,12 @@ add_submenu_page(
 'snipi-navodila',
 array( __CLASS__, 'render_navodila_page' )
 );
+}
+
+public static function hide_submenu_pages() {
+remove_submenu_page( 'edit.php?post_type=ekran', 'snipi-nastavitve' );
+remove_submenu_page( 'edit.php?post_type=ekran', 'snipi-oblikovanje' );
+remove_submenu_page( 'edit.php?post_type=ekran', 'snipi-navodila' );
 }
 
 public static function maybe_redirect_legacy_edit() {
@@ -347,31 +354,31 @@ public static function render_settings_page() {
 
 	// Vrstic na stran.
 	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label" for="snipi_rows_per_page">Vrstic na stran';
-	echo '<span class="snipi-info-icon" title="Koliko vrstic naj se prikaže na eni strani tabele."><span class="dashicons dashicons-editor-help"></span></span>';
-	echo '</label>';
-	echo '<input type="number" id="snipi_rows_per_page" name="snipi_rows_per_page" min="1" value="' . esc_attr( $data['rows_per_page'] ) . '" class="snipi-admin-input" />';
-	echo '<p class="description">Koliko vrstic naj se prikaže na eni strani tabele.</p>';
-	echo '</div>';
+        echo '<label class="snipi-admin-label" for="snipi_rows_per_page">Vrstic na stran';
+        echo '<span class="snipi-info-icon" data-snipi-tooltip="Koliko vrstic naj se prikaže na eni strani tabele."><span class="dashicons dashicons-editor-help"></span></span>';
+        echo '</label>';
+        echo '<input type="number" id="snipi_rows_per_page" name="snipi_rows_per_page" min="1" value="' . esc_attr( $data['rows_per_page'] ) . '" class="snipi-admin-input" />';
+        echo '<p class="description">Koliko vrstic naj se prikaže na eni strani tabele.</p>';
+        echo '</div>';
 
-	// Autoplay interval.
-	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label" for="snipi_autoplay_interval">Autoplay interval (s)';
-	echo '<span class="snipi-info-icon" title="Koliko sekund naj bo prikaz vsake strani (avtomatsko menjavanje)."><span class="dashicons dashicons-editor-help"></span></span>';
-	echo '</label>';
-	echo '<input type="number" id="snipi_autoplay_interval" name="snipi_autoplay_interval" min="1" value="' . esc_attr( $data['autoplay_interval'] ) . '" class="snipi-admin-input" />';
-	echo '<p class="description">Koliko sekund naj bo prikaz vsake strani (avtomatsko menjavanje).</p>';
-	echo '</div>';
+        // Autoplay interval.
+        echo '<div class="snipi-admin-col">';
+        echo '<label class="snipi-admin-label" for="snipi_autoplay_interval">Autoplay interval (s)';
+        echo '<span class="snipi-info-icon" data-snipi-tooltip="Koliko sekund naj bo prikaz vsake strani (avtomatsko menjavanje)."><span class="dashicons dashicons-editor-help"></span></span>';
+        echo '</label>';
+        echo '<input type="number" id="snipi_autoplay_interval" name="snipi_autoplay_interval" min="1" value="' . esc_attr( $data['autoplay_interval'] ) . '" class="snipi-admin-input" />';
+        echo '<p class="description">Koliko sekund naj bo prikaz vsake strani (avtomatsko menjavanje).</p>';
+        echo '</div>';
 
-	// Prikaz dogodkov za prihodnje dni.
-	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label" for="snipi_future_days">Prikaz dogodkov za prihodnje dni';
-	echo '<span class="snipi-info-icon" title="Izberi, koliko prihodnjih dni (poleg današnjega) naj se prikaže. Največ 3."><span class="dashicons dashicons-editor-help"></span></span>';
-	echo '</label>';
-	echo '<select id="snipi_future_days" name="snipi_future_days" class="snipi-admin-input">';
-	for ( $i = 0; $i <= 3; $i++ ) {
-		if ( 0 === $i ) {
-			$label = 'Samo danes';
+        // Prikaz dogodkov za prihodnje dni.
+        echo '<div class="snipi-admin-col">';
+        echo '<label class="snipi-admin-label" for="snipi_future_days">Prikaz dogodkov za prihodnje dni';
+        echo '<span class="snipi-info-icon" data-snipi-tooltip="Izberi, koliko prihodnjih dni (poleg današnjega) naj se prikaže. Največ 3."><span class="dashicons dashicons-editor-help"></span></span>';
+        echo '</label>';
+        echo '<select id="snipi_future_days" name="snipi_future_days" class="snipi-admin-input">';
+        for ( $i = 0; $i <= 3; $i++ ) {
+                if ( 0 === $i ) {
+                        $label = 'Samo danes';
 		} elseif ( 1 === $i ) {
 			$label = 'Danes + 1 dan';
 		} elseif ( 2 === $i ) {
@@ -401,7 +408,7 @@ echo '<div class="snipi-switch">';
 echo '<input type="checkbox" id="snipi_weekend_mode" class="snipi-switch__input" name="snipi_weekend_mode" value="1" ' . checked( $data['weekend_mode'], '1', false ) . ' />';
 echo '<label class="snipi-switch__label" for="snipi_weekend_mode">';
 echo '<span class="snipi-switch__track" aria-hidden="true"></span>';
-echo '<span class="snipi-switch__text">Vikend način</span>';
+echo '<span class="snipi-switch__text">Vikend način<span class="snipi-info-icon" data-snipi-tooltip="Vključi prikaz dogodkov v vikend načinu."><span class="dashicons dashicons-editor-help"></span></span></span>';
 echo '</label>';
 echo '</div>';
 echo '<p class="description">Vključi prikaz dogodkov v vikend načinu.</p>';
@@ -412,7 +419,7 @@ echo '<div class="snipi-switch">';
 echo '<input type="checkbox" id="snipi_show_program_column" class="snipi-switch__input" name="snipi_show_program_column" value="1" ' . checked( $data['show_program_column'], '1', false ) . ' />';
 echo '<label class="snipi-switch__label" for="snipi_show_program_column">';
 echo '<span class="snipi-switch__track" aria-hidden="true"></span>';
-echo '<span class="snipi-switch__text">Prikaz dodatnega stolpca v tabeli</span>';
+echo '<span class="snipi-switch__text">Prikaz dodatnega stolpca v tabeli<span class="snipi-info-icon" data-snipi-tooltip="SNIPI API podpira prikaz dodatnega stolpca PROGRAM. Če želite prikazati stolpec program, izberite to možnost in shranite/posodobite ekran."><span class="dashicons dashicons-editor-help"></span></span></span>';
 echo '</label>';
 echo '</div>';
 echo '<p class="description">SNIPI API podpira prikaz dodatnega stolpca PROGRAM. Če želite prikazati stolpec program, izberite to možnost in shranite/posodobite ekran.</p>';
@@ -423,7 +430,7 @@ echo '<div class="snipi-switch">';
 echo '<input type="checkbox" id="snipi_display_bottom" class="snipi-switch__input" name="snipi_display_bottom" value="1" ' . checked( $data['display_bottom'], '1', false ) . ' />';
 echo '<label class="snipi-switch__label" for="snipi_display_bottom">';
 echo '<span class="snipi-switch__track" aria-hidden="true"></span>';
-echo '<span class="snipi-switch__text">Prikaži nogo tabele</span>';
+echo '<span class="snipi-switch__text">Prikaži nogo tabele<span class="snipi-info-icon" data-snipi-tooltip="V spodnjo vrstico lahko vnesete poljubno vsebino (npr. legendo). Podpira kratke kode in HTML!"><span class="dashicons dashicons-editor-help"></span></span></span>';
 echo '</label>';
 echo '</div>';
 echo '<p class="description">V spodnjo vrstico lahko vnesete poljubno vsebino (npr. legendo). Podpira kratke kode in HTML!</p>';

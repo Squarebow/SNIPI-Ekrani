@@ -112,11 +112,13 @@ transform: translateX( 22px );
 
 .snipi-switch__input:focus + .snipi-switch__label,
 .snipi-switch__input:focus-visible + .snipi-switch__label {
-outline: 2px solid #2271b1;
-outline-offset: 3px;
+outline: none;
 }
 
 .snipi-switch__text {
+display: inline-flex;
+align-items: center;
+gap: 6px;
 font-weight: 600;
 color: #1d2327;
 }
@@ -150,7 +152,7 @@ color: #1d2327;
 }
 
 #snipi_shortcode_field {
-	width: auto;
+		width: 100%;
 }
 
 /* Gumb za kopiranje (na strani ekrana) in v seznamu Vsi ekrani */
@@ -191,8 +193,8 @@ color: #1d2327;
 }
 
 .snipi-admin-info-box__value {
-	font-weight: 700;
-	font-size: 110%;
+font-weight: 600;
+color: #135E96;
 }
 
 /* Logotip */
@@ -236,24 +238,54 @@ color: #1d2327;
 
 /* Info ikona pri naslovih (tooltip) */
 .snipi-info-icon {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
-	background-color: #f0f6fc;
-	color: #2271b1;
-	margin-left: 4px;
-	vertical-align: middle;
-	cursor: help;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+		width: 20px;
+		height: 20px;
+		color: #2271b1;
+		margin-left: 6px;
+		vertical-align: middle;
+		cursor: help;
 }
 
 .snipi-info-icon .dashicons {
-	width: 16px;
-	height: 16px;
-	font-size: 14px;
-	line-height: 1;
+		width: 16px;
+		height: 16px;
+		font-size: 18px;
+		line-height: 1;
+}
+
+/* Tooltip bubble on info icon hover */
+.snipi-info-icon::after {
+		content: attr(data-snipi-tooltip);
+		position: absolute;
+		top: 28px;
+		left: 50%;
+		transform: translateX(-50%);
+		min-width: 200px;
+		max-width: 250px;
+		padding: 8px 10px;
+		background: #000;
+		color: #fff;
+		border: 0;
+		border-radius: 4px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		font-size: 13px;
+		line-height: 1.4;
+		white-space: normal;
+		text-align: left;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.snipi-info-icon:hover::after,
+.snipi-info-icon:focus::after,
+.snipi-info-icon:focus-visible::after {
+		opacity: 1;
+		transform: translate(-50%, 0);
 }
 
 /* Opisi pod polji */
@@ -268,5 +300,13 @@ margin-top: 10px;
 }
 
 .snipi-bottom-editor--hidden {
-display: none;
+		display: none;
+}
+
+#wp-snipi_bottom_row_editor-wrap {
+		margin-top: -20px;
+}
+
+#snipi_copy_shortcode > img {
+		margin-left: -300px;
 }
