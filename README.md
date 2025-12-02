@@ -1,6 +1,6 @@
 # SNIPI Ekrani
 
-**Version:** 1.0.2
+**Version:** 1.0.9
 **Author:** SquareBow  
 **Requires WordPress:** 5.4+  
 **Tested up to:** 6.7  
@@ -44,6 +44,13 @@ Vtičnik administratorjem omogoča dodajanje več ekranov, konfiguriranje obdobj
 5. Insert the shortcode into any page or post
 
 ## Changelog
+
+v1.0.4
+- Dodano WordPress obvestilo o uspešnem shranjevanju nastavitev ter popravljen autoplay, da prikaže vse strani paginacije vključno s prihodnjimi dnevi.
+
+v1.0.3
+- Odpravljen prikaz napake pri shranjevanju nastavitev in posodobljen predogled na dejansko stran s kratko kodo.
+- Vikend način ponovno uporablja obseg Danes + 3 dni, prihodnji dnevi imajo oznake datuma na vseh straneh.
 
 v2.7
 - Popravljene povezave za nastavitvene strani SNIPI ekranov, da se ob urejanju obstoječega ekrana stran Nastavitve pravilno naloži brez napake "Napaka pri nalaganju snipi-nastavitve".

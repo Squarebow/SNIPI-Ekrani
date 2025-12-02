@@ -8,6 +8,7 @@ This is my Wordpress plugin that pulls the data from a bespoke CRM called SNIPI 
 
 ## 2 Key tech considerations for Codex
 
+- You are modifying the WordPress plugin SNIPI ekrani. You must strictly follow the structural and styling rules below. Do NOT invent new structures, new classes, or new markup. Only use what is defined here or what is native WordPress admin UI.
 - The plugin should never under no circumstances use any form of caching as the purpose of the frontend table is to display live events
 - I do not ever want to use Jquery - in any form. Remove any trae of it if it exists. Until now I used Vanilla JS but as it's very spartan and limited, I shall prefer you to use a modern UI building framework for admin panel such as React JS
 - Never replace anything that is working without asking me first for my approval. You may always suggest QoL improvements of code, UX functionality, but if I ask for something in particular, focus only on that
@@ -24,21 +25,17 @@ I Will describe the logic and the features as I WANT THEM TO be, not as they cur
 
 ## BACKEND
 
-3.1 Creating and editing Ekran (a CPT created by plugin)
-- When a user/admin clicks Dodaj ekran, he sets the API ključ in the metabox and saves/publishes Ekran. After that, he should automatiaclly be redirected to the editing page Nastavitve of the created Ekran, where he sets the parameters and designs the table.
-
-
-3.2 Editing page nastavitve / Admin settings
-The elements of the editing page should be set in a grid sometimes with 3 or four or one columns, depending on the number of elements
+3.1 
+3.2 
 
 # Nastavitve Features
-The working features are already implemented in the code.
+Work in progress
 
 Any changes, additions, updates and upgrades will be listed below this line and given as a descriptive prompt with instructions.
 
-# Oblikovanje (TODO)
+# Oblikovanje page (TODO)
 
-On the second tab the user should have a neat simple GUI for stylig the rendered table without writing CSS. All the styling should be done on this admin tab and not in the wp block editor once the shortcode is pasted there. This admin editor should have controls to style every single element on the front end separately, from ala visible top row (date, Urni izobraževanj text, pagination, logonad current time)to events cotent cells and bottom fixed row. Depending on the content, there should be fields to paste hex coor code and color pickers for row backgrounds and fonts, an option to alternate background color of every second row (similar to existing wp tables plugins), selectable size units for responsive display of fonts (vw, rem, px), font weigth) and settings for rows padding with separate top right bottom and left fields (with clear labels) with auto column width that adapts itself based on the content of the cell.
+On the second tab the user should have a neat simple GUI for stylig the rendered table without writing CSS. All the styling should be done on this admin tab and not in the wp block editor once the shortcode is pasted there. This admin editor should have controls to style every single element on the front end separately, from ala visible top row (date, Urni izobraževanj text, pagination, logo and current time)to events cotent cells and bottom fixed row. Depending on the content, there should be fields to paste hex coor code and color pickers for row backgrounds and fonts, an option to alternate background color of every second row (similar to existing wp tables plugins), selectable size units for responsive display of fonts (vw, rem, px), font weigth) and settings for rows padding with separate top right bottom and left fields (with clear labels) with auto column width that adapts itself based on the content of the cell.
 
 # Navodila (TODO)
 
@@ -47,22 +44,6 @@ From top to bottom, just a set of brief txt instructions #namestitev vtičnika (
 ## FRONTEND
 
 For development and testing purposes, here's a URL with working shortcode/table you can use to analyze the code when necessary: https://upi.wptweaker.com/ekran
-
-
-All "Ekrani" created from the admin menu should have the following structure:
-
-1) Top of the page, from left to right, row should be divided in 20/60/20 Left: Uploaded logo some space and date displayed as ponedeljek, 17. november 2025. Middle/center section: displayed exactly as Urnik izobraževanj followed by small space and pagination as stran 2/3. Right corner: live time in 24h format as is - 10:45:32
-Top row should be always visible, even if there are no events to be displayed
-
-2) Content rows with data from API: the header row should include and display the following values from left to right: ČAS (API reference "start" - "end"), IZOBRAŽEVANJE "name", PREDAVATELJ "teacher", UČILNICA "room" and NADSTROPJE "floor"
-
-3) The bottom row of the viewport should always stay fixed (similar to header) to bottom, no columns, just one big cell, and allow for any txt to be displayed. So, if there are no content rows or only 3 for example, I dont't want entire table to shrink and pull bottom row up but to always stay in place. Bottom row, as top row, must also always be visible and displayed, when it's turned on.
-
-4) When there are no events displayed in content rows, I want you to always hide the table top row (Čas IZOBRAŽEVANJE, PREDAVATELJ etc.), but always display top and bottom row. In the middle of the screen there should be text displayed as is now. 
-
-No matter how many rows a user selects in the Nastavitve tab to be displayed, the viewport should always be edge to edge and should never display vertical and horizontal scroll bars, it should always be filled with content rows, so does it makes sense to limit them to say 14?
-
-All your instructions should be beginner friendly as I am not a programmer, so be very precise. Always provide a clear path where code should be pasted and provide step by step instructions for complex tasks. Never provide small code patches and bits for me to put inside some file, always output entire file of code to be replaced.
 
 ## 4. API notes
 

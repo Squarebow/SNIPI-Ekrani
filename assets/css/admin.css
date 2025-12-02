@@ -51,9 +51,76 @@
 
 /* Naslovi polj */
 .snipi-admin-label {
-	display: block;
-	font-weight: 600;
-	margin-bottom: 4px;
+display: block;
+font-weight: 600;
+margin-bottom: 4px;
+}
+
+/* Preklopne tipke */
+.snipi-switch {
+display: inline-flex;
+align-items: center;
+gap: 12px;
+}
+
+.snipi-switch__input {
+position: absolute;
+opacity: 0;
+width: 1px;
+height: 1px;
+}
+
+.snipi-switch__label {
+display: inline-flex;
+align-items: center;
+gap: 12px;
+cursor: pointer;
+user-select: none;
+}
+
+.snipi-switch__track {
+position: relative;
+width: 46px;
+height: 24px;
+border-radius: 999px;
+background: #dcdfe6;
+box-shadow: inset 0 0 0 1px #c3c4c7;
+transition: background-color 0.2s ease;
+}
+
+.snipi-switch__track::after {
+content: '';
+position: absolute;
+top: 3px;
+left: 3px;
+width: 18px;
+height: 18px;
+background: #fff;
+border-radius: 50%;
+box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+transition: transform 0.2s ease;
+}
+
+.snipi-switch__input:checked + .snipi-switch__label .snipi-switch__track {
+background: #2271b1;
+box-shadow: inset 0 0 0 1px #0a4b78;
+}
+
+.snipi-switch__input:checked + .snipi-switch__label .snipi-switch__track::after {
+transform: translateX( 22px );
+}
+
+.snipi-switch__input:focus + .snipi-switch__label,
+.snipi-switch__input:focus-visible + .snipi-switch__label {
+outline: none;
+}
+
+.snipi-switch__text {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+font-weight: 600;
+color: #1d2327;
 }
 
 /* Vnosna polja – 100 % širine v stolpcu */
@@ -82,6 +149,10 @@
 	align-items: center;
 	gap: 8px;
 	width: 100%;
+}
+
+#snipi_shortcode_field {
+		width: 100%;
 }
 
 /* Gumb za kopiranje (na strani ekrana) in v seznamu Vsi ekrani */
@@ -122,8 +193,8 @@
 }
 
 .snipi-admin-info-box__value {
-	font-weight: 700;
-	font-size: 110%;
+font-weight: 600;
+color: #135E96;
 }
 
 /* Logotip */
@@ -167,24 +238,61 @@
 
 /* Info ikona pri naslovih (tooltip) */
 .snipi-info-icon {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
-	background-color: #f0f6fc;
-	color: #2271b1;
-	margin-left: 4px;
-	vertical-align: middle;
-	cursor: help;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+position: relative;
+width: 20px;
+height: 20px;
+color: #2271b1;
+margin-left: 6px;
+vertical-align: middle;
+cursor: help;
+flex-shrink: 0;
 }
 
 .snipi-info-icon .dashicons {
-	width: 16px;
-	height: 16px;
-	font-size: 14px;
-	line-height: 1;
+width: 18px;
+height: 18px;
+font-size: 20px;
+line-height: 1;
+}
+
+/* Tooltip bubble above info icon (200–250px wide, black background, white text) */
+.snipi-info-icon::after {
+content: attr(data-snipi-tooltip);
+position: absolute;
+bottom: 28px;
+left: 50%;
+transform: translate(-50%, -4px);
+min-width: 200px;
+max-width: 250px;
+padding: 10px 12px;
+background: #000;
+color: #fff;
+border: 0;
+border-radius: 4px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+font-size: 13px;
+font-weight: 300;
+line-height: 1.5;
+white-space: normal;
+text-align: left;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.snipi-info-icon:hover::after,
+.snipi-info-icon:focus::after,
+.snipi-info-icon:focus-visible::after {
+opacity: 1;
+transform: translate(-50%, -8px);
+}
+
+.snipi-admin-label .snipi-info-icon,
+.snipi-switch__text .snipi-info-icon {
+margin-left: 6px;
 }
 
 /* Opisi pod polji */
@@ -195,5 +303,17 @@
 
 /* Submit gumb */
 .snipi-admin-form .submit {
-	margin-top: 10px;
+margin-top: 10px;
+}
+
+.snipi-bottom-editor--hidden {
+		display: none;
+}
+
+#wp-snipi_bottom_row_editor-wrap {
+		margin-top: -20px;
+}
+
+#snipi_copy_shortcode > img {
+		margin-left: -300px;
 }

@@ -14,6 +14,7 @@ class SNIPI_Admin {
 public static function init() {
 add_action( 'init', array( __CLASS__, 'register_cpt' ) );
 add_action( 'admin_menu', array( __CLASS__, 'register_pages' ) );
+add_action( 'admin_menu', array( __CLASS__, 'hide_submenu_pages' ), 99 );
 add_action( 'admin_init', array( __CLASS__, 'maybe_redirect_legacy_edit' ) );
 add_filter( 'get_edit_post_link', array( __CLASS__, 'filter_edit_link' ), 10, 3 );
 add_filter( 'redirect_post_location', array( __CLASS__, 'redirect_after_save' ), 10, 2 );
@@ -22,6 +23,8 @@ add_action( 'admin_post_snipi_save_styling', array( __CLASS__, 'handle_custom_sa
 add_action( 'admin_post_snipi_save_navodila', array( __CLASS__, 'handle_custom_save' ) );
 add_action( 'save_post', array( __CLASS__, 'save_meta' ) );
 add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_assets' ) );
+// Added: display WordPress native success notice after saving SNIPI screens.
+add_action( 'admin_notices', array( __CLASS__, 'render_updated_notice' ) );
 add_filter( 'manage_ekran_posts_columns', array( __CLASS__, 'add_custom_columns' ) );
 add_action( 'manage_ekran_posts_custom_column', array( __CLASS__, 'render_custom_columns' ), 10, 2 );
 }
@@ -88,6 +91,12 @@ array( __CLASS__, 'render_navodila_page' )
 );
 }
 
+public static function hide_submenu_pages() {
+remove_submenu_page( 'edit.php?post_type=ekran', 'snipi-nastavitve' );
+remove_submenu_page( 'edit.php?post_type=ekran', 'snipi-oblikovanje' );
+remove_submenu_page( 'edit.php?post_type=ekran', 'snipi-navodila' );
+}
+
 public static function maybe_redirect_legacy_edit() {
 if ( ! is_admin() ) {
 return;
@@ -97,8 +106,8 @@ if ( isset( $_GET['post'], $_GET['action'] ) && 'edit' === $_GET['action'] ) {
 $post_id = absint( $_GET['post'] );
 $post    = get_post( $post_id );
 if ( $post && 'ekran' === $post->post_type && ! isset( $_GET['page'] ) ) {
+// Added: keep legacy edit redirect inside CPT submenu to prevent load errors.
 wp_safe_redirect( self::get_page_url( 'snipi-nastavitve', $post_id ) );
-wp_safe_redirect( admin_url( 'admin.php?page=snipi-nastavitve&post=' . $post_id ) );
 exit;
 }
 }
@@ -107,8 +116,8 @@ exit;
 public static function filter_edit_link( $link, $post_id, $context ) {
 $post = get_post( $post_id );
 if ( $post && 'ekran' === $post->post_type ) {
+// Added: ensure edit links point to CPT submenu URL instead of orphan admin.php page.
 return self::get_page_url( 'snipi-nastavitve', $post_id );
-return admin_url( 'admin.php?page=snipi-nastavitve&post=' . $post_id );
 }
 return $link;
 }
@@ -117,8 +126,8 @@ public static function redirect_after_save( $location, $post_id ) {
 $post = get_post( $post_id );
 if ( $post && 'ekran' === $post->post_type ) {
 $section  = isset( $_POST['snipi_section'] ) ? sanitize_key( $_POST['snipi_section'] ) : 'snipi-nastavitve';
+// Added: redirect back to scoped CPT submenu with updated flag after saving.
 $location = add_query_arg( 'updated', 1, self::get_page_url( $section, $post_id ) );
-$location = admin_url( 'admin.php?page=' . $section . '&post=' . $post_id . '&updated=1' );
 }
 return $location;
 }
@@ -190,6 +199,24 @@ array(
 }
 }
 
+// Added: native success notice on plugin subpages to confirm saving.
+	public static function render_updated_notice() {
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		$screen_page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
+		if ( ! in_array( $screen_page, array( 'snipi-nastavitve', 'snipi-oblikovanje', 'snipi-navodila' ), true ) ) {
+			return;
+		}
+
+		if ( ! isset( $_GET['updated'] ) || ! absint( $_GET['updated'] ) ) {
+			return;
+		}
+
+		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Nastavitve so bile shranjene.', 'snipi-ekrani' ) . '</p></div>';
+	}
+
 public static function render_settings_page() {
 	$post_id = isset( $_GET['post'] ) ? absint( $_GET['post'] ) : 0;
 	$post    = $post_id ? get_post( $post_id ) : null;
@@ -247,14 +274,15 @@ public static function render_settings_page() {
 	echo '<input type="text" id="snipi_post_title" name="snipi_post_title" class="snipi-admin-input regular-text" value="' . esc_attr( $post->post_title ) . '" />';
 	echo '</div>';
 
-	// 2. Gumb Predogled strani.
-	echo '<div class="snipi-admin-col">';
-	$preview_url = get_permalink( $post_id );
-	if ( $preview_url ) {
-		echo '<label class="snipi-admin-label" for="snipi_preview_button">&nbsp;</label>';
-		echo '<a id="snipi_preview_button" href="' . esc_url( $preview_url ) . '" target="_blank" class="button button-secondary">Predogled strani</a>';
-	}
-	echo '</div>';
+        // 2. Gumb Predogled strani.
+        echo '<div class="snipi-admin-col">';
+        $preview_url = self::resolve_preview_url( $post_id );
+        if ( $preview_url ) {
+                echo '<label class="snipi-admin-label" for="snipi_preview_button">&nbsp;</label>';
+                // Added: preview now targets the page containing this shortcode instead of the generic permalink.
+                echo '<a id="snipi_preview_button" href="' . esc_url( $preview_url ) . '" target="_blank" class="button button-secondary">Predogled strani</a>';
+        }
+        echo '</div>';
 
 	// 3. prazno
 	echo '<div class="snipi-admin-col"></div>';
@@ -326,31 +354,31 @@ public static function render_settings_page() {
 
 	// Vrstic na stran.
 	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label" for="snipi_rows_per_page">Vrstic na stran';
-	echo '<span class="snipi-info-icon" title="Koliko vrstic naj se prikaže na eni strani tabele."><span class="dashicons dashicons-editor-help"></span></span>';
-	echo '</label>';
-	echo '<input type="number" id="snipi_rows_per_page" name="snipi_rows_per_page" min="1" value="' . esc_attr( $data['rows_per_page'] ) . '" class="snipi-admin-input" />';
-	echo '<p class="description">Koliko vrstic naj se prikaže na eni strani tabele.</p>';
-	echo '</div>';
+        echo '<label class="snipi-admin-label" for="snipi_rows_per_page">Vrstic na stran';
+        echo '<span class="snipi-info-icon" data-snipi-tooltip="Koliko vrstic naj se prikaže na eni strani tabele."><span class="dashicons dashicons-editor-help"></span></span>';
+        echo '</label>';
+        echo '<input type="number" id="snipi_rows_per_page" name="snipi_rows_per_page" min="1" value="' . esc_attr( $data['rows_per_page'] ) . '" class="snipi-admin-input" />';
+        echo '<p class="description">Koliko vrstic naj se prikaže na eni strani tabele.</p>';
+        echo '</div>';
 
-	// Autoplay interval.
-	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label" for="snipi_autoplay_interval">Autoplay interval (s)';
-	echo '<span class="snipi-info-icon" title="Koliko sekund naj bo prikaz vsake strani (avtomatsko menjavanje)."><span class="dashicons dashicons-editor-help"></span></span>';
-	echo '</label>';
-	echo '<input type="number" id="snipi_autoplay_interval" name="snipi_autoplay_interval" min="1" value="' . esc_attr( $data['autoplay_interval'] ) . '" class="snipi-admin-input" />';
-	echo '<p class="description">Koliko sekund naj bo prikaz vsake strani (avtomatsko menjavanje).</p>';
-	echo '</div>';
+        // Autoplay interval.
+        echo '<div class="snipi-admin-col">';
+        echo '<label class="snipi-admin-label" for="snipi_autoplay_interval">Autoplay interval (s)';
+        echo '<span class="snipi-info-icon" data-snipi-tooltip="Koliko sekund naj bo prikaz vsake strani (avtomatsko menjavanje)."><span class="dashicons dashicons-editor-help"></span></span>';
+        echo '</label>';
+        echo '<input type="number" id="snipi_autoplay_interval" name="snipi_autoplay_interval" min="1" value="' . esc_attr( $data['autoplay_interval'] ) . '" class="snipi-admin-input" />';
+        echo '<p class="description">Koliko sekund naj bo prikaz vsake strani (avtomatsko menjavanje).</p>';
+        echo '</div>';
 
-	// Prikaz dogodkov za prihodnje dni.
-	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label" for="snipi_future_days">Prikaz dogodkov za prihodnje dni';
-	echo '<span class="snipi-info-icon" title="Izberi, koliko prihodnjih dni (poleg današnjega) naj se prikaže. Največ 3."><span class="dashicons dashicons-editor-help"></span></span>';
-	echo '</label>';
-	echo '<select id="snipi_future_days" name="snipi_future_days" class="snipi-admin-input">';
-	for ( $i = 0; $i <= 3; $i++ ) {
-		if ( 0 === $i ) {
-			$label = 'Samo danes';
+        // Prikaz dogodkov za prihodnje dni.
+        echo '<div class="snipi-admin-col">';
+        echo '<label class="snipi-admin-label" for="snipi_future_days">Prikaz dogodkov za prihodnje dni';
+        echo '<span class="snipi-info-icon" data-snipi-tooltip="Izberi, koliko prihodnjih dni (poleg današnjega) naj se prikaže. Največ 3."><span class="dashicons dashicons-editor-help"></span></span>';
+        echo '</label>';
+        echo '<select id="snipi_future_days" name="snipi_future_days" class="snipi-admin-input">';
+        for ( $i = 0; $i <= 3; $i++ ) {
+                if ( 0 === $i ) {
+                        $label = 'Samo danes';
 		} elseif ( 1 === $i ) {
 			$label = 'Danes + 1 dan';
 		} elseif ( 2 === $i ) {
@@ -373,46 +401,63 @@ public static function render_settings_page() {
 	 * 3) Prikaži nogo tabele (z novim opisom)
 	 */
 
-	echo '<div class="snipi-admin-row snipi-admin-row--thirds">';
+echo '<div class="snipi-admin-row snipi-admin-row--thirds">';
 
-	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label">';
-	echo '<input type="checkbox" name="snipi_weekend_mode" value="1" ' . checked( $data['weekend_mode'], '1', false ) . ' /> Vikend način';
-	echo '</label>';
-	echo '<p class="description">Vključi prikaz dogodkov v vikend načinu.</p>';
-	echo '</div>';
+echo '<div class="snipi-admin-col">';
+echo '<div class="snipi-switch">';
+echo '<input type="checkbox" id="snipi_weekend_mode" class="snipi-switch__input" name="snipi_weekend_mode" value="1" ' . checked( $data['weekend_mode'], '1', false ) . ' />';
+echo '<label class="snipi-switch__label" for="snipi_weekend_mode">';
+echo '<span class="snipi-switch__track" aria-hidden="true"></span>';
+echo '<span class="snipi-switch__text">Vikend način<span class="snipi-info-icon" data-snipi-tooltip="Vključi prikaz dogodkov v vikend načinu."><span class="dashicons dashicons-editor-help"></span></span></span>';
+echo '</label>';
+echo '</div>';
+echo '<p class="description">Vključi prikaz dogodkov v vikend načinu.</p>';
+echo '</div>';
 
-	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label">';
-	echo '<input type="checkbox" name="snipi_show_program_column" value="1" ' . checked( $data['show_program_column'], '1', false ) . ' /> Prikaz dodatnega stolpca v tabeli';
-	echo '</label>';
-	echo '<p class="description">SNIPI API podpira prikaz dodatnega stolpca PROGRAM. Če želite prikazati stolpec program, izberite to možnost in shranite/posodobite ekran.</p>';
-	echo '</div>';
+echo '<div class="snipi-admin-col">';
+echo '<div class="snipi-switch">';
+echo '<input type="checkbox" id="snipi_show_program_column" class="snipi-switch__input" name="snipi_show_program_column" value="1" ' . checked( $data['show_program_column'], '1', false ) . ' />';
+echo '<label class="snipi-switch__label" for="snipi_show_program_column">';
+echo '<span class="snipi-switch__track" aria-hidden="true"></span>';
+echo '<span class="snipi-switch__text">Prikaz dodatnega stolpca v tabeli<span class="snipi-info-icon" data-snipi-tooltip="SNIPI API podpira prikaz dodatnega stolpca PROGRAM. Če želite prikazati stolpec program, izberite to možnost in shranite/posodobite ekran."><span class="dashicons dashicons-editor-help"></span></span></span>';
+echo '</label>';
+echo '</div>';
+echo '<p class="description">SNIPI API podpira prikaz dodatnega stolpca PROGRAM. Če želite prikazati stolpec program, izberite to možnost in shranite/posodobite ekran.</p>';
+echo '</div>';
 
-	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label">';
-	echo '<input type="checkbox" name="snipi_display_bottom" value="1" ' . checked( $data['display_bottom'], '1', false ) . ' /> Prikaži nogo tabele';
-	echo '</label>';
-	echo '<p class="description">V spodnjo vrstico lahko vnesete poljubno vsebino (npr. legendo). Podpira kratke kode in HTML!</p>';
-	echo '</div>';
+echo '<div class="snipi-admin-col">';
+echo '<div class="snipi-switch">';
+echo '<input type="checkbox" id="snipi_display_bottom" class="snipi-switch__input" name="snipi_display_bottom" value="1" ' . checked( $data['display_bottom'], '1', false ) . ' />';
+echo '<label class="snipi-switch__label" for="snipi_display_bottom">';
+echo '<span class="snipi-switch__track" aria-hidden="true"></span>';
+echo '<span class="snipi-switch__text">Prikaži nogo tabele<span class="snipi-info-icon" data-snipi-tooltip="V spodnjo vrstico lahko vnesete poljubno vsebino (npr. legendo). Podpira kratke kode in HTML!"><span class="dashicons dashicons-editor-help"></span></span></span>';
+echo '</label>';
+echo '</div>';
+echo '<p class="description">V spodnjo vrstico lahko vnesete poljubno vsebino (npr. legendo). Podpira kratke kode in HTML!</p>';
+echo '</div>';
 
-	echo '</div>'; // /ROW 4
+echo '</div>'; // /ROW 4
 
 	/*
 	 * WYSIWYG za spodnjo vrstico + Shrani
 	 */
 
-	echo '<div class="snipi-admin-row snipi-admin-row--full">';
-	echo '<div class="snipi-admin-col">';
-	echo '<label class="snipi-admin-label">Vsebina spodnje vrstice</label>';
-	$editor_settings = array(
-		'textarea_name' => 'snipi_bottom_row',
-		'media_buttons' => false,
-		'textarea_rows' => 4,
-	);
-	wp_editor( wp_kses_post( $data['bottom_row'] ), 'snipi_bottom_row_editor', $editor_settings );
-	echo '</div>';
-	echo '</div>';
+$bottom_editor_classes = 'snipi-admin-row snipi-admin-row--full snipi-bottom-row-editor';
+if ( '1' !== $data['display_bottom'] ) {
+$bottom_editor_classes .= ' snipi-bottom-editor--hidden';
+}
+
+echo '<div class="' . esc_attr( $bottom_editor_classes ) . '" data-snipi-bottom-editor>';
+echo '<div class="snipi-admin-col">';
+echo '<label class="snipi-admin-label">Vsebina spodnje vrstice</label>';
+$editor_settings = array(
+'textarea_name' => 'snipi_bottom_row',
+'media_buttons' => false,
+'textarea_rows' => 4,
+);
+wp_editor( wp_kses_post( $data['bottom_row'] ), 'snipi_bottom_row_editor', $editor_settings );
+echo '</div>';
+echo '</div>';
 
 	echo '<p class="submit"><button type="submit" class="button button-primary">Shrani nastavitve</button></p>';
 	echo '</form>';
@@ -552,8 +597,8 @@ wp_update_post( array(
 }
 
 $section = isset( $_POST['snipi_section'] ) ? sanitize_key( $_POST['snipi_section'] ) : 'snipi-nastavitve';
+// Added: send user back to the correct SNIPI submenu with confirmation flag.
 wp_safe_redirect( add_query_arg( 'updated', 1, self::get_page_url( $section, $post_id ) ) );
-wp_safe_redirect( admin_url( 'admin.php?page=' . $section . '&post=' . $post_id . '&updated=1' ) );
 exit;
 }
 
@@ -640,6 +685,32 @@ return array(
 );
 }
 
+protected static function resolve_preview_url( $post_id ) {
+$shortcode = '[snipi_ekran id="' . intval( $post_id ) . '"]';
+
+$query = new WP_Query(
+array(
+'s'              => $shortcode,
+'post_type'      => 'any',
+'post_status'    => 'publish',
+'posts_per_page' => 1,
+'fields'         => 'ids',
+)
+);
+
+if ( $query->have_posts() ) {
+// Added: point preview to the first published page containing this shortcode.
+$target_id = (int) $query->posts[0];
+wp_reset_postdata();
+return get_permalink( $target_id );
+}
+
+wp_reset_postdata();
+
+// Added: fallback to ekran permalink if shortcode location is not found.
+return get_permalink( $post_id );
+}
+
 private static function get_page_url( $slug, $post_id = 0 ) {
 $base_url = add_query_arg(
 array(
@@ -669,8 +740,8 @@ $classes = 'button button-secondary snipi-tab-btn';
 if ( $active === $slug ) {
 $classes .= ' button-primary';
 }
+// Added: single, canonical link to submenu to avoid duplicate anchors and broken routes.
 echo '<a class="' . esc_attr( $classes ) . '" href="' . esc_url( self::get_page_url( $slug, $post_id ) ) . '">' . esc_html( $label ) . '</a>';
-echo '<a class="' . esc_attr( $classes ) . '" href="' . esc_url( admin_url( 'admin.php?page=' . $slug . '&post=' . intval( $post_id ) ) ) . '">' . esc_html( $label ) . '</a>';
 }
 echo '</div>';
 }

@@ -1,0 +1,50 @@
+<svg width="64" height="64" viewBox="0 0 64 64"
+     xmlns="http://www.w3.org/2000/svg">
+
+  <style>
+    .center-dot {
+      fill: #ff0000; /* red */
+    }
+
+    .pulse-circle {
+      fill: none;
+      stroke: #ff0000;
+      stroke-width: 4px;            /* 4 px stroke */
+      opacity: 0;
+      transform-origin: 50% 50%;
+      transform-box: fill-box;
+      animation: pulse 2s infinite;
+    }
+
+    .pulse2 {
+      animation-delay: 0.4s;
+    }
+
+    .pulse3 {
+      animation-delay: 0.8s;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.3);
+        opacity: 0.9;
+      }
+      70% {
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1.6);
+        opacity: 0;
+      }
+    }
+  </style>
+
+  <!-- Center red dot -->
+  <circle class="center-dot" cx="32" cy="32" r="4" />
+
+  <!-- Pulsating circles -->
+  <circle class="pulse-circle pulse1" cx="32" cy="32" r="10" />
+  <circle class="pulse-circle pulse2" cx="32" cy="32" r="10" />
+  <circle class="pulse-circle pulse3" cx="32" cy="32" r="10" />
+
+</svg>

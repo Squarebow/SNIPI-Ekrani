@@ -173,11 +173,32 @@ handleCopyAction( value, btn );
 			} );
 		}
 
-		updateLogoPreviewHeight();
+updateLogoPreviewHeight();
 
-		var previewBtn = qs( 'snipi_preview_css' );
-		if ( previewBtn ) {
-			previewBtn.addEventListener( 'click', function () {
+var bottomToggle = qs( 'snipi_display_bottom' );
+var bottomEditor = document.querySelector( '[data-snipi-bottom-editor]' );
+
+function syncBottomEditorVisibility() {
+if ( ! bottomEditor ) {
+return;
+}
+
+if ( bottomToggle && bottomToggle.checked ) {
+bottomEditor.classList.remove( 'snipi-bottom-editor--hidden' );
+} else {
+bottomEditor.classList.add( 'snipi-bottom-editor--hidden' );
+}
+}
+
+if ( bottomToggle ) {
+bottomToggle.addEventListener( 'change', syncBottomEditorVisibility );
+}
+
+syncBottomEditorVisibility();
+
+var previewBtn = qs( 'snipi_preview_css' );
+if ( previewBtn ) {
+previewBtn.addEventListener( 'click', function () {
 				handlePreview();
 			} );
 		}
