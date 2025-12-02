@@ -9,11 +9,18 @@
 		return;
 	}
 
-	var restRoot         = SNIPI_FRONT_REST.rest_root.replace( /\/$/, '' );
-	var postId           = SNIPI_FRONT_REST.post_id;
-	var rowsPerPage      = parseInt( SNIPI_FRONT_REST.rowsPerPage || 8, 10 );
-	var autoplayInterval = parseInt( SNIPI_FRONT_REST.autoplayInterval || 10, 10 );
+	var restRoot          = SNIPI_FRONT_REST.rest_root.replace( /\/$/, '' );
+	var postId            = SNIPI_FRONT_REST.post_id;
+	var rowsPerPage       = parseInt( SNIPI_FRONT_REST.rowsPerPage || 8, 10 );
+	var autoplayInterval  = parseInt( SNIPI_FRONT_REST.autoplayInterval || 10, 10 );
 	var showProgramColumn = SNIPI_FRONT_REST.showProgramColumn === '1';
+
+	// Config for intelligent auto-fit typography to keep rows on one line across TV browsers.
+	var fontFitConfig = {
+		base: 18,
+		min: 14,
+		max: 20
+};
 
 	function parseISOToMs( isoString ) {
 		if ( ! isoString ) return NaN;
@@ -118,9 +125,9 @@
 	}
 
        function groupByDay( items ) {
-               var map = {};
-               items.forEach( function ( it ) {
-                       var startIso = it.start_iso || it.start || '';
+	       var map = {};
+	       items.forEach( function ( it ) {
+		       var startIso = it.start_iso || it.start || '';
 			var key      = getDayKey( startIso );
 			if ( ! key ) return;
 			if ( ! map[ key ] ) {
@@ -167,52 +174,131 @@
 			return;
 		}
 
-		shells.forEach( function ( container ) {
+shells.forEach( function ( container ) {
 
-			var headerDate   = container.querySelector( '.snipi__date' );
-			var headerClock  = container.querySelector( '.snipi__clock-value' );
-			var table        = container.querySelector( '.snipi__table' );
-			var tbody        = container.querySelector( 'tbody' );
-			var paginationEl = container.querySelector( '.snipi__pagination' );
-			var bottomRowEl  = container.querySelector( '[data-snipi-bottom-row]' );
-			var logoEl       = container.querySelector( '.snipi__logo' );
+var headerDate   = container.querySelector( '.snipi__date' );
+var headerClock  = container.querySelector( '.snipi__clock-value' );
+var table        = container.querySelector( '.snipi__table' );
+var tbody        = container.querySelector( 'tbody' );
+var paginationEl = container.querySelector( '.snipi__pagination' );
+var bottomRowEl  = container.querySelector( '[data-snipi-bottom-row]' );
+var logoEl       = container.querySelector( '.snipi__logo' );
 
-			var items         = [];
-			var currentPage   = 1;
-			var totalPages    = 1;
-			var autoplayTimer = null;
-			var fetchTimer    = null;
+var items         = [];
+var currentPage   = 1;
+var totalPages    = 1;
+var autoplayTimer = null;
+var fetchTimer    = null;
+var resizeTimer   = null;
 
-			function syncHeaderColumns( shouldShowProgram ) {
-				if ( ! table ) {
-					return;
-				}
+function setProgramLayoutClass( shouldShowProgram ) {
+container.classList.toggle( 'snipi--program-hidden', ! shouldShowProgram );
+container.classList.toggle( 'snipi--program-visible', !! shouldShowProgram );
+}
 
-				var headRow = table.querySelector( 'thead tr' );
-				if ( ! headRow ) {
-					return;
-				}
+function syncHeaderColumns( shouldShowProgram ) {
+if ( ! table ) {
+return;
+}
 
-				var programTh = headRow.querySelector( '[data-snipi-program]' );
+var headRow = table.querySelector( 'thead tr' );
+if ( ! headRow ) {
+return;
+}
 
-				if ( shouldShowProgram && ! programTh ) {
-					var newTh = document.createElement( 'th' );
-					newTh.setAttribute( 'data-snipi-col', 'program' );
-					newTh.setAttribute( 'data-snipi-program', '1' );
-					newTh.textContent = 'PROGRAM';
+var programTh = headRow.querySelector( '[data-snipi-program]' );
 
-					var teacherTh = headRow.querySelector( '[data-snipi-col="teacher"]' );
-					if ( teacherTh ) {
-						headRow.insertBefore( newTh, teacherTh );
-					} else {
-						headRow.appendChild( newTh );
-					}
-				} else if ( ! shouldShowProgram && programTh ) {
-					headRow.removeChild( programTh );
-				}
-			}
+if ( shouldShowProgram && ! programTh ) {
+var newTh = document.createElement( 'th' );
+newTh.setAttribute( 'data-snipi-col', 'program' );
+newTh.setAttribute( 'data-snipi-program', '1' );
+newTh.textContent = 'PROGRAM';
+
+var teacherTh = headRow.querySelector( '[data-snipi-col="teacher"]' );
+if ( teacherTh ) {
+headRow.insertBefore( newTh, teacherTh );
+} else {
+headRow.appendChild( newTh );
+}
+} else if ( ! shouldShowProgram && programTh ) {
+headRow.removeChild( programTh );
+}
+}
 
 			syncHeaderColumns( showProgramColumn );
+			setProgramLayoutClass( showProgramColumn );
+			
+			// =========================
+			// Intelligent auto-fit typography helpers
+			// - Keeps tbody text on a single line by tuning font-size between min/max.
+			// =========================
+			function setBodyFontSize( sizePx ) {
+			if ( ! table ) {
+			return;
+			}
+			
+			table.style.setProperty( '--snipi-body-font-size', sizePx + 'px' );
+			}
+			
+			function autofitTableFont() {
+			if ( ! tbody || ! table ) {
+			return fontFitConfig.base;
+			}
+			
+			// Always start from the base value so the fit loop can move up or down.
+			setBodyFontSize( fontFitConfig.base );
+			
+			var rows = tbody.querySelectorAll( 'tr' );
+			if ( ! rows.length ) {
+			return fontFitConfig.base;
+			}
+			
+			var minSize   = fontFitConfig.min;
+			var maxSize   = showProgramColumn ? fontFitConfig.max : fontFitConfig.max + 1;
+			var size      = fontFitConfig.base;
+			var attempts  = 0;
+			
+			function fits() {
+			for ( var i = 0; i < rows.length; i++ ) {
+			var tr = rows[ i ];
+			if ( tr.scrollHeight > tr.clientHeight ) {
+			return false;
+			}
+			
+			var cells = tr.querySelectorAll( 'td' );
+			for ( var j = 0; j < cells.length; j++ ) {
+			var td = cells[ j ];
+			if ( td.scrollWidth > td.clientWidth ) {
+			return false;
+			}
+			}
+			}
+			
+			return true;
+			}
+			
+			// First shrink until every cell fits on one line or we hit the minimum.
+			while ( ! fits() && size > minSize && attempts < 40 ) {
+			size -= 1;
+			attempts++;
+			setBodyFontSize( size );
+			}
+			
+			// Then grow back up to use available space without wrapping.
+			while ( fits() && size < maxSize && attempts < 80 ) {
+			size += 1;
+			attempts++;
+			setBodyFontSize( size );
+			}
+			
+			// If the last step overflowed, step down once to the stable value.
+			if ( ! fits() ) {
+			size = Math.max( minSize, size - 1 );
+			setBodyFontSize( size );
+			}
+			
+			return size;
+			}
 
 			// =========================
 			// Datum + ura v glavi
@@ -295,156 +381,243 @@
 				return keep;
 			}
 
-			function renderPage() {
-				if ( ! tbody ) {
-					return;
-				}
-
-				tbody.innerHTML = '';
-
-				if ( ! items.length ) {
-					var trEmpty = document.createElement( 'tr' );
-					var tdEmpty = document.createElement( 'td' );
-					tdEmpty.colSpan = showProgramColumn ? 6 : 5;
-					tdEmpty.style.textAlign = 'center';
-					tdEmpty.style.padding = '20px';
-					tdEmpty.textContent = 'Ni podatkov za izbrani dan.';
-					trEmpty.appendChild( tdEmpty );
-					tbody.appendChild( trEmpty );
-
-					if ( bottomRowEl ) {
-						bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
-						bottomRowEl.innerHTML = '';
-					}
-					return;
-				}
-
-				totalPages = Math.max( 1, Math.ceil( items.length / rowsPerPage ) );
-				if ( currentPage > totalPages ) {
-					currentPage = 1;
-				}
-
-                                if ( paginationEl ) {
-                                        paginationEl.textContent = 'stran ' + currentPage + '/' + totalPages;
-                                }
-
-                                var startIndex = ( currentPage - 1 ) * rowsPerPage;
-                                var endIndex   = startIndex + rowsPerPage;
-                                var pageItems  = items.slice( startIndex, endIndex );
-
-                                tbody.innerHTML = '';
-
-                                var todayKey = getDayKey( nowLjubljana().toISOString() );
-                                var previousKey = null;
-
-                                pageItems.forEach( function ( it, index ) {
-                                        var tr = document.createElement( 'tr' );
-                                        if ( index % 2 === 1 ) {
-                                                tr.classList.add( 'snipi__row--alt' );
-                                        }
-
-                                        var timeText = formatTimeRange( it.start_iso || it.start || '', it.end_iso || it.end || '' ) || '';
-                                        var tdTime   = document.createElement( 'td' );
-
-                                        var dayKey   = it._dayKey || getDayKey( it.start_iso || it.start || '' );
-                                        var showDayLabel = dayKey && dayKey !== todayKey && dayKey !== previousKey && it._dayLabel;
-
-                                        if ( showDayLabel ) {
-                                                var dayLabel = document.createElement( 'div' );
-                                                dayLabel.className = 'snipi__day-label';
-                                                dayLabel.textContent = it._dayLabel;
-                                                tdTime.appendChild( dayLabel );
-                                        }
-
-                                        previousKey = dayKey;
-
-					var timeWrapper = document.createElement('div');
-					timeWrapper.className = 'snipi__time-wrapper';
-					var timeSpan = document.createElement('span');
-					timeSpan.className = 'snipi__time';
-					timeSpan.textContent = timeText;
-
-					timeWrapper.appendChild(timeSpan);
-
-					/* LIVE INDICATOR: check if event is ongoing */
-					var now = nowLjubljana();
-					var startMs = parseISOToMs(it.start_iso);
-					var endMs   = parseISOToMs(it.end_iso);
-
-					if (startMs <= now.getTime() && endMs > now.getTime()) {
-
-    					var liveImg = document.createElement('img');
-						liveImg.className = 'snipi__live-indicator';
-						liveImg.src = SNIPI_FRONT_REST.pluginUrl + 'assets/Live.svg';
-						liveImg.alt = 'live';
-
-						timeWrapper.appendChild(liveImg);
-					}
-
-
-					tdTime.appendChild(timeWrapper);
-
-					var tdName    = document.createElement( 'td' );
-					tdName.textContent = it.name || '';
-
-					var tdProgram = null;
-					if ( showProgramColumn ) {
-						tdProgram = document.createElement( 'td' );
-						tdProgram.textContent = resolveProgram( it );
-					}
-
-					var tdTeacher = document.createElement( 'td' );
-					tdTeacher.textContent = it.teacher || '';
-
-					var tdRoom = document.createElement( 'td' );
-					tdRoom.textContent = it.room || '';
-
-					var tdFloor = document.createElement( 'td' );
-					tdFloor.textContent = it.floor || '';
-
-					tr.appendChild( tdTime );
-					tr.appendChild( tdName );
-					if ( tdProgram ) {
-						tr.appendChild( tdProgram );
-					}
-					tr.appendChild( tdTeacher );
-					tr.appendChild( tdRoom );
-					tr.appendChild( tdFloor );
-
-					tbody.appendChild( tr );
-				} );
-
-				if ( bottomRowEl ) {
-					bottomRowEl.classList.remove( 'snipi__bottom-row--hidden' );
-				}
+			// Helper to rebuild tbody for current page and reuse during recalculation.
+			function renderRowsForPage( pageItems ) {
+			tbody.innerHTML = '';
+			
+			var todayKey    = getDayKey( nowLjubljana().toISOString() );
+			var previousKey = null;
+			
+			pageItems.forEach( function ( it, index ) {
+			var tr = document.createElement( 'tr' );
+			if ( index % 2 === 1 ) {
+			tr.classList.add( 'snipi__row--alt' );
 			}
-
-function updateBottomRow( html, shouldDisplay ) {
-if ( ! bottomRowEl ) {
-				return;
-}
-
-if ( shouldDisplay === false ) {
-bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
-bottomRowEl.innerHTML = '';
-				return;
-}
-
-if ( ! html ) {
-bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
-bottomRowEl.innerHTML = '';
-				return;
-}
-
+			
+			var timeText = formatTimeRange( it.start_iso || it.start || '', it.end_iso || it.end || '' ) || '';
+			var tdTime   = document.createElement( 'td' );
+			tdTime.setAttribute( 'data-snipi-col', 'time' );
+			
+			var dayKey       = it._dayKey || getDayKey( it.start_iso || it.start || '' );
+			var showDayLabel = dayKey && dayKey !== todayKey && dayKey !== previousKey && it._dayLabel;
+			
+			if ( showDayLabel ) {
+			var dayLabel = document.createElement( 'div' );
+			dayLabel.className = 'snipi__day-label';
+			dayLabel.textContent = it._dayLabel;
+			tdTime.appendChild( dayLabel );
+			}
+			
+			previousKey = dayKey;
+			
+			var timeWrapper = document.createElement('div');
+			timeWrapper.className = 'snipi__time-wrapper';
+			var timeSpan = document.createElement('span');
+			timeSpan.className = 'snipi__time';
+			timeSpan.textContent = timeText;
+			
+			timeWrapper.appendChild(timeSpan);
+			
+			/* LIVE INDICATOR: check if event is ongoing */
+			var now = nowLjubljana();
+			var startMs = parseISOToMs(it.start_iso);
+			var endMs   = parseISOToMs(it.end_iso);
+			
+			if (startMs <= now.getTime() && endMs > now.getTime()) {
+			
+			var liveImg = document.createElement('img');
+			liveImg.className = 'snipi__live-indicator';
+			liveImg.src = SNIPI_FRONT_REST.pluginUrl + 'assets/Live.svg';
+			liveImg.alt = 'live';
+			
+			timeWrapper.appendChild(liveImg);
+			}
+			
+			
+			tdTime.appendChild(timeWrapper);
+			
+			var tdName    = document.createElement( 'td' );
+			tdName.setAttribute( 'data-snipi-col', 'name' );
+			tdName.textContent = it.name || '';
+			
+			var tdProgram = null;
+			if ( showProgramColumn ) {
+			tdProgram = document.createElement( 'td' );
+			tdProgram.setAttribute( 'data-snipi-col', 'program' );
+			tdProgram.textContent = resolveProgram( it );
+			}
+			
+			var tdTeacher = document.createElement( 'td' );
+			tdTeacher.setAttribute( 'data-snipi-col', 'teacher' );
+			tdTeacher.textContent = it.teacher || '';
+			
+			var tdRoom = document.createElement( 'td' );
+			tdRoom.setAttribute( 'data-snipi-col', 'room' );
+			tdRoom.textContent = it.room || '';
+			
+			var tdFloor = document.createElement( 'td' );
+			tdFloor.setAttribute( 'data-snipi-col', 'floor' );
+			tdFloor.textContent = it.floor || '';
+			
+			tr.appendChild( tdTime );
+			tr.appendChild( tdName );
+			if ( tdProgram ) {
+			tr.appendChild( tdProgram );
+			}
+			tr.appendChild( tdTeacher );
+			tr.appendChild( tdRoom );
+			tr.appendChild( tdFloor );
+			
+			tbody.appendChild( tr );
+			} );
+			}
+			
+function measureRowHeight() {
+				if ( ! tbody || ! table ) {
+					return 0;
+				}
+				
+				var sample = document.createElement( 'tr' );
+				sample.style.visibility = 'hidden';
+				sample.style.position   = 'absolute';
+				sample.style.pointerEvents = 'none';
+				
+				var columns = [ 'time', 'name', 'teacher', 'room', 'floor' ];
+				if ( showProgramColumn ) {
+					columns.splice( 2, 0, 'program' );
+				}
+				
+				columns.forEach( function ( col ) {
+					var td = document.createElement( 'td' );
+					td.setAttribute( 'data-snipi-col', col );
+					td.textContent = col === 'time' ? '00:00 - 00:00' : 'Vrednost';
+					sample.appendChild( td );
+				} );
+				
+				tbody.appendChild( sample );
+				var height = sample.getBoundingClientRect().height;
+				tbody.removeChild( sample );
+				
+				return height;
+			}
+			
+			function calculateRowsPerPage() {
+				var rowHeight = measureRowHeight();
+				if ( ! rowHeight || ! isFinite( rowHeight ) ) {
+					return Math.max( 1, rowsPerPage );
+				}
+				
+				var tbodyTop = tbody.getBoundingClientRect().top;
+				var boundary = window.innerHeight;
+				
+				if ( bottomRowEl && ! bottomRowEl.classList.contains( 'snipi__bottom-row--hidden' ) ) {
+					boundary = bottomRowEl.getBoundingClientRect().top;
+				}
+				
+				var wrapper       = container.querySelector( '.snipi__table-wrapper' );
+				var paddingBottom = 0;
+				if ( wrapper ) {
+					var cs = window.getComputedStyle( wrapper );
+					paddingBottom = parseFloat( cs.paddingBottom ) || 0;
+				}
+				
+				var availableHeight = boundary - tbodyTop - paddingBottom;
+				var maxRows         = Math.floor( availableHeight / rowHeight );
+				
+				if ( ! isFinite( maxRows ) || maxRows < 1 ) {
+					maxRows = 1;
+				}
+				
+				return Math.max( 1, Math.min( maxRows, items.length ) );
+			}
+			
+			function renderPage() {
+			if ( ! tbody ) {
+			return;
+			}
+			
+			if ( ! items.length ) {
+			var trEmpty = document.createElement( 'tr' );
+			var tdEmpty = document.createElement( 'td' );
+			tdEmpty.colSpan = showProgramColumn ? 6 : 5;
+			tdEmpty.style.textAlign = 'center';
+			tdEmpty.style.padding = '20px';
+			tdEmpty.textContent = 'Ni podatkov za izbrani dan.';
+			trEmpty.appendChild( tdEmpty );
+			tbody.appendChild( trEmpty );
+			
+			if ( bottomRowEl ) {
+			bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
+			bottomRowEl.innerHTML = '';
+			}
+			return;
+			}
+			
+			var effectiveRowsPerPage = calculateRowsPerPage();
+			
+			totalPages = Math.max( 1, Math.ceil( items.length / effectiveRowsPerPage ) );
+			if ( currentPage > totalPages ) {
+			currentPage = 1;
+			}
+			
+			var startIndex = ( currentPage - 1 ) * effectiveRowsPerPage;
+			var endIndex   = startIndex + effectiveRowsPerPage;
+			var pageItems  = items.slice( startIndex, endIndex );
+			
+			renderRowsForPage( pageItems );
+			
+			// Intelligent auto-fit: resize tbody font so every cell remains on one line on large TVs.
+			autofitTableFont();
+			
+			var recalculatedRows = calculateRowsPerPage();
+			if ( recalculatedRows !== effectiveRowsPerPage ) {
+			effectiveRowsPerPage = recalculatedRows;
+			totalPages = Math.max( 1, Math.ceil( items.length / effectiveRowsPerPage ) );
+			if ( currentPage > totalPages ) {
+			currentPage = 1;
+			}
+			startIndex = ( currentPage - 1 ) * effectiveRowsPerPage;
+			endIndex   = startIndex + effectiveRowsPerPage;
+			pageItems  = items.slice( startIndex, endIndex );
+			renderRowsForPage( pageItems );
+			autofitTableFont();
+			}
+			
+			if ( paginationEl ) {
+			paginationEl.textContent = 'stran ' + currentPage + '/' + totalPages;
+			}
+			
+			if ( bottomRowEl ) {
+			bottomRowEl.classList.remove( 'snipi__bottom-row--hidden' );
+			}
+			}
+			
+			function updateBottomRow( html, shouldDisplay ) {
+				if ( ! bottomRowEl ) {
+					return;
+				}
+				
+				if ( shouldDisplay === false ) {
+					bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
+					bottomRowEl.innerHTML = '';
+					return;
+				}
+				
+				if ( ! html ) {
+					bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
+					bottomRowEl.innerHTML = '';
+					return;
+				}
+				
 				bottomRowEl.classList.remove( 'snipi__bottom-row--hidden' );
 				bottomRowEl.innerHTML = html;
 			}
-
+			
 			function updateLogo( url ) {
 				if ( ! logoEl ) {
 					return;
 				}
-
+				
 				if ( url ) {
 					logoEl.setAttribute( 'src', url );
 					logoEl.style.display = '';
@@ -453,11 +626,11 @@ bottomRowEl.innerHTML = '';
 					logoEl.style.display = 'none';
 				}
 			}
-
-		function fetchData() {
-			fetch( getEndpoint(), {
-				credentials: 'same-origin'
-			} )
+			
+			function fetchData() {
+				fetch( getEndpoint(), {
+					credentials: 'same-origin'
+				} )
 				.then( function ( response ) {
 					if ( ! response.ok ) {
 						throw new Error( 'Network error: ' + response.status );
@@ -470,92 +643,104 @@ bottomRowEl.innerHTML = '';
 						renderPage();
 						return;
 					}
-
+					
 					if ( typeof payload.rows_per_page !== 'undefined' ) {
 						var parsedRows = parseInt( payload.rows_per_page, 10 );
 						if ( ! isNaN( parsedRows ) && parsedRows > 0 ) {
 							rowsPerPage = parsedRows;
 						}
 					}
-
+					
 					if ( typeof payload.autoplay_interval !== 'undefined' ) {
 						var parsedAutoplay = parseInt( payload.autoplay_interval, 10 );
 						if ( ! isNaN( parsedAutoplay ) && parsedAutoplay > 0 ) {
 							autoplayInterval = parsedAutoplay;
 						}
 					}
-
+					
 					var rawItems = payload.items || [];
 					var filtered = clientFilter( rawItems );
 					items        = filtered;
-
+					
 					// Added: enrich events with day metadata so future days are visible across pagination.
 					decorateDayMetadata( items );
-
-var shouldDisplayBottom = payload.display_bottom === true || payload.display_bottom === '1';
-
-if ( payload.bottom_row ) {
-					updateBottomRow( payload.bottom_row, shouldDisplayBottom );
-} else if ( payload.bottom_row_html ) {
-					updateBottomRow( payload.bottom_row_html, shouldDisplayBottom );
+					
+					var shouldDisplayBottom = payload.display_bottom === true || payload.display_bottom === '1';
+					
+					if ( payload.bottom_row ) {
+						updateBottomRow( payload.bottom_row, shouldDisplayBottom );
+					} else if ( payload.bottom_row_html ) {
+						updateBottomRow( payload.bottom_row_html, shouldDisplayBottom );
 					} else {
-					updateBottomRow( '', shouldDisplayBottom );
-}
-
+						updateBottomRow( '', shouldDisplayBottom );
+					}
+					
 					if ( typeof payload.logo_url === 'string' ) {
 						updateLogo( payload.logo_url );
 					}
-
+					
 					if ( typeof payload.show_program_column === 'boolean' ) {
 						showProgramColumn = payload.show_program_column;
 						syncHeaderColumns( showProgramColumn );
+						setProgramLayoutClass( showProgramColumn );
 					} else if ( typeof payload.show_program === 'boolean' ) {
 						showProgramColumn = payload.show_program;
 						syncHeaderColumns( showProgramColumn );
+						setProgramLayoutClass( showProgramColumn );
 					}
-
+					
 					currentPage = 1;
 					renderPage();
 					startAutoplay();
-} )
+				} )
 				.catch( function () {
 					items = [];
 					renderPage();
 					updateBottomRow( '', false );
-} );
-}
-
-		function startAutoplay() {
-			if ( autoplayTimer ) {
-				clearInterval( autoplayTimer );
-				autoplayTimer = null;
-}
-			if ( totalPages <= 1 ) {
-				return;
-}
-
-			// Added: restart autoplay with fresh totals so all paginated days rotate.
-			autoplayTimer = setInterval( function () {
-				currentPage++;
-				if ( currentPage > totalPages ) {
-					currentPage = 1;
-}
+				} );
+			}
+			
+			function startAutoplay() {
+				if ( autoplayTimer ) {
+					clearInterval( autoplayTimer );
+					autoplayTimer = null;
+				}
+				if ( totalPages <= 1 ) {
+					return;
+				}
+				
+				// Added: restart autoplay with fresh totals so all paginated days rotate.
+				autoplayTimer = setInterval( function () {
+					currentPage++;
+					if ( currentPage > totalPages ) {
+						currentPage = 1;
+					}
 					renderPage();
-			}, autoplayInterval * 1000 );
-}
-
-		fetchData();
-
-		fetchTimer = setInterval( fetchData, 60 * 1000 );
-
-		window.addEventListener( 'beforeunload', function () {
-			if ( fetchTimer ) {
-				clearInterval( fetchTimer );
-}
-			if ( autoplayTimer ) {
-				clearInterval( autoplayTimer );
-}
-} );
-} );
-} );
-})();
+				}, autoplayInterval * 1000 );
+			}
+			
+			window.addEventListener( 'resize', function () {
+				if ( resizeTimer ) {
+					clearTimeout( resizeTimer );
+				}
+				
+				resizeTimer = setTimeout( function () {
+					renderPage();
+				}, 150 );
+			} );
+			
+			fetchData();
+			
+			fetchTimer = setInterval( fetchData, 60 * 1000 );
+			
+			window.addEventListener( 'beforeunload', function () {
+				if ( fetchTimer ) {
+					clearInterval( fetchTimer );
+				}
+				if ( autoplayTimer ) {
+					clearInterval( autoplayTimer );
+				}
+			} );
+			} );
+			} );
+			})();

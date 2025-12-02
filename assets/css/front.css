@@ -122,12 +122,37 @@
 .snipi__table {
 	width: 100%;
 	border-collapse: collapse;
+	/* Intelligent auto-fit applies via CSS variable so TV layouts stay consistent. */
+	--snipi-body-font-size: 18px;
 }
 
 .snipi__table th,
-.snipi__table td {
-	padding: 6px 10px;
+	.snipi__table td {
+	padding: 6px 14px;
 	text-align: left;
+	font-size: var(--snipi-body-font-size);
+}
+
+.snipi__table [data-snipi-col="teacher"],
+.snipi__table [data-snipi-col="room"],
+.snipi__table [data-snipi-col="floor"] {
+white-space: nowrap;
+width: 1%;
+}
+
+.snipi__table [data-snipi-col="name"],
+.snipi__table [data-snipi-col="program"] {
+white-space: normal;
+width: auto;
+}
+
+.snipi--program-hidden .snipi__table {
+table-layout: fixed;
+}
+
+.snipi--program-hidden .snipi__table th,
+.snipi--program-hidden .snipi__table td {
+word-break: break-word;
 }
 
 .snipi__table thead th {
@@ -166,18 +191,26 @@
 	left: 0;
 	width: 100vw;
 
-	/* ★ ORIGINALNA STILIZACIJA OHRANJENA */
-	background: #222;
-	color: #fff;
-	padding: 8px 16px;
-	font-size: 0.9rem;
-	text-align: center;
+/* ★ ORIGINALNA STILIZACIJA OHRANJENA */
+background: #222;
+color: #fff;
+padding: 8px 16px;
+font-size: 0.9rem;
+text-align: center;
+line-height: 1.2;
 
-	z-index: 999;
+/* Odstrani dodatne razmake iz privzetih HTML elementov */
+margin: 0;
+
+z-index: 999;
 }
 
 .snipi__bottom-row--hidden {
-	display: none;
+display: none;
+}
+
+.snipi__bottom-row > * {
+margin: 0;
 }
 
 /* ============================================================
