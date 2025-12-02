@@ -1,15 +1,15 @@
 <?php
 /**
- * Plugin Name: SNIPI ekrani DEV
+ * Plugin Name: SNIPI ekrani MAIN
  * Plugin URI: https://github.com/Squarebow/snipi-ekrani
  * Description: Prikaže urnike iz Snipi API na WordPress strani. Podpira več ekranov, oblikovanje tabele, avtomatsko paginacijo, autoplay, 16:9 prikaz in osveževanje podatkov v živo.
- * Version: 1.0.9
+ * Version: 1.1
  * Author: Aleš Lednik
  * Author URI: https://squarebow.com
  * Text Domain: snipi-ekrani
  * Domain Path: /languages
- * Requires at least: 5.4
- * Requires PHP: 7.4
+ * Requires at least: 6.7
+ * Requires PHP: 8.3
  * Tested up to: 6.7
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
