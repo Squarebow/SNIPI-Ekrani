@@ -1,6 +1,6 @@
 # SNIPI Ekrani
 
-**Version:** 1.0.9
+**Version:** 1.1
 **Author:** SquareBow  
 **Requires WordPress:** 5.4+  
 **Tested up to:** 6.7  

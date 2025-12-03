@@ -122,12 +122,15 @@
 .snipi__table {
 	width: 100%;
 	border-collapse: collapse;
+	/* Intelligent auto-fit applies via CSS variable so TV layouts stay consistent. */
+	--snipi-body-font-size: 18px;
 }
 
 .snipi__table th,
-.snipi__table td {
-padding: 6px 14px;
-text-align: left;
+	.snipi__table td {
+	padding: 6px 14px;
+	text-align: left;
+	font-size: var(--snipi-body-font-size);
 }
 
 .snipi__table [data-snipi-col="teacher"],
