@@ -1,10 +1,10 @@
 # SNIPI Ekrani
 
-**Version:** 1.0.9
+**Version:** 1.1
 **Author:** SquareBow  
-**Requires WordPress:** 5.4+  
+**Requires WordPress:** 6.7  
 **Tested up to:** 6.7  
-**Requires PHP:** 7.4+  
+**Requires PHP:** 8.3  
 **License:** GPLv2 or later
 
 SNIPI Ekrani je WordPress vtičnik za prikaz urnikov in aktivnosti v živo na velikih zaslonih iz programa **Snipi**  
