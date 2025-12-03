@@ -8,16 +8,14 @@
  * Author URI: https://squarebow.com
  * Text Domain: snipi-ekrani
  * Domain Path: /languages
- * Requires at least: 5.4
- * Requires PHP: 7.4
+ * Requires at least: 6.7
+ * Requires PHP: 8.3
  * Tested up to: 6.7
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Update URI: false
  *  * ...
- * GitHub Plugin URI: https://github.com/Squarebow/snipi-ekrani
- * Primary Branch: main
- * 
+ 
  * @package SNIPI_Ekrani
  */
 
