@@ -130,6 +130,8 @@
 .snipi__table {
 	width: 100%;
 	border-collapse: collapse;
+	/* Intelligent auto-fit applies via CSS variable so TV layouts stay consistent. */
+	--snipi-body-font-size: 18px;
 }
 
 .snipi__table th,
@@ -281,7 +283,6 @@
 
 /* ============================================================
 	MOBILNE IN TABLIČNE NAPRAVE – prilagodljiva skala in brez stolpca Program
-============================================================ */
 @media (max-width: 1024px) {
 /* Fluidno pomanjšanje tipografije in razmikov za manjše zaslone */
 .snipi {
