@@ -130,12 +130,15 @@
 .snipi__table {
 	width: 100%;
 	border-collapse: collapse;
+	/* Intelligent auto-fit applies via CSS variable so TV layouts stay consistent. */
+	--snipi-body-font-size: 18px;
 }
 
 .snipi__table th,
-.snipi__table td {
-	padding: 0.375rem 0.875rem;
+	.snipi__table td {
+	padding: 6px 14px;
 	text-align: left;
+	font-size: var(--snipi-body-font-size);
 }
 
 .snipi__table [data-snipi-col="teacher"],
@@ -268,17 +271,6 @@
 
 /* Prevent TD from wrapping onto new lines */
 .snipi__table td:first-child {
-	white-space: nowrap;
-	width: 1%;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 0.25rem;
-}
-
-/* ============================================================
-	MOBILNE IN TABLIČNE NAPRAVE – prilagodljiva skala in brez stolpca Program
-============================================================ */
 @media (max-width: 1024px) {
 /* Fluidno pomanjšanje tipografije in razmikov za manjše zaslone */
 .snipi {
@@ -312,4 +304,6 @@
 .snipi__time-wrapper {
 	gap: 0.4rem;
 }
+white-space: nowrap;
+width: 1%;
 }
