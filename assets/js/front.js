@@ -187,17 +187,17 @@ var resizeTimer   = null;
 function setProgramLayoutClass( shouldShowProgram ) {
 container.classList.toggle( 'snipi--program-hidden', ! shouldShowProgram );
 container.classList.toggle( 'snipi--program-visible', !! shouldShowProgram );
-}
+			}
 
 function syncHeaderColumns( shouldShowProgram ) {
 if ( ! table ) {
-return;
-}
+				return;
+			}
 
 var headRow = table.querySelector( 'thead tr' );
 if ( ! headRow ) {
-return;
-}
+				return;
+			}
 
 var programTh = headRow.querySelector( '[data-snipi-program]' );
 
@@ -212,11 +212,11 @@ if ( teacherTh ) {
 headRow.insertBefore( newTh, teacherTh );
 } else {
 headRow.appendChild( newTh );
-}
+			}
 } else if ( ! shouldShowProgram && programTh ) {
 headRow.removeChild( programTh );
-}
-}
+			}
+			}
 
 syncHeaderColumns( showProgramColumn );
 setProgramLayoutClass( showProgramColumn );
@@ -368,22 +368,21 @@ setProgramLayoutClass( showProgramColumn );
 				
 				tbody.innerHTML = '';
 				
-				if ( ! items.length ) {
-					var trEmpty = document.createElement( 'tr' );
-					var tdEmpty = document.createElement( 'td' );
-					tdEmpty.colSpan = showProgramColumn ? 6 : 5;
-					tdEmpty.style.textAlign = 'center';
-					tdEmpty.style.padding = '20px';
-					tdEmpty.textContent = 'Ni podatkov za izbrani dan.';
-					trEmpty.appendChild( tdEmpty );
-					tbody.appendChild( trEmpty );
-					
-					if ( bottomRowEl ) {
-						bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
-						bottomRowEl.innerHTML = '';
-					}
-					return;
-				}
+			if ( ! items.length ) {
+				var trEmpty = document.createElement( 'tr' );
+				var tdEmpty = document.createElement( 'td' );
+				tdEmpty.colSpan = showProgramColumn ? 6 : 5;
+				tdEmpty.className = 'snipi__cell snipi__cell--empty';
+				tdEmpty.textContent = 'Ni podatkov za izbrani dan.';
+				trEmpty.appendChild( tdEmpty );
+				tbody.appendChild( trEmpty );
+
+				if ( bottomRowEl ) {
+					bottomRowEl.classList.add( 'snipi__bottom-row--hidden' );
+					bottomRowEl.innerHTML = '';
+			}
+				return;
+			}
 				
 				var effectiveRowsPerPage = calculateRowsPerPage();
 				
@@ -414,6 +413,7 @@ setProgramLayoutClass( showProgramColumn );
 					var timeText = formatTimeRange( it.start_iso || it.start || '', it.end_iso || it.end || '' ) || '';
 					var tdTime   = document.createElement( 'td' );
 					tdTime.setAttribute( 'data-snipi-col', 'time' );
+					tdTime.className = 'snipi__cell snipi__cell--time';
 					
 					var dayKey   = it._dayKey || getDayKey( it.start_iso || it.start || '' );
 					var showDayLabel = dayKey && dayKey !== todayKey && dayKey !== previousKey && it._dayLabel;
