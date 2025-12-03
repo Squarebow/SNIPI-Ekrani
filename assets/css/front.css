@@ -7,8 +7,6 @@
 	color: #111;
 }
 
-
-
 /* ============================================================
    HEADER – stabilen layout brez jitterja
    ============================================================ */
@@ -318,4 +316,16 @@
 .snipi__cell--time {
 	min-width: clamp(9rem, 32vw, 12rem);
 }
+}
+
+/* ==========================================
+   Odstrani notranje robove iz celic
+   ========================================== */
+.snipi__table th,
+.snipi__table td,
+.snipi__table .snipi__cell {
+	border: 0 !important;    /* odstrani vse robove v celicah */
+	border-width: 0 !important;
+	border-style: none !important;
+	border-color: transparent !important;
 }

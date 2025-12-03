@@ -3,12 +3,12 @@
 
   <style>
     .center-dot {
-      fill: #ff0000; /* red */
+      fill: #DE7268; /* UPI pink */
     }
 
     .pulse-circle {
       fill: none;
-      stroke: #ff0000;
+      stroke: #DE7268;
       stroke-width: 4px;            /* 4 px stroke */
       opacity: 0;
       transform-origin: 50% 50%;
