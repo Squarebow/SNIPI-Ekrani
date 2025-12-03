@@ -14,12 +14,13 @@
    ============================================================ */
 
 .snipi__header {
-	/* 3-stolpčni grid: levo fleksibilno, sredina fluid min/max, desno fiksno */
+/* 3-stolpčni grid: levo fleksibilno, sredina fluid min/max, desno fiksno */
 	display: grid;
 	grid-template-columns: 1fr auto 1fr;  /* CENTER bo imel min/max valove nižje */
 	align-items: center;
 	column-gap: 32px; /* večji razmak za TV */
-	padding: 10px 16px;
+	padding: 0.625rem 1rem;
+	margin-bottom: 0.625rem;
 }
 
 /* LEVA STRAN (logo) */
@@ -47,11 +48,12 @@
 	align-items: center;
 	justify-content: flex-end;
 	gap: 12px;
+	margin-top: 2.5rem;
 
-	/* ★ fiksna širina, da Chrome/Edge ne premikata sredine */
+/* ★ fiksna širina, da Chrome/Edge ne premikata sredine */
 	min-width: 220px;  /* ★ prevents jitter */
-    width: auto;       /* ★ allows fluid layout */
-    flex-shrink: 0;    /* ★ prevents collapsing */
+	width: auto;       /* ★ allows fluid layout */
+	flex-shrink: 0;    /* ★ prevents collapsing */
 }
 
 
@@ -69,6 +71,7 @@
 	font-weight: 700;
 	text-align: center;
 	line-height: 1.1;
+	margin-bottom: 0.5rem;
 }
 
 /* ============================================================
@@ -87,6 +90,7 @@
 	font-weight: 500 !important; /* enako v vseh brskalnikih */
 	text-transform: none;
 	white-space: nowrap; /* ne dovoli preloma */
+	color: #3A4F66;
 }
 
 /* ============================================================
@@ -99,6 +103,10 @@
 	font-weight: 300 !important;
 	white-space: nowrap; /* ne prelomi v 2 vrsti */
 	font-variant-numeric: tabular-nums; /* Stabilizira širino številk za uro in paginacijo */
+}
+
+	span.snipi__clock-value {
+	font-weight: 500 !important;
 }
 
 
@@ -116,7 +124,7 @@
    ============================================================ */
 
 .snipi__table-wrapper {
-	padding: 0 16px 60px; /* prostor za sticky spodnjo vrstico */
+	padding: 0 1rem 3.75rem; /* prostor za sticky spodnjo vrstico */
 }
 
 .snipi__table {
@@ -126,30 +134,30 @@
 
 .snipi__table th,
 .snipi__table td {
-padding: 6px 14px;
-text-align: left;
+	padding: 0.375rem 0.875rem;
+	text-align: left;
 }
 
 .snipi__table [data-snipi-col="teacher"],
 .snipi__table [data-snipi-col="room"],
 .snipi__table [data-snipi-col="floor"] {
-white-space: nowrap;
-width: 1%;
+	white-space: nowrap;
+	width: 1%;
 }
 
 .snipi__table [data-snipi-col="name"],
 .snipi__table [data-snipi-col="program"] {
-white-space: normal;
-width: auto;
+	white-space: normal;
+	width: auto;
 }
 
 .snipi--program-hidden .snipi__table {
-table-layout: fixed;
+	table-layout: fixed;
 }
 
 .snipi--program-hidden .snipi__table th,
 .snipi--program-hidden .snipi__table td {
-word-break: break-word;
+	word-break: break-word;
 }
 
 .snipi__table thead th {
@@ -162,17 +170,18 @@ word-break: break-word;
 }
 
 /* časovni stolpec */
+
 .snipi__day-label {
 	display: block;
 	font-size: 0.75rem;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
-	margin-bottom: 2px;
-	color: rgba(0, 0, 0, 0.65);
+	margin-bottom: 0.125rem;
+	color: #E07A71;
 }
 
 .snipi__time {
-	display: block;
+	display: inline-block;
 	font-size: 1rem;
 	font-weight: 600;
 }
@@ -189,25 +198,33 @@ word-break: break-word;
 	width: 100vw;
 
 /* ★ ORIGINALNA STILIZACIJA OHRANJENA */
-background: #222;
-color: #fff;
-padding: 8px 16px;
-font-size: 0.9rem;
-text-align: center;
-line-height: 1.2;
+	background: #222;
+	color: #fff;
+	padding: 0.875rem 1rem;
+	font-size: 0.9rem;
+	text-align: center;
+	line-height: 1.2;
 
 /* Odstrani dodatne razmake iz privzetih HTML elementov */
-margin: 0;
+	margin: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 
-z-index: 999;
+	z-index: 999;
 }
 
 .snipi__bottom-row--hidden {
-display: none;
+	display: none;
 }
 
 .snipi__bottom-row > * {
-margin: 0;
+	margin: 0;
+}
+
+.snipi__bottom-row span {
+	display: inline-block;
+	padding: 0.875rem 1rem;
 }
 
 /* ============================================================
@@ -216,38 +233,83 @@ margin: 0;
 
 /* Base icon (Pulse.svg is the dot in the middle) */
 .snipi__live-indicator {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-vertical-align: middle;
-margin-left: 8px;
-width: 20px;
-height: 20px;
-object-fit: contain;
-flex-shrink: 0;
-position: relative;
-z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	vertical-align: middle;
+	margin-left: 0.5rem;
+	width: clamp(1rem, 0.8vw + 0.8rem, 1.5rem);
+	height: clamp(1rem, 0.8vw + 0.8rem, 1.5rem);
+	object-fit: contain;
+	flex-shrink: 0;
+	position: relative;
+	z-index: 1;
 }
 
 
 /* Ensures time + pulse are always in ONE horizontal line */
 .snipi__time-wrapper {
-display: inline-flex;
-align-items: center;
-gap: 8px;
-white-space: nowrap;
-line-height: 1.1;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	white-space: nowrap;
+	line-height: 1.1;
+	width: 100%;
 }
 
 /* Convert snipi__time to inline element instead of block */
 .snipi__time {
-display: inline-block;
-white-space: nowrap;
-line-height: 1.1;
+	display: inline-block;
+	white-space: nowrap;
+	line-height: 1.1;
+	flex: 1 1 auto;
 }
 
 /* Prevent TD from wrapping onto new lines */
 .snipi__table td:first-child {
-white-space: nowrap;
-width: 1%;
+	white-space: nowrap;
+	width: 1%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.25rem;
+}
+
+/* ============================================================
+	MOBILNE IN TABLIČNE NAPRAVE – prilagodljiva skala in brez stolpca Program
+============================================================ */
+@media (max-width: 1024px) {
+/* Fluidno pomanjšanje tipografije in razmikov za manjše zaslone */
+.snipi {
+	font-size: clamp(0.95rem, 1vw + 0.75rem, 1.05rem);
+}
+
+.snipi__header {
+	grid-template-columns: 1fr;
+	row-gap: 0.5rem;
+	justify-items: center;
+}
+
+.snipi__header-right {
+	margin-top: 0;
+}
+
+.snipi__table-wrapper {
+	padding: 0 0.75rem 3rem;
+}
+
+/* Skrij stolpec Program na telefonih in tablicah */
+.snipi__table th[data-snipi-col="program"],
+.snipi__table td[data-snipi-col="program"] {
+	display: none;
+}
+
+.snipi__table {
+	font-size: 0.95rem;
+}
+
+.snipi__time-wrapper {
+	gap: 0.4rem;
+}
 }
