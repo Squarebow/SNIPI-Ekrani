@@ -16,7 +16,7 @@
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 	align-items: center;
-	column-gap: 32px; /* večji razmak za TV */
+	column-gap: 24px;
 	padding: 0.625rem 1rem;
 	margin-bottom: 0.625rem;
 }
@@ -109,8 +109,8 @@
    ============================================================ */
 
 .snipi__logo {
-	max-height: clamp(3.5rem, 8vh, 5.5rem);
-	max-width: min(22vw, 14rem);
+	max-height: 5.5rem;
+	max-width: 14rem;
 	height: auto;
 	width: auto;
 	object-fit: contain;
@@ -228,7 +228,7 @@
 	align-items: flex-start;
 	gap: 0.35rem;
 	width: 100%;
-	min-width: clamp(10rem, 18vw, 14rem);
+	min-width: 12rem;
 }
 
 .snipi__time-wrapper {
@@ -256,8 +256,8 @@
 	justify-content: center;
 	vertical-align: middle;
 	margin-left: 0;
-	width: clamp(1.1rem, 1.8vw, 1.35rem);
-	height: clamp(1.1rem, 1.8vw, 1.35rem);
+	width: 1.35rem;
+	height: 1.35rem;
 	object-fit: contain;
 	flex-shrink: 0;
 	position: relative;
@@ -270,7 +270,7 @@
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	min-height: clamp(14rem, 50vh, 28rem);
+	min-height: 14rem;
 	padding: 1.5rem;
 	font-size: 2rem;
 	font-weight: 700;
@@ -314,7 +314,7 @@
 }
 
 .snipi__cell--time {
-	min-width: clamp(9rem, 32vw, 12rem);
+	min-width: 10rem;
 }
 }
 
