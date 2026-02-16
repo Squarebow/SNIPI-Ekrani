@@ -1,0 +1,134 @@
+/**
+ * SNIPI Ekrani - TV-Optimized CSS
+ * Version: 2.2.0
+ */
+
+/* TV Reset */
+html.snipi-tv-mode,
+html.snipi-tv-mode body {
+	overflow: hidden !important;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+}
+
+/* TV wrapper */
+.snipi-tv-mode .snipi-screen-wrapper {
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden !important;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+/* Dynamic grid columns */
+.snipi-tv-mode .snipi-table-wrapper {
+	height: 100%;
+	overflow: hidden !important;
+}
+
+.snipi-tv-mode .snipi-table {
+	display: grid;
+	grid-template-columns: repeat(var(--tv-columns, 4), 1fr);
+	gap: 15px;
+	height: 100%;
+	align-content: start;
+}
+
+.snipi-tv-mode .snipi-table-row {
+	height: var(--tv-card-height, auto);
+	overflow: hidden;
+}
+
+/* Dynamic font sizing */
+.snipi-tv-mode {
+	font-size: var(--tv-font-size, 16px);
+}
+
+/* TV confirm dialog */
+.snipi-tv-dialog {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.85);
+	z-index: 99999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.snipi-tv-dialog-content {
+	background: white;
+	border-radius: 12px;
+	padding: 40px;
+	max-width: 600px;
+	text-align: center;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.snipi-tv-dialog-content h2 {
+	margin: 0 0 20px 0;
+	font-size: 28px;
+}
+
+.snipi-tv-dialog-content p {
+	margin: 10px 0;
+	font-size: 18px;
+}
+
+.snipi-tv-dialog-buttons {
+	margin-top: 30px;
+	display: flex;
+	gap: 15px;
+	justify-content: center;
+}
+
+.snipi-tv-btn {
+	padding: 15px 30px;
+	font-size: 18px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: transform 0.2s;
+}
+
+.snipi-tv-btn:hover {
+	transform: translateY(-2px);
+}
+
+.snipi-tv-btn-primary {
+	background: #0073aa;
+	color: white;
+}
+
+.snipi-tv-btn-secondary {
+	background: #666;
+	color: white;
+}
+
+/* HD Ready (1366x768) */
+@media (min-width: 1366px) and (max-width: 1366px) and (min-height: 768px) {
+	:root {
+		--tv-columns: 3;
+		--tv-font-size: 14px;
+	}
+}
+
+/* Full HD (1920x1080) */
+@media (min-width: 1920px) and (min-height: 1080px) and (max-width: 1920px) {
+	:root {
+		--tv-columns: 4;
+		--tv-font-size: 16px;
+	}
+}
+
+/* 4K (3840x2160) */
+@media (min-width: 3840px) and (min-height: 2160px) {
+	:root {
+		--tv-columns: 6;
+		--tv-font-size: 24px;
+	}
+}
