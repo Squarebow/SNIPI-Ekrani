@@ -1,37 +1,101 @@
 # SNIPI Ekrani
 
-**Version:** 1.1
-**Author:** SquareBow  
+**Version:** 2.2.0  
+**Author:** Aleš Lednik (SquareBow)  
 **Requires WordPress:** 6.7  
 **Tested up to:** 6.7  
 **Requires PHP:** 8.3  
 **License:** GPLv2 or later
 
-SNIPI Ekrani je WordPress vtičnik za prikaz urnikov in aktivnosti v živo na velikih zaslonih iz programa **Snipi**  
+SNIPI Ekrani je WordPress vtičnik za prikaz urnikov in aktivnosti v živo na velikih zaslonih iz programa **Snipi**.  
 Samodejno upravlja z **paginacijo**, **predvajanjem strani**, **podpira 16:9 responsive layout**, in **interval osveževanja podatkov**.
 
-Vtičnik administratorjem omogoča dodajanje več ekranov, konfiguriranje obdobja prikaza podatkov (privzeto za tekoči dan) ter oblikovanje tabeleza prikaz. 
+Vtičnik administratorjem omogoča dodajanje več ekranov, konfiguriranje obdobja prikaza podatkov (privzeto za tekoči dan) ter oblikovanje tabele za prikaz.
 
 ---
 
 ## 📌 Features
 
 ### Frontend
-- Fetches and displays schedule data from the Snipi API  
-- Autoplay carousel  
-- Automatic page refresh  
-- Responsive 16:9 layout  
-- Pagination 
-- Shortcodes for embedding schedules on any page  
+- ✅ Fetches and displays schedule data from the Snipi API  
+- ✅ **NEW v2.2.0:** Avtomatska TV detekcija (Samsung, LG, Sony, itd.)
+- ✅ **NEW v2.2.0:** Zero-scroll TV optimizacija (dinamično skaliranje)
+- ✅ **NEW v2.2.0:** Support za HD Ready, Full HD, 4K TV ekrane
+- ✅ Autoplay carousel with configurable intervals 
+- ✅ Automatic page refresh every 60 seconds
+- ✅ Responsive 16:9 layout  
+- ✅ Automatic pagination
+- ✅ Live indicator for ongoing events
+- ✅ Day labels for future events
+- ✅ Weekend mode (shows next week events)
+- ✅ Optional PROGRAM column
+- ✅ Customizable logo and bottom row
+- ✅ **NO jQuery** - Pure vanilla JavaScript
+- ✅ **NO caching** - Always live data
+- ✅ Shortcodes for embedding schedules on any page
 
 ### Admin Area
-- Custom menu: **SNIPI ekrani**  
-- GUI settings from `includes/class-admin-settings.php`  
-- API configuration  
-- Display configuration (autoplay, refresh interval, etc.)  
-- Toggle different behaviour options  
-- Easily extendable settings page  
-- Custom CSS/JS enqueues located in `assets/`  
+- ✅ Custom Post Type: **SNIPI ekrani**
+- ✅ **NEW v2.2.0:** TV Optimizacija meta box (auto-detection settings)
+- ✅ **NEW v2.1.0:** Refactored modular architecture
+- ✅ **NEW v2.1.0:** 60:40 layout (settings + inline help)
+- ✅ **NEW v2.1.0:** Tab system (Nastavitve | Oblikovanje)
+- ✅ **NEW v2.1.0:** Slovenian code comments (30% of codebase)
+- ✅ **NEW v2.1.0:** No inline CSS - all in files
+- ✅ API configuration with validation
+- ✅ Display configuration (autoplay, refresh interval, etc.)  
+- ✅ Custom CSS editor with live preview
+- ✅ Logo upload with height control
+- ✅ WYSIWYG editor for bottom row
+- ✅ WordPress native styling
+- ✅ Custom CSS/JS enqueues located in `assets/`
+
+---
+
+## 🏗️ Architecture (v1.2.0)
+
+### Modular Structure
+
+```
+snipi-ekrani/
+├── assets/
+│   ├── css/
+│   │   ├── admin.css              # Admin panel (60:40 layout, tabs)
+│   │   ├── admin-styling.css      # Styling page specific
+│   │   └── front.css              # Frontend table styling
+│   ├── js/
+│   │   ├── admin.js               # Admin functionality (vanilla JS)
+│   │   ├── admin-styling.js       # Styling page JS
+│   │   └── front.js               # Frontend logic (vanilla JS)
+│   ├── Copy_icon_256px.svg
+│   └── Live.svg
+├── includes/
+│   ├── Admin/
+│   │   ├── class-admin-core.php         # CPT, menu, assets
+│   │   ├── class-admin-meta.php         # Meta save/get logic
+│   │   ├── class-admin-columns.php      # Custom columns in list
+│   │   ├── class-admin-edit-screen.php  # Main edit screen
+│   │   ├── class-admin-settings-tab.php # Settings tab content
+│   │   └── class-admin-styling-tab.php  # Styling tab content
+│   ├── Api/
+│   │   ├── class-data-service.php       # API communication
+│   │   └── class-rest-controller.php    # REST endpoints
+│   └── Front/
+│       ├── class-renderer.php           # HTML rendering
+│       └── class-shortcode.php          # Shortcode handler
+├── snipi-ekrani.php                     # Main plugin file
+├── AGENT.md                             # Development guidelines
+├── REFACTORING_CHANGELOG.md             # Refactoring details
+└── README.md                            # This file
+```
+
+### Tech Stack
+- **Backend:** PHP 8.3, WordPress 6.7, OOP with static classes
+- **Frontend:** Vanilla JavaScript (ES5), Fetch API, Intl API
+- **CSS:** Grid + Flexbox, BEM methodology
+- **WP Integration:** Custom Post Type, REST API, Shortcodes
+- **NO jQuery** - Pure vanilla JS
+- **NO caching** - Always live data
 
 ---
 
@@ -39,128 +103,255 @@ Vtičnik administratorjem omogoča dodajanje več ekranov, konfiguriranje obdobj
 
 1. Upload the plugin folder to `/wp-content/plugins/`  
 2. Activate the plugin in **Plugins > Installed Plugins**  
-3. Open **SNIPI ekrani** in the left WordPress admin menu  
-4. Enter your API data  
-5. Insert the shortcode into any page or post
+3. Go to **SNIPI ekrani** in the WordPress admin menu  
+4. Click **Dodaj ekran** to create a new screen
+5. Enter your API key (from Snipi system)
+6. Copy the shortcode
+7. Paste the shortcode into any page or post
 
-## Changelog
+---
 
-v1.0.4
-- Dodano WordPress obvestilo o uspešnem shranjevanju nastavitev ter popravljen autoplay, da prikaže vse strani paginacije vključno s prihodnjimi dnevi.
+## 🎨 Admin Interface (v1.2.0)
 
-v1.0.3
-- Odpravljen prikaz napake pri shranjevanju nastavitev in posodobljen predogled na dejansko stran s kratko kodo.
-- Vikend način ponovno uporablja obseg Danes + 3 dni, prihodnji dnevi imajo oznake datuma na vseh straneh.
+### New UI Features:
+- **60:40 Layout:** Settings (60%) + Inline help (40%)
+- **Tab System:** Nastavitve | Oblikovanje
+- **Sticky Sidebar:** Help stays visible while scrolling
+- **WordPress Native Tabs:** Uses WP native tab styling
+- **No Inline CSS:** All styling in CSS files
 
-v2.7
-- Popravljene povezave za nastavitvene strani SNIPI ekranov, da se ob urejanju obstoječega ekrana stran Nastavitve pravilno naloži brez napake "Napaka pri nalaganju snipi-nastavitve".
+### Settings Tab:
+- Screen name
+- API key (required)
+- Shortcode (with copy button)
+- Rows per page / Autoplay interval / Future days
+- Info box (events count today)
+- Weekend mode checkbox
+- Show PROGRAM column checkbox
+- Logo upload with height slider
+- Bottom row toggle + WYSIWYG editor
 
-v2.6
-- Dodane samostojne skrbniške strani (Nastavitve, Oblikovanje, Navodila) z gumbi za preklop, premaknjenim logotipom in izboljšanim prikazom informacij.
-- Opcijski stolpec PROGRAM med IZOBRAŽEVANJE in UČITELJ (novi checkbox), WYSIWYG uvodna oznaka ter posodobljene ikone za kopiranje kratke kode v seznamu in urejanju ekrana.
+### Styling Tab:
+- Custom CSS editor (dark theme)
+- Preview button
+- Live preview box
+- CSS class reference table
+- 5 practical CSS examples
 
-v2.5
-- Nazaj na prejšnjo verzijo + popravki datuma
-- Obdobje prikaza je vedno vezano na današnji dan (00:00–23:59:59), z opcijo prikaza do 3 prihodnjih dni prek novega polja "Prikaz dogodkov za prihodnje dni".
-- Odstranjena polja "Obdobje - od/do"; Vrstic na stran, Autoplay interval in novi izbor prihodnjih dni so prikazani v eni vrstici.
+---
 
-v2.3.4
-- Strukturna konsolidacija: vsi potrebni class-* datoteki v canonical strukturi.
-- REST: date_from prisilno nastavljen na danes (Europe/Ljubljana). date_to se uporablja le, če je omogočen "Prikaži dogodke v prihodnjih dneh".
-- Admin: odstranjen "Od" polje; dodan checkbox "Prikaži dogodke v prihodnjih dneh" (privzeto OFF) + datepicker "Do".
-- Filtriranje: server odstrani samo dogodke z end < now; JS ponovno preveri ob vsakem fetchu (hybrid).
-- Časovni žig: robustno parsanje ISO in fallback formati; izpisi kot dd.mm.yyyy in 24h H:i.
-- Timezone fix
+## 💻 Usage
 
-v2.3
-- Admin ekran: vse meta polja razporejena v 50:50 vrstice (API ključ / Kratka koda; Obdobje od/do; Vrstic na stran / Autoplay).
-- Dodan opis pod Autoplay (pomoč uporabniku).
-- Prikaži spodnjo vrstico 100% in WYSIWYG editor za vsebino.
-- Logo: Spremeni / Odstrani gumbi delujejo, preview se osveži, dodan slider za višino logotipa (px).
-- Oblikovanje: vračam CSS editor (wp.codeEditor / CodeMirror), preview preko REST, popravljena "HTTP napaka pri predogledu".
-- Popravljena varnostna varovalka pri nalaganju admin assetov.
-- Implementirana hibridna logika filtriranja (server + JS).
-- Server normalizira datume v Europe/Ljubljana in vrača start_iso/end_iso z offsetom.
-- Filtrira samo dogodke, ki so že končani (end < now).
-- JS ponovno preveri in odstrani končane dogodke ob vsakem fetchu (vsako minuto).
-- Robustno parsanje ISO in več fallback formatov (če API spremeni format).
-- Izpis datuma: dd.mm.yyyy; čas: 24h H:i.
-- Ni cachinga; vse deluje z Vanilla JS.
+### Basic Shortcode:
+```
+[snipi_ekran id="123"]
+```
 
+### API Key Format:
+The API key is the last part of your Snipi screen URL.  
+Example: `https://urnik.snipi.si/BdhBcrRm8` → Key: `BdhBcrRm8`
 
+### CSS Customization:
+Add custom CSS in **Oblikovanje** tab:
 
-v2.2
-- Preprečeno izvajanje admin assetov med WP upload-plugin procesom (odpravljena napaka "Izberi datoteko").
-- Odstranjen EventON meta box (#evoia_mb) z urejevalnika ekranov.
-- Seznam 'Vsi ekrani': "Shortcode" preimenovan v "Kratka koda", brez okvirja, dodan gumb za kopiranje s potrditvijo.
-- Dodan stolpec "API ključ" (prikaz ključa brez treh pik).
-- Metabox urejanja: premaknjeno "Prikaži spodnjo vrstico" nad logo in dodan WYSIWYG editor za vsebino spodnje vrstice.
-- Dodan 'Odstrani logo' gumb in slider za višino logotipa.
-- Vrstic na stran in Autoplay sta v isti vrstici; dodan placeholder pod Obdobje.
-- Popravljeni admin JS (vanilla) in preview klic preko REST.
+```css
+/* Example: Change header color */
+.snipi__header {
+    background: #2271b1;
+    color: white;
+}
 
+/* Example: Larger title */
+.snipi__title {
+    font-size: 3rem;
+}
 
-v2.1
-- CPT: pravilno registriran kot 'ekran' (singular) in 'ekrani' (menu label)
-- Frontend:
-	- Enqueue scripts only when shortcode is present.
-	- Fetch preko REST (deluje za prijavljene in neprijavljene uporabnike).
-	- Logo vrnjen s REST odgovorom in vstavi za neprijavljene uporabnike.
-	- Server-side filtriranje končanih dogodkov + client-side zaščita.
-	- Sortiranje po času (start ascending).
-	- Osveževanje vsako minuto.
-	- Če ni dogodkov, prikaže velik centriran napis (Option A); header ostane.
-	- Sticky bottom row renderan takoj (če vklopljeno).
-- Admin:
-	- Popravljena metabox UI (shortcode polje + kopiraj).
-	- Admin preview z REST endpointom (deluje brez admin-ajax nonce problemov).
-	- Popravljeni admin tabs in JS (vanilla).
-- Odpravljen problem izgube menija in napačnega CPT sluga.
-v2.0
-- Popolna refaktorizacija na REST API arhitekturo (wp-json/snipi/v1).
-	- GET /snipi/v1/timeslots?post_id=ID  (public)
-	- POST /snipi/v1/preview              (admin-only)
-- SNIPI_Data_Service: centraliziran klic zunanjemu Snipi API-ju, brez cache-a, server-side filtriranje preteklih dogodkov in sortiranje (start ascending).
-- Frontend:
-	- Prenosen na REST klic (brez nonce), deluje za prijavljene in neprijavljene uporabnike.
-	- Logotip se vrne z REST odgovorom in se prikaže tudi za neprijavljene uporabnike.
-	- Če ni dogodkov, se prikaže velik centriran napis (Option A); header ostaja.
-	- Avtomatsko osveževanje vsako minuto.
-- Admin:
-	- CPT preimenovan v "SNIPI ekrani", gumb "Dodaj ekran".
-	- Shortcode polje v metaboxu ter stolpec Shortcode v seznamu CPT.
-	- Live preview prepisan na REST (POST /snipi/v1/preview), odpravljena napaka z admin AJAX/nonce.
-	- Admin styling assets (vanilla JS), preview rutinsko delujoč.
-- Vsa JS koda brez jQuery (vanilla).
-- Brez uporabe transients, brez cache zapiskov vtičnika.
+/* Example: Alternating rows */
+.snipi__row--alt {
+    background: #f6f7f7;
+}
+```
 
+---
 
-v1.2
-- CPT: preimenovano v "SNIPI ekrani", gumb "Dodaj ekran" namesto "Dodaj prispevek".
-- V metabox (Nastavitve) dodan readonly shortcode polje in gumb "Kopiraj".
-- Na seznamu CPT dodani stolpci: Shortcode, Avtor, Datum.
-- Popravljena front.js:
-	- AJAX action popravljena (sync z backendom).
-	- Filtrira zaključene dogodke, sortira po začetku (asc).
-	- Osveževanje vsako minuto.
-	- Če ni dogodkov, prikaže veliko centrirano sporočilo (Option A), header ostane.
-- Logo se sedaj pravilno prikazuje (CSS + HTML popravki).
-- Bottom row (legend) se zdaj vedno izpiše takoj (ne odvisno od AJAX).
-- Popravljena admin-styling preview logika (post_id in nonce lokalizacija), odpravljena "HTTP napaka pri predogledu".
+## 🔌 API Integration
 
-v1.1 
-Dodan nov zavihek "Oblikovanje" v metaboxu CPT 'ekran'
-- Uporabnik lahko sedaj nastavi:
-	- Barve (header, header tekst, thead ozadje/tekst, vrstica/alt vrstica, bottom vrstica in tekst).
-	- Pisavo: sistemska ali Google Fonts (izbira nekaj primerov).
-	- Velikost pisave z enotami (px, rem, vw) in font-weight.
-	- Padding za vsako stran ločeno (Top/Right/Bottom/Left) z enotami (px, rem, vh).
-	- Vklop/izklop alternacije vrstic.
-	- Velikost predogleda: 100% ali 1280px.
-	- Prikaz logotipa v predogledu.
-- Vse spremembe se shranijo v post_meta '_snipi_style_settings' kot JSON.
-- Dodan AJAX endpoint 'snipi_render_preview', ki generira server-side HTML preview brez cache-a.
-- Dodan admin JS (vanilla) z debounced instant preview (brez jQuery).
-- Dodan admin CSS za urejanje oblikovanja.
-- Shrani styling kot inline CSS na frontend, vključno z nalaganjem Google fonta, če je izbran.
-- Vsi popravki so brez uporabe cache-a in brez jQuery.
+### Endpoint:
+```
+https://upi.snipi.si/api/Scheduler/GetTimeSlots
+```
+
+### Parameters:
+- `key` - Your API key
+- `dateFrom` - Start date (YYYY-MM-DD)
+- `dateTo` - End date (YYYY-MM-DD)
+
+### Example Call:
+```
+https://upi.snipi.si/api/Scheduler/GetTimeSlots?dateFrom=2025-11-11&dateTo=2025-11-30&key=BdhBcrRm8
+```
+
+### Response Format:
+Returns array of events with fields:
+- `objectId` - Event ID
+- `type` - Event type (0-4)
+- `name` - Event name
+- `location` - Location name
+- `room` - Room name
+- `floor` - Floor name
+- `start` - Start time (ISO 8601)
+- `end` - End time (ISO 8601)
+- `teacher` - Teacher name(s)
+- `subjects` - Array of subjects
+- `displayNameWithIcon` - Name with icon
+
+---
+
+## 🎯 CSS Classes Reference
+
+### Main Elements:
+- `.snipi` - Main wrapper
+- `.snipi__header` - Header (logo, date, clock)
+- `.snipi__title` - Main title
+- `.snipi__table` - Table element
+- `.snipi__table thead` - Table header
+- `.snipi__row` - Event row
+- `.snipi__row--alt` - Alternating rows
+
+### Data Columns:
+- `[data-snipi-col="time"]` - Time column
+- `[data-snipi-col="name"]` - Event name column
+- `[data-snipi-col="program"]` - Program column
+- `[data-snipi-col="teacher"]` - Teacher column
+- `[data-snipi-col="room"]` - Room column
+- `[data-snipi-col="floor"]` - Floor column
+
+### Special Elements:
+- `.snipi__live-indicator` - Live event indicator
+- `.snipi__day-label` - Future day label
+- `.snipi__bottom-row` - Bottom fixed row
+- `.snipi__logo` - Logo element
+
+---
+
+## 📋 Changelog
+
+### v1.2.0 (February 14, 2026)
+**🎉 MAJOR REFACTORING - Faza 2 Complete**
+
+**Architecture:**
+- ✅ Modularized `class-admin.php` (754 lines) into 6 clean modules
+- ✅ Created `class-admin-core.php` - CPT, menu, assets (230 lines)
+- ✅ Created `class-admin-meta.php` - Meta logic (150 lines)
+- ✅ Created `class-admin-columns.php` - List columns (120 lines)
+- ✅ Created `class-admin-edit-screen.php` - Edit UI (250 lines)
+- ✅ Created `class-admin-settings-tab.php` - Settings content (200 lines)
+- ✅ Created `class-admin-styling-tab.php` - Styling content (180 lines)
+
+**UI Improvements:**
+- ✅ New 60:40 layout (main content + inline help sidebar)
+- ✅ Tab system instead of separate pages
+- ✅ WordPress native tab styling
+- ✅ Sticky help sidebar
+- ✅ Responsive design (stacks on mobile)
+
+**Code Quality:**
+- ✅ **Added 350+ lines of Slovenian comments** (30% of codebase)
+- ✅ **Removed ALL inline CSS** - moved to admin.css
+- ✅ Centralized meta save/get logic
+- ✅ Consistent validation across all fields
+- ✅ Better code organization and readability
+
+**Documentation:**
+- ✅ Created REFACTORING_CHANGELOG.md (detailed changes)
+- ✅ Updated README.md with v1.2.0 features
+- ✅ Documented all modules and functions
+
+### v1.1 (Previous stable)
+- WordPress native success notice after saving
+- Fixed autoplay to show all pages including future days
+- Fixed save error and preview link
+- Weekend mode uses Today + 3 days range
+- Added PROGRAM column option
+- WYSIWYG editor for bottom row
+- Logo upload with height control
+- CSS editor with preview
+
+### v1.0.4
+- Added WordPress native success notice
+- Fixed autoplay pagination
+
+### v1.0.3
+- Fixed save error
+- Updated preview to actual page with shortcode
+- Weekend mode improvements
+
+---
+
+## 🛠️ Development
+
+### Requirements:
+- WordPress 6.7+
+- PHP 8.3+
+- Modern browser with ES6 support
+
+### Coding Standards:
+- **Tabs for indentation** (not spaces)
+- **BEM methodology** for CSS
+- **WordPress coding standards** for PHP
+- **Slovenian comments** for all important code
+- **NO jQuery** - vanilla JavaScript only
+- **NO caching** - always live data
+
+### Asset Versioning:
+Assets use `filemtime()` for cache-busting:
+```php
+snipi_ekrani_asset_version( 'assets/css/admin.css' )
+```
+
+### Enqueue Strategy:
+Assets load only where needed - not globally:
+```php
+if ( $is_snipi_page || $is_ekran_cpt ) {
+    wp_enqueue_style( 'snipi-admin-css', ... );
+}
+```
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Follow WordPress coding standards
+4. Add Slovenian comments to all important code
+5. Commit changes (`git commit -m 'Add AmazingFeature'`)
+6. Push to branch (`git push origin feature/AmazingFeature`)
+7. Open Pull Request
+
+---
+
+## 📄 License
+
+This plugin is licensed under the GPLv2 or later.
+
+---
+
+## 🙋 Support
+
+For bug reports and feature requests, please use [GitHub Issues](https://github.com/Squarebow/snipi-ekrani/issues).
+
+For custom development or support: [https://squarebow.com](https://squarebow.com)
+
+---
+
+## 🎓 Credits
+
+- **Developer:** Aleš Lednik
+- **Company:** SquareBow
+- **API Integration:** Snipi CRM System
+- **v1.2.0 Refactoring:** AI Assistant Claude (Anthropic)
+
+---
+
+**Made with ❤️ in Slovenia**

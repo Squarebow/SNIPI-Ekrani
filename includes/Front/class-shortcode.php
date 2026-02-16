@@ -50,6 +50,39 @@ class SNIPI_Shortcode {
 			true
 		);
 
+		// TV assets (v2.2.0)
+		$enable_tv = get_post_meta( $post_id, '_snipi_enable_tv_detection', true );
+		if ( $enable_tv !== '0' ) {
+			wp_enqueue_style(
+				'snipi-tv-css',
+				SNIPI_EKRANI_URL . 'assets/css/tv.css',
+				array( 'snipi-front-css' ),
+				snipi_ekrani_asset_version( 'assets/css/tv.css' )
+			);
+
+			wp_enqueue_script(
+				'snipi-tv-js',
+				SNIPI_EKRANI_URL . 'assets/js/tv.js',
+				array(),
+				snipi_ekrani_asset_version( 'assets/js/tv.js' ),
+				true
+			);
+
+			$tv_override = get_post_meta( $post_id, '_snipi_tv_mode_override', true ) ?: 'auto';
+			$tv_confirm = get_post_meta( $post_id, '_snipi_tv_confirm_dialog', true );
+
+			wp_localize_script(
+				'snipi-tv-js',
+				'snipiTVConfig',
+				array(
+					'screenId'           => $post_id,
+					'enableTVDetection'  => $enable_tv !== '0',
+					'tvModeOverride'     => $tv_override,
+					'tvConfirmDialog'    => $tv_confirm !== '0',
+				)
+			);
+		}
+
 		// Nastavitve za JS (REST root, nastavitve, URL vtičnika).
 		$rows_per_page     = get_post_meta( $post_id, '_snipi_rows_per_page', true ) ?: 8;
 		$autoplay_interval = get_post_meta( $post_id, '_snipi_autoplay_interval', true ) ?: 10;

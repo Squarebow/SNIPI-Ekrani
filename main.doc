@@ -1,7 +1,0 @@
-🔁 Changelog (v tvojem slogu, v slovenščini)
-
-Posodobljena glava v includes/Front/class-renderer.php: logo je zdaj levo, na sredini je večji naslov “Urnik izobraževanj”, pod njim pa datum in paginacija; ura ostane desno.
-
-Dodani novi razredi in slog za glavo v assets/css/front.css (.snipi__title--large, .snipi__header-center, .snipi__subheader, .snipi__date) z osnovnimi privzetimi vrednostmi.
-
-Prilagojena funkcija setHeaderNow() v assets/js/front.js, da datum za razred .snipi__date izpiše v slovenskem formatu in z malimi črkami (npr. “sreda, 26. november 2025”), ura se še naprej osvežuje vsako sekundo na desni.
