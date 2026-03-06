@@ -1,5 +1,28 @@
 # SNIPI Ekrani - Changelog
 
+## [2.3.1] – 2026-03-06
+
+### Admin – Nastavitve tab
+- **Skaliranje pisave**: radio gumbi prerazporejeni v dve koloni (50:50), vsak z opisom pod seboj
+- **Spodnja vrstica – višina**: radio gumbi prerazporejeni v dve koloni (50:50)
+- Dodan naslov **Urejevalnik vsebine spodnje vrstice** nad WYSIWYG editorjem
+- **TV optimizacija**:
+  - Opis sekcije dobil konsistenten spodnji odmik pred kontrolami
+  - Polje za detekcijo obdano v siv blok (`.snipi-tv-option-block`) za vizualno ločitev
+  - **Način prikaza** in **Potrditveno okno** postavljeni v eno vrstico (50:50)
+  - Način prikaza: zamenjali dropdown s tremi horizontalnimi radio pill gumbi (Avtomatsko / Vedno TV / Namizni)
+
+### Admin – Oblikovanje tab
+- **Spodnja vrstica – 1. vrstica**: Poravnava besedila premaknjena za barvo besedila → razporeditev 33:33:33 (Ozadje | Besedilo | Poravnava)
+- **Spodnja vrstica – 2. vrstica**: Padding zgoraj premaknjen na desno → razporeditev 33:33:33 (Velikost pisave | Padding L/D | Padding zgoraj)
+- **Predogled**: odstranjen vgrajen preview box, nadomestil ga gumb **Odpri predogled v novem oknu** — odpre odzivno okno (1280×720, nastavljiva velikost), kjer uporabnik testira skaliranje pisave
+
+### CSS / JS
+- `admin.css`: dodani stili za `.snipi-radio-pill`, `.snipi-radio-inline`, `.snipi-tv-option-block`, `.snipi-radio-label--block`
+- `admin-styling.css`: poenostavljen, odstranjena pravila za preview box
+- `admin-styling.js`: dodan handler za radio pill aktivni razred; predogled zdaj odpre `window.open()` popup namesto injiciranja CSS v vgrajen box
+
+
 ## [2.3.0] – 2025-03-06
 
 ### Admin – Nastavitve tab

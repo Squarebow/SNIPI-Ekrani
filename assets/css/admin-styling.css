@@ -1,30 +1,22 @@
 /**
- * SNIPI Ekrani – Admin Styling Tab CSS
- *
- * Styling za GUI elemente v Oblikovanje tabu:
- * - Sekcije z accordion toggle
- * - Color picker integracija (wp-color-picker/Iris)
- * - Range sliderji z vrednostjo
- * - Sublabeli znotraj sekcij
+ * SNIPI Ekrani – Admin Styling Tab CSS v2.3.1
  *
  * @package SNIPI_Ekrani
- * @since   2.3.0
  */
 
 /* ========================================================================
-   STYLE SEKCIJE (accordion)
+   STYLE SEKCIJA (accordion)
    ======================================================================== */
 
 .snipi-style-section {
 	margin-bottom: 24px;
 	border: 1px solid #c3c4c7;
-	border-radius: 6px;
-	background: #fff;
+	border-radius: 4px;
 	overflow: hidden;
 }
 
 .snipi-style-section--secondary {
-	border-color: #ddd;
+	border-color: #e5e5e5;
 	background: #fafafa;
 }
 
@@ -32,15 +24,15 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 14px 18px;
+	padding: 12px 18px;
 	background: #f6f7f7;
-	border-bottom: 1px solid #e5e5e5;
+	border-bottom: 1px solid #c3c4c7;
 	cursor: default;
-	user-select: none;
 }
 
 .snipi-style-section--secondary .snipi-style-section__header {
-	background: #f0f0f0;
+	background: #f0f0f1;
+	border-color: #e5e5e5;
 }
 
 .snipi-style-section__header h3 {
@@ -52,11 +44,7 @@
 	align-items: center;
 	gap: 8px;
 }
-
-.snipi-style-section__header h3 i {
-	color: #2271b1;
-	font-size: 14px;
-}
+.snipi-style-section__header h3 i { color: #2271b1; }
 
 .snipi-style-section__toggle {
 	background: none;
@@ -64,174 +52,132 @@
 	cursor: pointer;
 	padding: 4px 8px;
 	color: #646970;
-	font-size: 14px;
-	transition: color 0.15s;
-	display: flex;
-	align-items: center;
+	font-size: 12px;
+	border-radius: 3px;
+	transition: background 0.15s;
 }
-
-.snipi-style-section__toggle:hover {
-	color: #2271b1;
-}
-
-.snipi-toggle-icon {
-	font-size: 11px;
-	line-height: 1;
-}
+.snipi-style-section__toggle:hover { background: #e5e5e5; color: #1d2327; }
+.snipi-toggle-icon { display: inline-block; transition: none; }
 
 .snipi-style-section__body {
-	padding: 18px 18px 20px;
+	padding: 18px;
+	background: #fff;
 }
-
-/* Skrita sekcija */
-.snipi-style-section--collapsed .snipi-style-section__body {
-	display: none;
+.snipi-style-section--secondary .snipi-style-section__body {
+	background: #fafafa;
 }
-
-/* ========================================================================
-   SUBLABELI (podnaslovi znotraj sekcij)
-   ======================================================================== */
 
 .snipi-style-section__sublabel {
 	font-size: 12px;
 	font-weight: 600;
-	color: #646970;
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
-	margin: 0 0 8px;
+	color: #646970;
+	margin: 0 0 10px;
 }
-
-.snipi-style-section__sublabel i {
-	margin-right: 5px;
-	color: #2271b1;
-}
+.snipi-style-section__sublabel i { margin-right: 5px; }
 
 /* ========================================================================
-   COLOR PICKER (wp-color-picker / Iris override)
+   COLOR PICKER overrides
    ======================================================================== */
 
-/* Wrapper, ki ga ustvari Iris */
-.wp-picker-container {
+.snipi-style-section .wp-picker-container {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: 8px;
 	flex-wrap: wrap;
 }
 
-/* Gumb za barvo (barvni kvadratek) */
-.wp-color-result {
-	display: inline-flex !important;
-	align-items: center;
-	gap: 6px;
-	min-width: 90px;
+.snipi-style-section .wp-picker-container .wp-color-result {
+	min-width: 120px;
 }
 
-/* Popover okno color pickerja – rahlo omeji širino v admin kontekstu */
-.iris-picker {
+.snipi-style-section .iris-picker {
 	max-width: 220px !important;
 }
 
-/* Input za hex vrednost */
-.wp-picker-input-wrap input[type="text"].wp-color-picker {
-	width: 90px;
-}
-
 /* ========================================================================
-   RANGE SLIDERJI
+   RANGE SLIDER
    ======================================================================== */
 
-/* Vrednost poleg sliderja */
-.snipi-range-display {
-	font-size: 12px;
-	font-weight: 600;
-	color: #2271b1;
-	min-width: 36px;
-	display: inline-block;
-	text-align: right;
-}
-
-/* Slider - full width v stolpcu */
-input[type="range"].snipi-style-range {
+.snipi-style-range {
 	width: 100%;
 	max-width: 100%;
 	display: block;
-	margin-top: 8px;
+	margin-top: 4px;
 	accent-color: #2271b1;
-	cursor: pointer;
 }
 
-/* ========================================================================
-   SELECT DROPDOWN v styling GUI
-   ======================================================================== */
-
-.snipi-style-select {
-	min-width: 160px;
-	max-width: 100%;
+.snipi-range-display {
+	display: inline-block;
+	min-width: 40px;
+	text-align: right;
+	font-size: 12px;
+	font-weight: 600;
+	color: #2271b1;
+	margin-left: 8px;
 }
 
-/* ========================================================================
-   STYLING LABEL s prikazano vrednostjo
-   ======================================================================== */
-
-.snipi-style-section .snipi-label {
+/* Labela z range displayjem v isti vrstici */
+.snipi-field-col .snipi-label {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	gap: 4px;
 	width: 100%;
 }
 
 /* ========================================================================
-   PREDOGLED – live CSS injected tag indikator
+   PREDOGLED GUMB
    ======================================================================== */
 
-/* Animacija pri prvem nalaganju */
-.snipi-styling-preview {
-	transition: opacity 0.2s;
+.snipi-field-group #snipi_open_preview {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 18px;
+	font-size: 14px;
 }
-
-.snipi-styling-preview--loading {
-	opacity: 0.5;
-}
-
-/* ========================================================================
-   FONT FAMILY PREVIEW v dropdownu
-   ======================================================================== */
-
-#snipi_style_screen_font_family option {
+.snipi-field-group #snipi_open_preview i {
 	font-size: 13px;
 }
 
 /* ========================================================================
-   CSS EXAMPLES v pomoči
+   CSS EDITOR
    ======================================================================== */
 
-.snipi-css-examples h4 {
-	margin-top: 18px;
-	margin-bottom: 8px;
+.snipi-css-editor {
+	font-family: 'Courier New', Courier, monospace;
 	font-size: 13px;
-	color: #2271b1;
-}
-
-.snipi-css-examples pre {
+	line-height: 1.6;
+	border: 1px solid #8c8f94;
+	border-radius: 4px;
+	padding: 10px;
 	background: #1e1e1e;
 	color: #d4d4d4;
-	padding: 12px;
-	border-radius: 4px;
-	overflow-x: auto;
-	font-size: 12px;
-	line-height: 1.5;
+	tab-size: 4;
+	width: 100%;
+	box-sizing: border-box;
+	resize: vertical;
+	min-height: 180px;
+}
+.snipi-css-editor:focus {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+	outline: none;
 }
 
 /* ========================================================================
-   RESPONSIVE
+   CSS REFERENČNA TABELA
    ======================================================================== */
 
-@media (max-width: 900px) {
-	.snipi-style-section__body {
-		padding: 14px;
-	}
-
-	.iris-picker {
-		max-width: 200px !important;
-	}
+.snipi-css-reference { margin-top: 20px; }
+.snipi-css-reference h4 { margin-bottom: 10px; font-size: 13px; color: #1d2327; }
+.snipi-css-reference table { width: 100%; }
+.snipi-css-reference td code {
+	background: #f0f0f1;
+	padding: 2px 6px;
+	border-radius: 3px;
+	font-size: 12px;
+	color: #d63638;
 }
