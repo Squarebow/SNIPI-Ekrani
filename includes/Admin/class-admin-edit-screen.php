@@ -42,6 +42,14 @@ class SNIPI_Admin_Edit_Screen {
 			return;
 		}
 
+		// ── PREDOGLED v ločenem oknu ──────────────────────────────────────
+		// Ko je parameter snipi_preview=1, izrišemo samo vsebino ekrana
+		// (brez WP admin chrome-a) in izhod iz PHP-ja.
+		if ( ! empty( $_GET['snipi_preview'] ) ) {
+			self::render_preview_page( $post_id );
+			return;
+		}
+
 		$meta       = SNIPI_Admin_Meta::get_all( $post_id );
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'nastavitve';
 
@@ -312,5 +320,115 @@ class SNIPI_Admin_Edit_Screen {
 		echo '<div class="wrap"><div class="notice notice-error"><p>';
 		esc_html_e( 'Ekran ni bil najden. Preverite URL ali se vrnite na seznam ekranov.', 'snipi-ekrani' );
 		echo '</p></div></div>';
+	}
+
+	/**
+	 * Izriše minimalen full-page predogled ekrana (brez WP admin chrome-a).
+	 * Odpre se v ločenem oknu, velikost okna je nastavljiva.
+	 *
+	 * @param int $post_id  ID ekrana.
+	 * @return void
+	 */
+	protected static function render_preview_page( $post_id ) {
+		// Varnostni pregled nonce-a (opcijsko, saj je stran za prijavjene)
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_die( esc_html__( 'Nimate dovoljenja za ogled predogleda.', 'snipi-ekrani' ) );
+		}
+
+		// Prisilimo WP da izriše shortcode kot na frontend-u
+		// Skupaj s font-awesome in front CSS/JS odvisnostmi
+		$shortcode_output = do_shortcode( '[snipi_ekran id="' . intval( $post_id ) . '"]' );
+
+		// Zberemo vse enqueued skripte in stile
+		ob_start();
+		wp_head();
+		$head = ob_get_clean();
+
+		ob_start();
+		wp_footer();
+		$footer = ob_get_clean();
+
+		// Pridobimo morebitni styling CSS iz rendererja
+		$styling_css = '';
+		if ( class_exists( 'SNIPI_Renderer' ) && method_exists( 'SNIPI_Renderer', 'generate_styling_css' ) ) {
+			$styling_css = SNIPI_Renderer::generate_styling_css( $post_id );
+		}
+
+		$meta       = SNIPI_Admin_Meta::get_all( $post_id );
+		$screen_title = SNIPI_Admin_Meta::get_screen_title( $post_id );
+
+		?><!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+<meta charset="<?php bloginfo( 'charset' ); ?>">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><?php echo esc_html( $screen_title ); ?> – <?php esc_html_e( 'Predogled', 'snipi-ekrani' ); ?></title>
+<?php echo $head; // phpcs:ignore WordPress.Security.EscapeOutput ?>
+<style>
+/* Predogled stran – brez margine in scrollbar-a */
+html, body {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background: #000;
+	height: 100%;
+	width: 100%;
+}
+/* Toolbar za zapiranje predogleda */
+.snipi-preview-bar {
+	position: fixed;
+	top: 0; left: 0; right: 0;
+	height: 36px;
+	background: rgba(0,0,0,0.85);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 14px;
+	z-index: 9999;
+	font-family: system-ui, sans-serif;
+	font-size: 13px;
+	color: #ccc;
+}
+.snipi-preview-bar .snipi-preview-title { font-weight: 600; color: #fff; }
+.snipi-preview-bar .snipi-preview-hint  { font-size: 11px; opacity: 0.7; }
+.snipi-preview-bar button {
+	background: #c0392b;
+	border: none;
+	color: #fff;
+	padding: 4px 12px;
+	border-radius: 3px;
+	cursor: pointer;
+	font-size: 12px;
+}
+.snipi-preview-bar button:hover { background: #e74c3c; }
+/* Vsebina ekrana zapolni prostor pod toolbarom */
+.snipi-preview-content {
+	position: fixed;
+	top: 36px; left: 0; right: 0; bottom: 0;
+	overflow: hidden;
+}
+<?php echo wp_strip_all_tags( $styling_css ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+</style>
+</head>
+<body>
+
+<div class="snipi-preview-bar">
+	<span class="snipi-preview-title">
+		<?php echo esc_html( $screen_title ); ?> – <?php esc_html_e( 'Predogled', 'snipi-ekrani' ); ?>
+	</span>
+	<span class="snipi-preview-hint">
+		<?php esc_html_e( 'Povlecite rob okna, da preizkusite skaliranje pisave.', 'snipi-ekrani' ); ?>
+	</span>
+	<button onclick="window.close()">✕ <?php esc_html_e( 'Zapri', 'snipi-ekrani' ); ?></button>
+</div>
+
+<div class="snipi-preview-content">
+	<?php echo $shortcode_output; // phpcs:ignore WordPress.Security.EscapeOutput ?>
+</div>
+
+<?php echo $footer; // phpcs:ignore WordPress.Security.EscapeOutput ?>
+</body>
+</html><?php
+		exit;
 	}
 }

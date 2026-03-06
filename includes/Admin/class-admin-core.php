@@ -233,7 +233,7 @@ class SNIPI_Admin_Core {
 			'SNIPI_ADMIN',
 			array(
 				'preview_nonce' => wp_create_nonce( 'snipi_preview_nonce' ),
-				'rest_url'      => esc_url_raw( rest_url( 'snipi/v1/ekrani/preview' ) ),
+				'admin_url'     => esc_url_raw( admin_url( 'edit.php' ) ),
 				'post_id'       => $post_id,
 			)
 		);

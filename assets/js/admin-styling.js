@@ -100,50 +100,25 @@ jQuery( function ( $ ) {
 	   ══════════════════════════════════════════════════════════ */
 
 	$( document ).on( 'click', '#snipi_open_preview', function () {
-		var $btn    = $( this );
-		var postId  = $btn.data( 'preview-post' );
-		var nonce   = $btn.data( 'nonce' );
+		var postId = $( this ).data( 'preview-post' );
+		var nonce  = $( this ).data( 'nonce' );
 
-		// Zberemo trenutne vrednosti GUI obrazca za barve, pisave, sliderje
-		var styleData = collectStyleData();
-
-		// Zgradimo URL z RESTom — predamo post_id in nonce
-		var restUrl = $btn.data( 'rest-url' ) || '';
-		if ( ! restUrl ) { return; }
-
-		// Pošljemo podatke na REST endpoint in odpremo okno s HTMLjem
-		var previewParams = new URLSearchParams( {
-			post_id : postId,
-			nonce   : nonce,
-			_ts     : Date.now()
-		} );
-
-		// Zgradimo URL za inline predogled stran (WordPress admin)
-		var adminBase = ( typeof SNIPI_ADMIN !== 'undefined' && SNIPI_ADMIN.admin_url )
-			? SNIPI_ADMIN.admin_url
-			: '';
-
-		if ( adminBase ) {
-			var previewUrl = adminBase + 'edit.php?post_type=ekran&page=snipi-edit-screen'
-				+ '&post=' + encodeURIComponent( postId )
-				+ '&snipi_preview=1'
-				+ '&nonce=' + encodeURIComponent( nonce );
-
-			var win = window.open(
-				previewUrl,
-				'snipi_preview_' + postId,
-				'width=1280,height=720,resizable=yes,scrollbars=yes,menubar=no,toolbar=no,location=no,status=no'
-			);
-			if ( win ) { win.focus(); }
+		if ( ! postId || typeof SNIPI_ADMIN === 'undefined' || ! SNIPI_ADMIN.admin_url ) {
+			alert( 'Predogled ni na voljo.' );
 			return;
 		}
 
-		// Fallback: odpre REST URL direktno
-		var url = restUrl + '?' + previewParams.toString();
+		var previewUrl = SNIPI_ADMIN.admin_url
+			+ '?post_type=ekran'
+			+ '&page=snipi-edit-screen'
+			+ '&post=' + encodeURIComponent( postId )
+			+ '&snipi_preview=1'
+			+ '&nonce=' + encodeURIComponent( nonce );
+
 		var win = window.open(
-			url,
+			previewUrl,
 			'snipi_preview_' + postId,
-			'width=1280,height=720,resizable=yes,scrollbars=yes,menubar=no,toolbar=no'
+			'width=1280,height=720,resizable=yes,scrollbars=no,menubar=no,toolbar=no,location=no,status=no'
 		);
 		if ( win ) { win.focus(); }
 	} );
