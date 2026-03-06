@@ -1,6 +1,6 @@
 # SNIPI Ekrani
 
-**Version:** 2.3.0  
+**Version:** 2.3.3  
 **Author:** Aleš Lednik (SquareBow)  
 **Requires WordPress:** 6.7  
 **Tested up to:** 6.7  
@@ -350,7 +350,6 @@ For custom development or support: [https://squarebow.com](https://squarebow.com
 - **Developer:** Aleš Lednik
 - **Company:** SquareBow
 - **API Integration:** Snipi CRM System
-- **v1.2.0 Refactoring:** AI Assistant Claude (Anthropic)
 
 ---
 
