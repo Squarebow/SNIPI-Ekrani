@@ -166,7 +166,7 @@ class SNIPI_Admin_Edit_Screen {
 				<table class="snipi-info-table">
 					<tr>
 						<td><?php esc_html_e( 'Dogodki danes:', 'snipi-ekrani' ); ?></td>
-						<td><strong><?php echo intval( $ev['total'] ); ?></strong></td>
+						<td><span class="snipi-badge snipi-badge--total"><?php echo intval( $ev['total'] ); ?></span></td>
 					</tr>
 					<tr>
 						<td style="padding-left:12px;color:#646970;"><?php esc_html_e( '↳ končani:', 'snipi-ekrani' ); ?></td>

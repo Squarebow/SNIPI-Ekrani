@@ -302,9 +302,10 @@ p.description {
 	font-weight: 600;
 	line-height: 1.5;
 }
-.snipi-badge--on  { background: #d1f0d1; color: #1a6e1a; }
-.snipi-badge--off { background: #f0f0f0; color: #646970; }
+.snipi-badge--on      { background: #d1f0d1; color: #1a6e1a; }
+.snipi-badge--off     { background: #f0f0f0; color: #646970; }
 .snipi-badge--neutral { background: #fff3cd; color: #664d03; font-weight: 500; vertical-align: middle; }
+.snipi-badge--total   { background: #e8eaf0; color: #1d2327; font-weight: 700; }
 
 /* ========================================================================
    INFO BOX (sidebar)
