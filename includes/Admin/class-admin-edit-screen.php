@@ -133,20 +133,13 @@ class SNIPI_Admin_Edit_Screen {
 				admin_url( 'edit.php' )
 			);
 			$is_active = ( $active_tab === $tab_key );
-
-			if ( $is_active ) {
-				// input[submit] → identičen stil kot "Shrani spremembe"
-				printf(
-					'<input type="button" class="button button-primary snipi-tab-btn" value="%s" disabled />',
-					esc_attr( $tab_label )
-				);
-			} else {
-				printf(
-					'<a href="%s" class="button button-secondary snipi-tab-btn">%s</a>',
-					esc_url( $tab_url ),
-					esc_html( $tab_label )
-				);
-			}
+			$class     = $is_active ? 'snipi-tab-btn snipi-tab-btn--active' : 'snipi-tab-btn';
+			printf(
+				'<a href="%s" class="%s">%s</a>',
+				esc_url( $tab_url ),
+				esc_attr( $class ),
+				esc_html( $tab_label )
+			);
 		}
 		echo '</div>';
 	}

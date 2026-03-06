@@ -5,7 +5,7 @@
  */
 
 /* ========================================================================
-   TAB GUMBI (namesto nav-tab-wrapper)
+   TAB GUMBI
    ======================================================================== */
 
 .snipi-tab-nav {
@@ -14,11 +14,22 @@
 	margin: 16px 0 24px;
 }
 .snipi-tab-btn {
-	min-width: 120px;
+	display: inline-block;
+	padding: 6px 20px;
+	font-size: 14px;
+	font-weight: 500;
+	text-decoration: none;
+	border-radius: 3px;
+	border: 1px solid #2271b1;
+	color: #2271b1;
+	background: #fff;
+	line-height: 2;
 }
-.snipi-tab-btn[disabled] {
-	opacity: 1 !important;  /* WP disabled stili znižajo opacity – ohranimo polno barvo */
+.snipi-tab-btn--active {
+	background: #2271b1;
+	color: #fff;
 	cursor: default;
+	pointer-events: none;
 }
 
 /* ========================================================================
