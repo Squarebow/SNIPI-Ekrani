@@ -77,10 +77,8 @@ class SNIPI_Admin_Core {
 	 * @return void
 	 */
 	public static function register_menu() {
-		// Registriramo stran brez vidnega menijskega vnosa (parent = null).
-		// Redirect iz standardnega WP edit screena deluje normalno.
 		add_submenu_page(
-			null,
+			'edit.php?post_type=ekran',
 			'Uredi ekran',
 			'Uredi ekran',
 			'edit_posts',
