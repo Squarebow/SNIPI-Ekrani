@@ -1,6 +1,6 @@
 # SNIPI Ekrani
 
-**Version:** 2.2.0  
+**Version:** 2.3.0  
 **Author:** Aleš Lednik (SquareBow)  
 **Requires WordPress:** 6.7  
 **Tested up to:** 6.7  
