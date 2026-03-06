@@ -1,5 +1,40 @@
 # SNIPI Ekrani - Changelog
 
+## [2.3.0] – 2025-03-06
+
+### Admin – Nastavitve tab
+- **Ime ekrana + API ključ** prikazana v eni vrstici (50:50)
+- **Dodatne možnosti** premaknjene takoj za kratko kodo
+- Polja Vrstic / Interval / Prihodnji dnevi v razporeditvi 33:33:33 z opisom pod vsakim poljem
+- **Vikend način** in **Prikaži stolpec PROGRAM** v eni vrstici (50:50)
+- **Informacije o ekranu** (info box) premaknjene na vrh desnega stolpca nad navodila
+- Dodano nastavitev **Skaliranje pisave** (Samodejno fill / Prosto)
+- **Spodnja vrstica**: dodan radio switch Samodejno / Fiksna višina z px sliderjem (40–200px)
+
+### Admin – Oblikovanje tab (novo)
+- Zamenjali smo golo CSS polje s **4-sekcijskim GUI**: Cel zaslon, Glava, Tabela, Spodnja vrstica
+- **Color picker** (wp-color-picker / Iris) za vse barvne lastnosti
+- **Range sliderji** z prikazano vrednostjo za pisave (70–150%), padding (px)
+- **Dropdown** za izbiro pisave (8 možnosti) in poravnavo besedila
+- **Toggle** za live indikator (prikaži/skrij)
+- **Custom CSS** ohranjen kot accordion sekcija za napredne uporabnike
+- Živi predogled CSS se injicira brez shranjevanja forme
+
+### Frontend – font scaling
+- Nov način **fill**: pisava vrstic se skalira (CSS `--snipi-row-scale`) da `rowsPerPage` vrstic vedno zapolni razpoložljivi zaslon
+- Nov način **free**: ohrani obstoječe vedenje (privzeta pisava, prikaži kolikor vrstic se ujame)
+
+### Frontend – footer
+- **ResizeObserver** na spodnji vrstici: pri vsaki spremembi višine se tabela samodejno preračuna
+- Podpora za **fiksno višino footerja**: `footerHeightMode=fixed` rezervira točno toliko px prostora
+- Popravek: `totalPages` se izračuna z enim korakom – odpravljena možnost zamika paginacije pri prvem renderu
+
+### Interno
+- `class-admin-meta.php`: nova meta polja `_snipi_row_scale_mode`, `_snipi_footer_height_mode`, `_snipi_footer_fixed_height`, `_snipi_styling_data` (JSON)
+- `class-renderer.php`: nova metoda `generate_styling_css()` – generira scoped CSS iz GUI podatkov
+- `class-shortcode.php`: injicira styling CSS + posreduje nova JS konfig polja
+- `class-admin-core.php`: doda `wp-color-picker` v enqueue
+
 ## v2.2.0 (15. februar 2026) - TV DETECTION & OPTIMIZATION
 
 ### ✨ Nove funkcionalnosti

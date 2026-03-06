@@ -7,7 +7,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * SNIPI_Shortcode
  * Shortcode: [snipi_ekran id="123"]
  */
-
 class SNIPI_Shortcode {
 
 	public static function init() {
@@ -22,9 +21,7 @@ class SNIPI_Shortcode {
 	 */
 	public static function render( $atts ) {
 		$atts = shortcode_atts(
-			array(
-				'id' => 0,
-			),
+			array( 'id' => 0 ),
 			$atts,
 			'snipi_ekran'
 		);
@@ -34,7 +31,7 @@ class SNIPI_Shortcode {
 			return '';
 		}
 
-		// Front assets.
+		// Front assets
 		wp_enqueue_style(
 			'snipi-front-css',
 			SNIPI_EKRANI_URL . 'assets/css/front.css',
@@ -69,49 +66,62 @@ class SNIPI_Shortcode {
 			);
 
 			$tv_override = get_post_meta( $post_id, '_snipi_tv_mode_override', true ) ?: 'auto';
-			$tv_confirm = get_post_meta( $post_id, '_snipi_tv_confirm_dialog', true );
+			$tv_confirm  = get_post_meta( $post_id, '_snipi_tv_confirm_dialog', true );
 
 			wp_localize_script(
 				'snipi-tv-js',
 				'snipiTVConfig',
 				array(
-					'screenId'           => $post_id,
-					'enableTVDetection'  => $enable_tv !== '0',
-					'tvModeOverride'     => $tv_override,
-					'tvConfirmDialog'    => $tv_confirm !== '0',
+					'screenId'          => $post_id,
+					'enableTVDetection' => $enable_tv !== '0',
+					'tvModeOverride'    => $tv_override,
+					'tvConfirmDialog'   => $tv_confirm !== '0',
 				)
 			);
 		}
 
-		// Nastavitve za JS (REST root, nastavitve, URL vtičnika).
-		$rows_per_page     = get_post_meta( $post_id, '_snipi_rows_per_page', true ) ?: 8;
-		$autoplay_interval = get_post_meta( $post_id, '_snipi_autoplay_interval', true ) ?: 10;
-		$show_program      = get_post_meta( $post_id, '_snipi_show_program_column', true ) === '1';
+		// Pridobi nastavitve iz meta
+		$rows_per_page      = get_post_meta( $post_id, '_snipi_rows_per_page', true ) ?: 8;
+		$autoplay_interval  = get_post_meta( $post_id, '_snipi_autoplay_interval', true ) ?: 10;
+		$show_program       = get_post_meta( $post_id, '_snipi_show_program_column', true ) === '1';
+		$row_scale_mode     = get_post_meta( $post_id, '_snipi_row_scale_mode', true ) ?: 'fill';
+		$footer_height_mode = get_post_meta( $post_id, '_snipi_footer_height_mode', true ) ?: 'auto';
+		$footer_fixed_h     = max( 40, min( 200, intval( get_post_meta( $post_id, '_snipi_footer_fixed_height', true ) ?: 80 ) ) );
 
 		wp_localize_script(
 			'snipi-front-js',
 			'SNIPI_FRONT_REST',
 			array(
-				'rest_root'        => esc_url_raw( rest_url() ),
-				'post_id'          => $post_id,
-				'rowsPerPage'      => intval( $rows_per_page ),
-				'autoplayInterval' => intval( $autoplay_interval ),
-				'noEventsMessage'  => __( 'Danes ni predvidenih izobraževanj.', 'snipi-ekrani' ),
+				'rest_root'         => esc_url_raw( rest_url() ),
+				'post_id'           => $post_id,
+				'rowsPerPage'       => intval( $rows_per_page ),
+				'autoplayInterval'  => intval( $autoplay_interval ),
 				'showProgramColumn' => $show_program,
-				// Osnovni URL vtičnika za uporabo v front.js (npr. za Live.svg).
-				'pluginUrl'        => trailingslashit( SNIPI_EKRANI_URL ),
+				// Skaliranje pisave: 'fill' = zapolni zaslon | 'free' = prosto
+				'rowScaleMode'      => ( 'free' === $row_scale_mode ) ? 'free' : 'fill',
+				// Višina spodnje vrstice
+				'footerHeightMode'  => ( 'fixed' === $footer_height_mode ) ? 'fixed' : 'auto',
+				'footerFixedHeight' => $footer_fixed_h,
+				'noEventsMessage'   => __( 'Danes ni predvidenih izobraževanj.', 'snipi-ekrani' ),
+				// URL vtičnika za Live.svg in ostale assete
+				'pluginUrl'         => trailingslashit( SNIPI_EKRANI_URL ),
 			)
 		);
 
+		// Styling CSS iz GUI nastavitev (scoped na snipi--screen-{post_id})
+		$styling_css = SNIPI_Renderer::generate_styling_css( $post_id );
+		if ( ! empty( $styling_css ) ) {
+			wp_add_inline_style( 'snipi-front-css', $styling_css );
+		}
+
+		// Custom CSS (textarea) – aplicira se po styling CSS
 		$custom_css = get_post_meta( $post_id, '_snipi_custom_css', true );
 		if ( is_string( $custom_css ) && '' !== trim( $custom_css ) ) {
 			wp_add_inline_style( 'snipi-front-css', sanitize_textarea_field( $custom_css ) );
 		}
 
-		// Initial server-side shell.
-		$html = SNIPI_Renderer::render_front_shell( $post_id );
-
-		return $html;
+		// Inicializacijski HTML shell
+		return SNIPI_Renderer::render_front_shell( $post_id );
 	}
 }
 

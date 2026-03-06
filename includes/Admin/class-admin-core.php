@@ -1,19 +1,18 @@
 <?php
 /**
  * SNIPI Admin Core
- * 
+ *
  * Jedro admin funkcionalnosti za SNIPI Ekrani plugin.
  * Odgovoren za:
  * - Registracijo Custom Post Type (CPT) 'ekran'
  * - Registracijo admin menijev in strani
  * - Enqueue admin CSS in JS datotek
  * - Redirect logiko za edit povezave
- * 
+ *
  * @package SNIPI_Ekrani
- * @since 1.2.0
+ * @since   1.2.0
  */
 
-// Prepoved direktnega dostopa
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -21,40 +20,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 class SNIPI_Admin_Core {
 
 	/**
-	 * Inicializacija - registracija vseh WordPress hookov
-	 * 
+	 * Inicializacija – registracija vseh WordPress hookov
+	 *
 	 * @return void
 	 */
 	public static function init() {
-		// Registracija Custom Post Type ob init
-		add_action( 'init', array( __CLASS__, 'register_cpt' ) );
-		
-		// Registracija admin menu strani
-		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
-		
-		// Redirect iz standardnega WP edit screena na našo custom stran
-		add_action( 'admin_init', array( __CLASS__, 'maybe_redirect_to_custom_edit' ) );
-		
-		// Filter za spreminjanje edit linkov
-		add_filter( 'get_edit_post_link', array( __CLASS__, 'filter_edit_link' ), 10, 3 );
-		
-		// Enqueue admin assetov (CSS, JS)
-		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_assets' ) );
-		
-		// WordPress native success notice po shranjevanju
-		add_action( 'admin_notices', array( __CLASS__, 'render_success_notice' ) );
+		add_action( 'init',                    array( __CLASS__, 'register_cpt' ) );
+		add_action( 'admin_menu',              array( __CLASS__, 'register_menu' ) );
+		add_action( 'admin_init',              array( __CLASS__, 'maybe_redirect_to_custom_edit' ) );
+		add_filter( 'get_edit_post_link',      array( __CLASS__, 'filter_edit_link' ), 10, 3 );
+		add_action( 'admin_enqueue_scripts',   array( __CLASS__, 'enqueue_admin_assets' ) );
+		add_action( 'admin_notices',           array( __CLASS__, 'render_success_notice' ) );
 	}
 
 	/**
 	 * Registracija Custom Post Type 'ekran'
-	 * 
-	 * Registrira CPT za upravljanje SNIPI ekranov.
-	 * Vsak ekran predstavlja en zaslon/urnik z lastnim API ključem in nastavitvami.
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function register_cpt() {
-		// Naslovi za CPT v slovenščini
 		$labels = array(
 			'name'               => 'SNIPI ekrani',
 			'singular_name'      => 'Ekran',
@@ -71,60 +55,48 @@ class SNIPI_Admin_Core {
 			'all_items'          => 'Vsi ekrani',
 		);
 
-		// Argumenti za registracijo CPT
 		$args = array(
 			'labels'        => $labels,
-			'public'        => false,        // Ne prikazuj v frontend navigaciji
-			'show_ui'       => true,         // Prikaži v WP adminu
-			'show_in_menu'  => true,         // Prikaži v glavnem meniju
-			'menu_position' => 25,           // Pozicija v meniju (pod Comments)
-			'menu_icon'     => 'dashicons-screenoptions', // Ikona ekrana
-			'supports'      => array( 'title' ),          // Samo naslov, brez vsebine
-			'has_archive'   => false,        // Brez arhivske strani
-			'rewrite'       => false,        // Brez custom URL strukture
-			'show_in_rest'  => false,        // Brez Gutenberg editorja
+			'public'        => false,
+			'show_ui'       => true,
+			'show_in_menu'  => true,
+			'menu_position' => 25,
+			'menu_icon'     => 'dashicons-screenoptions',
+			'supports'      => array( 'title' ),
+			'has_archive'   => false,
+			'rewrite'       => false,
+			'show_in_rest'  => false,
 		);
 
-		// Registracija CPT
 		register_post_type( 'ekran', $args );
 	}
 
 	/**
 	 * Registracija admin menija
-	 * 
-	 * Kreira custom submenu stran pod "SNIPI ekrani" menijem.
-	 * Uporabljamo submenu namesto meta boxov za boljšo preglednost.
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function register_menu() {
-		// Glavna edit stran za posamezen ekran
-		// Skrita iz menija (dostopna samo preko edit linkov)
 		add_submenu_page(
-			'edit.php?post_type=ekran',           // Parent page
-			'Uredi ekran',                         // Page title
-			'Uredi ekran',                         // Menu title
-			'edit_posts',                          // Capability
-			'snipi-edit-screen',                   // Menu slug
-			array( 'SNIPI_Admin_Edit_Screen', 'render' ) // Callback funkcija
+			'edit.php?post_type=ekran',
+			'Uredi ekran',
+			'Uredi ekran',
+			'edit_posts',
+			'snipi-edit-screen',
+			array( 'SNIPI_Admin_Edit_Screen', 'render' )
 		);
 	}
 
 	/**
 	 * Redirect iz standardnega WP edit.php na našo custom edit stran
-	 * 
-	 * Ko uporabnik klikne "Uredi" pri ekranu, ga preusmerimo na našo
-	 * custom admin stran namesto standardnega WP post editorja.
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function maybe_redirect_to_custom_edit() {
-		// Preveri da smo v adminu
 		if ( ! is_admin() ) {
 			return;
 		}
 
-		// Preveri da je to edit akcija
 		if ( ! isset( $_GET['post'], $_GET['action'] ) || 'edit' !== $_GET['action'] ) {
 			return;
 		}
@@ -132,46 +104,40 @@ class SNIPI_Admin_Core {
 		$post_id = absint( $_GET['post'] );
 		$post    = get_post( $post_id );
 
-		// Preveri da je to naš CPT
 		if ( ! $post || 'ekran' !== $post->post_type ) {
 			return;
 		}
 
-		// Preveri da ni že redirect (prepreči loop)
 		if ( isset( $_GET['page'] ) ) {
 			return;
 		}
 
-		// Redirect na našo custom edit stran
 		$redirect_url = self::get_edit_screen_url( $post_id );
 		wp_safe_redirect( $redirect_url );
 		exit;
 	}
 
 	/**
-	 * Filter za edit linke - spremeni v linke na našo custom stran
-	 * 
-	 * @param string $link    Originalni edit link
-	 * @param int    $post_id Post ID
-	 * @param string $context Kontekst (display ali ne)
-	 * @return string Modificiran link
+	 * Filter za edit linke
+	 *
+	 * @param string $link
+	 * @param int    $post_id
+	 * @param string $context
+	 * @return string
 	 */
 	public static function filter_edit_link( $link, $post_id, $context ) {
 		$post = get_post( $post_id );
-		
-		// Če je to naš CPT, vrni link na našo edit stran
 		if ( $post && 'ekran' === $post->post_type ) {
 			return self::get_edit_screen_url( $post_id );
 		}
-		
 		return $link;
 	}
 
 	/**
-	 * Generira URL za edit screen določenega ekrana
-	 * 
-	 * @param int $post_id Post ID ekrana
-	 * @return string URL do edit screena
+	 * Generira URL za edit screen
+	 *
+	 * @param int $post_id
+	 * @return string
 	 */
 	public static function get_edit_screen_url( $post_id ) {
 		return add_query_arg(
@@ -186,10 +152,9 @@ class SNIPI_Admin_Core {
 
 	/**
 	 * Enqueue admin CSS in JavaScript datotek
-	 * 
+	 *
 	 * Naloži vse potrebne admin assete samo na SNIPI admin straneh.
-	 * To zagotavlja optimalno hitrost - asseti se ne naložijo nepotrebno.
-	 * 
+	 *
 	 * @param string $hook Current admin page hook
 	 * @return void
 	 */
@@ -201,18 +166,16 @@ class SNIPI_Admin_Core {
 			return;
 		}
 
-		// Določi ali smo na SNIPI strani
 		$screen_page   = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
 		$is_snipi_page = ( 'snipi-edit-screen' === $screen_page );
 		$is_ekran_cpt  = ( 'ekran' === $post_type );
 		$is_new_ekran  = ( 'post-new.php' === $pagenow && isset( $_GET['post_type'] ) && 'ekran' === $_GET['post_type'] );
 
-		// Naloži assete samo na relevantnih straneh
 		if ( ! $is_snipi_page && ! $is_ekran_cpt && ! $is_new_ekran ) {
 			return;
 		}
 
-		// FontAwesome 6 CDN - ikone namesto emojijev
+		// FontAwesome 6 CDN
 		wp_enqueue_style(
 			'fontawesome',
 			'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
@@ -220,7 +183,11 @@ class SNIPI_Admin_Core {
 			'6.4.0'
 		);
 
-		// CSS - admin styling
+		// WordPress color picker (Iris) – za styling GUI
+		wp_enqueue_style( 'wp-color-picker' );
+		wp_enqueue_script( 'wp-color-picker' );
+
+		// Admin CSS
 		wp_enqueue_style(
 			'snipi-admin-css',
 			SNIPI_EKRANI_URL . 'assets/css/admin.css',
@@ -228,36 +195,36 @@ class SNIPI_Admin_Core {
 			snipi_ekrani_asset_version( 'assets/css/admin.css' )
 		);
 
-		// CSS - styling page specific (color pickers, preview)
+		// Styling page CSS
 		wp_enqueue_style(
 			'snipi-admin-styling-css',
 			SNIPI_EKRANI_URL . 'assets/css/admin-styling.css',
-			array(),
+			array( 'wp-color-picker' ),
 			snipi_ekrani_asset_version( 'assets/css/admin-styling.css' )
 		);
 
-		// WordPress media uploader (za logo upload)
+		// WordPress media uploader
 		wp_enqueue_media();
 
-		// JavaScript - admin functionality
+		// Admin JS (vanilla)
 		wp_enqueue_script(
 			'snipi-admin-js',
 			SNIPI_EKRANI_URL . 'assets/js/admin.js',
 			array(),
 			snipi_ekrani_asset_version( 'assets/js/admin.js' ),
-			true // V footerju
+			true
 		);
 
-		// JavaScript - styling page functionality
+		// Styling JS (jQuery + wp-color-picker)
 		wp_enqueue_script(
 			'snipi-admin-styling-js',
 			SNIPI_EKRANI_URL . 'assets/js/admin-styling.js',
-			array(),
+			array( 'jquery', 'wp-color-picker' ),
 			snipi_ekrani_asset_version( 'assets/js/admin-styling.js' ),
-			true // V footerju
+			true
 		);
 
-		// Localize script - pošlji podatke v JavaScript
+		// Localize admin JS
 		$post_id = isset( $_GET['post'] ) ? absint( $_GET['post'] ) : 0;
 		wp_localize_script(
 			'snipi-admin-js',
@@ -271,36 +238,28 @@ class SNIPI_Admin_Core {
 	}
 
 	/**
-	 * Prikaže WordPress native success notice po shranjevanju
-	 * 
-	 * Uporabnik vidi zeleno obvestilo "Nastavitve so bile shranjene"
-	 * po uspešnem shranjevanju nastavitev ekrana.
-	 * 
+	 * WordPress native success notice po shranjevanju
+	 *
 	 * @return void
 	 */
 	public static function render_success_notice() {
-		// Preveri da smo v adminu
 		if ( ! is_admin() ) {
 			return;
 		}
 
-		// Preveri da smo na SNIPI strani
 		$screen_page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
 		if ( 'snipi-edit-screen' !== $screen_page ) {
 			return;
 		}
 
-		// Preveri da je bil setiran 'updated' parameter
 		if ( ! isset( $_GET['updated'] ) || ! absint( $_GET['updated'] ) ) {
 			return;
 		}
 
-		// Prikaži success notice
 		echo '<div class="notice notice-success is-dismissible">';
 		echo '<p>' . esc_html__( 'Nastavitve so bile uspešno shranjene.', 'snipi-ekrani' ) . '</p>';
 		echo '</div>';
 	}
 }
 
-// Inicializacija razreda
 SNIPI_Admin_Core::init();
