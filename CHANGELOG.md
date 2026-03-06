@@ -1,5 +1,24 @@
 # SNIPI Ekrani - Changelog
 
+---
+
+## [2.3.4] – 2026-03-06
+
+### Izboljšave
+- **Predogled**: namesto WP admin chrome-a vtičnik zdaj poišče objavljeno WordPress stran, ki vsebuje shortcode tega ekrana (`LIKE '%[snipi_ekran id="X"]%'`), in jo odpre direktno v ločenem oknu — predogled je identičen prikazu na TV zaslonu
+- Če shortcode še ni vstavljen v nobeno stran, gumb prikaže obvestilo z navodilom
+
+## [2.3.3] – 2026-03-06
+
+### Popravki
+- **Predogled**: popravljena napaka `rest_no_route` (404) — gumb je napačno klical neobstoječ REST endpoint; zamenjano z WP admin URL pristopom, ki odpre stran prek `render_preview_page()` znotraj WP admin konteksta
+
+## [2.3.2] – 2026-03-06
+
+### Popravki
+- **Admin meni**: odstranjen vnos "Uredi ekran" iz stranskega menija — stran je še vedno dostopna prek redirecta iz seznama ekranov, le brez odvečnega menijskega vnosa
+- **Live ikona**: povečana na 34px (prej 20px), poravnana na desni rob časovne celice z ustreznimi odmiki, dodana utripajoča animacija (`@keyframes snipi-pulse`)
+
 ## [2.3.1] – 2026-03-06
 
 ### Admin – Nastavitve tab
@@ -21,7 +40,6 @@
 - `admin.css`: dodani stili za `.snipi-radio-pill`, `.snipi-radio-inline`, `.snipi-tv-option-block`, `.snipi-radio-label--block`
 - `admin-styling.css`: poenostavljen, odstranjena pravila za preview box
 - `admin-styling.js`: dodan handler za radio pill aktivni razred; predogled zdaj odpre `window.open()` popup namesto injiciranja CSS v vgrajen box
-
 
 ## [2.3.0] – 2025-03-06
 

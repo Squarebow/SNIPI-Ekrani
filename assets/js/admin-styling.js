@@ -96,31 +96,38 @@ jQuery( function ( $ ) {
 	} );
 
 	/* ══════════════════════════════════════════════════════════
-	   PREDOGLED – odpri popup okno
+	   PREDOGLED – odpri frontend stran ali prikaži navodilo
 	   ══════════════════════════════════════════════════════════ */
 
 	$( document ).on( 'click', '#snipi_open_preview', function () {
 		var postId = $( this ).data( 'preview-post' );
-		var nonce  = $( this ).data( 'nonce' );
 
-		if ( ! postId || typeof SNIPI_ADMIN === 'undefined' || ! SNIPI_ADMIN.admin_url ) {
-			alert( 'Predogled ni na voljo.' );
-			return;
+		if ( typeof SNIPI_ADMIN === 'undefined' ) { return; }
+
+		var pageUrl = SNIPI_ADMIN.preview_page_url || '';
+
+		if ( pageUrl ) {
+			// Odpremo dejansko frontend stran ki vsebuje shortcode
+			var win = window.open(
+				pageUrl,
+				'snipi_preview_' + postId,
+				'width=1280,height=720,resizable=yes,scrollbars=yes,menubar=no,toolbar=no,location=yes,status=no'
+			);
+			if ( win ) { win.focus(); }
+		} else {
+			// Shortcode ni vstavljen v nobeno stran – pokažemo navodilo
+			$( '#snipi-preview-notice' ).remove();
+			var $notice = $(
+				'<div id="snipi-preview-notice" style="'
+				+ 'margin-top:12px;padding:12px 16px;background:#fff3cd;border:1px solid #ffc107;'
+				+ 'border-radius:4px;font-size:13px;line-height:1.5;">'
+				+ '<strong>Predogled ni mogoč:</strong> Ta ekran še ni vstavljen v nobeno objavljeno stran ali prispevek. '
+				+ 'Kopirajte kratko kodo iz zavihka <em>Nastavitve</em> in jo prilepite v stran, '
+				+ 'nato se vrnite in poskusite znova.'
+				+ '</div>'
+			);
+			$( '#snipi_open_preview' ).after( $notice );
 		}
-
-		var previewUrl = SNIPI_ADMIN.admin_url
-			+ '?post_type=ekran'
-			+ '&page=snipi-edit-screen'
-			+ '&post=' + encodeURIComponent( postId )
-			+ '&snipi_preview=1'
-			+ '&nonce=' + encodeURIComponent( nonce );
-
-		var win = window.open(
-			previewUrl,
-			'snipi_preview_' + postId,
-			'width=1280,height=720,resizable=yes,scrollbars=no,menubar=no,toolbar=no,location=no,status=no'
-		);
-		if ( win ) { win.focus(); }
 	} );
 
 	/* ══════════════════════════════════════════════════════════

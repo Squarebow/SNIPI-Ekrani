@@ -228,15 +228,60 @@ class SNIPI_Admin_Core {
 
 		// Localize admin JS
 		$post_id = isset( $_GET['post'] ) ? absint( $_GET['post'] ) : 0;
+
+		// Poiščemo WP stran, ki vsebuje shortcode tega ekrana
+		$preview_page_url = '';
+		if ( $post_id ) {
+			$preview_page_url = self::find_shortcode_page_url( $post_id );
+		}
+
 		wp_localize_script(
 			'snipi-admin-js',
 			'SNIPI_ADMIN',
 			array(
-				'preview_nonce' => wp_create_nonce( 'snipi_preview_nonce' ),
-				'admin_url'     => esc_url_raw( admin_url( 'edit.php' ) ),
-				'post_id'       => $post_id,
+				'preview_nonce'    => wp_create_nonce( 'snipi_preview_nonce' ),
+				'admin_url'        => esc_url_raw( admin_url( 'edit.php' ) ),
+				'post_id'          => $post_id,
+				'preview_page_url' => $preview_page_url,
 			)
 		);
+	}
+
+	/**
+	 * Poišče URL WordPress strani, ki vsebuje shortcode [snipi_ekran id="POST_ID"].
+	 *
+	 * @param int $post_id  ID ekrana.
+	 * @return string  URL strani ali prazen niz, če stran ni najdena.
+	 */
+	protected static function find_shortcode_page_url( $post_id ) {
+		$shortcode_pattern = '[snipi_ekran id="' . intval( $post_id ) . '"]';
+
+		$pages = get_posts( array(
+			'post_type'      => array( 'page', 'post' ),
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			's'              => $shortcode_pattern,
+			'fields'         => 'ids',
+		) );
+
+		if ( empty( $pages ) ) {
+			// Poskusimo z WP_Query za natančnejše iskanje (s= ni vedno zanesljivo)
+			global $wpdb;
+			$like = '%' . $wpdb->esc_like( $shortcode_pattern ) . '%';
+			$page_id = $wpdb->get_var( $wpdb->prepare(
+				"SELECT ID FROM {$wpdb->posts}
+				 WHERE post_status = 'publish'
+				   AND post_content LIKE %s
+				 LIMIT 1",
+				$like
+			) );
+			if ( $page_id ) {
+				return get_permalink( intval( $page_id ) ) ?: '';
+			}
+			return '';
+		}
+
+		return get_permalink( $pages[0] ) ?: '';
 	}
 
 	/**
