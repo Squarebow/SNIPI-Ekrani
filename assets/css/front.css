@@ -179,22 +179,6 @@
 	color: rgba(0, 0, 0, 0.65);
 }
 
-/* Časovni wrapper (čas + live ikona v eni vrstici) */
-.snipi__time-wrapper {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	white-space: nowrap;
-	line-height: 1.1;
-}
-
-.snipi__time {
-	display: inline-block;
-	white-space: nowrap;
-	line-height: 1.1;
-	font-weight: 600;
-}
-
 .snipi__table td:first-child {
 	white-space: nowrap;
 	width: 1%;
@@ -229,18 +213,35 @@
 
 /* ============================================================
    LIVE EVENT INDICATOR
+   - Ikona je poravnana na desni rob celice s pravilnimi odmiki
+   - Večja in bolj vidna (34px)
+   - Utripajoča animacija
    ============================================================ */
 
+@keyframes snipi-pulse {
+	0%   { opacity: 1;    transform: scale(1);    }
+	50%  { opacity: 0.4;  transform: scale(0.88); }
+	100% { opacity: 1;    transform: scale(1);    }
+}
+
 .snipi__live-indicator {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	vertical-align: middle;
-	margin-left: 8px;
-	width: calc( 20px * var( --snipi-row-scale ) );
-	height: calc( 20px * var( --snipi-row-scale ) );
+	display: block;
+	width:  calc( 34px * var(--snipi-row-scale) );
+	height: calc( 34px * var(--snipi-row-scale) );
 	object-fit: contain;
 	flex-shrink: 0;
-	position: relative;
-	z-index: 1;
+	margin-left: auto;    /* potisne ikono na desni rob */
+	padding: 4px 6px 4px 10px;
+	box-sizing: content-box;
+	animation: snipi-pulse 1.6s ease-in-out infinite;
+}
+
+/* Časovni wrapper: čas levo, live ikona desno */
+.snipi__time-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	white-space: nowrap;
+	line-height: 1.1;
+	width: 100%;
 }
