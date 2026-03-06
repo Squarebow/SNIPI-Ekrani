@@ -365,7 +365,7 @@ class SNIPI_Admin_Meta {
 			'footer_fixed_height' => $footer_fixed_height,
 			'custom_css'          => $custom_css,
 			'styling_data'        => $styling_data,
-			'today_count'         => $today_events_count,
+		'today_events'        => $today_events_count,
 			'weekend_mode'        => $weekend_mode,
 			'show_program_column' => $show_program,
 			// TV Optimizacija
@@ -376,23 +376,40 @@ class SNIPI_Admin_Meta {
 	}
 
 	/**
-	 * Prešteje število dogodkov za današnji dan
+	 * Prešteje dogodke za današnji dan z razčlenitvijo na končane in aktivne/načrtovane.
 	 *
 	 * @param string $api_key API ključ ekrana
-	 * @return int|null
+	 * @return array|null  Asociativno polje s ključi total, finished, active ali null ob napaki.
 	 */
 	protected static function count_today_events( $api_key ) {
 		$tz    = new DateTimeZone( 'Europe/Ljubljana' );
-		$today = new DateTime( 'now', $tz );
-		$date  = $today->format( 'Y-m-d' );
+		$now   = new DateTime( 'now', $tz );
+		$date  = $now->format( 'Y-m-d' );
 
+		// include_past = true → dobimo vse dogodke za danes, vključno s končanimi
 		$events = SNIPI_Data_Service::get_timeslots( $api_key, $date, $date, true );
 
-		if ( is_wp_error( $events ) ) {
+		if ( is_wp_error( $events ) || ! is_array( $events ) ) {
 			return null;
 		}
 
-		return is_array( $events ) ? count( $events ) : 0;
+		$total    = count( $events );
+		$finished = 0;
+
+		foreach ( $events as $event ) {
+			$end_iso = isset( $event['end_iso'] ) ? $event['end_iso'] : ( isset( $event['end'] ) ? $event['end'] : '' );
+			if ( ! $end_iso ) { continue; }
+			$end_dt = new DateTime( $end_iso );
+			if ( $end_dt < $now ) {
+				$finished++;
+			}
+		}
+
+		return array(
+			'total'    => $total,
+			'finished' => $finished,
+			'active'   => $total - $finished,
+		);
 	}
 
 	/**

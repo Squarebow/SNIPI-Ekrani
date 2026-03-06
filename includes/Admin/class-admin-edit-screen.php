@@ -121,7 +121,7 @@ class SNIPI_Admin_Edit_Screen {
 			'oblikovanje' => 'Oblikovanje',
 		);
 
-		echo '<h2 class="nav-tab-wrapper">';
+		echo '<div class="snipi-tab-nav">';
 		foreach ( $tabs as $tab_key => $tab_label ) {
 			$tab_url = add_query_arg(
 				array(
@@ -132,15 +132,16 @@ class SNIPI_Admin_Edit_Screen {
 				),
 				admin_url( 'edit.php' )
 			);
-			$tab_class = ( $active_tab === $tab_key ) ? 'nav-tab nav-tab-active' : 'nav-tab';
+			$is_active = ( $active_tab === $tab_key );
+			$class     = $is_active ? 'button button-primary snipi-tab-btn snipi-tab-btn--active' : 'button button-secondary snipi-tab-btn';
 			printf(
 				'<a href="%s" class="%s">%s</a>',
 				esc_url( $tab_url ),
-				esc_attr( $tab_class ),
+				esc_attr( $class ),
 				esc_html( $tab_label )
 			);
 		}
-		echo '</h2>';
+		echo '</div>';
 	}
 
 	/**
@@ -156,14 +157,24 @@ class SNIPI_Admin_Edit_Screen {
 		?>
 		<div class="snipi-sidebar-sticky">
 
-			<?php if ( ! empty( $meta ) && null !== $meta['today_count'] ) : ?>
+			<?php if ( ! empty( $meta ) && is_array( $meta['today_events'] ) ) :
+			$ev = $meta['today_events'];
+		?>
 			<!-- INFORMACIJE O EKRANU (na vrhu desnega stolpca) -->
 			<div class="snipi-info-box snipi-info-box--sidebar">
 				<h4><i class="fas fa-chart-bar"></i> <?php esc_html_e( 'Informacije o ekranu', 'snipi-ekrani' ); ?></h4>
 				<table class="snipi-info-table">
 					<tr>
 						<td><?php esc_html_e( 'Dogodki danes:', 'snipi-ekrani' ); ?></td>
-						<td><strong><?php echo intval( $meta['today_count'] ); ?></strong></td>
+						<td><strong><?php echo intval( $ev['total'] ); ?></strong></td>
+					</tr>
+					<tr>
+						<td style="padding-left:12px;color:#646970;"><?php esc_html_e( '↳ končani:', 'snipi-ekrani' ); ?></td>
+						<td><span class="snipi-badge snipi-badge--off"><?php echo intval( $ev['finished'] ); ?></span></td>
+					</tr>
+					<tr>
+						<td style="padding-left:12px;color:#646970;"><?php esc_html_e( '↳ potekajo / načrtovani:', 'snipi-ekrani' ); ?></td>
+						<td><span class="snipi-badge snipi-badge--on"><?php echo intval( $ev['active'] ); ?></span></td>
 					</tr>
 					<tr>
 						<td><?php esc_html_e( 'Vikend način:', 'snipi-ekrani' ); ?></td>
@@ -179,7 +190,7 @@ class SNIPI_Admin_Edit_Screen {
 					</tr>
 				</table>
 			</div>
-			<?php endif; ?>
+		<?php endif; ?>
 
 			<!-- NAVODILA ZA NASTAVITVE -->
 			<div class="snipi-help-box">

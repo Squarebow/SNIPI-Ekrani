@@ -5,6 +5,30 @@
  */
 
 /* ========================================================================
+   TAB GUMBI (namesto nav-tab-wrapper)
+   ======================================================================== */
+
+.snipi-tab-nav {
+	display: flex;
+	gap: 8px;
+	margin: 16px 0 24px;
+}
+.snipi-tab-btn {
+	min-width: 120px;
+	text-align: center;
+	height: 36px;
+	line-height: 34px;
+	font-size: 14px;
+	font-weight: 500;
+	text-decoration: none !important;
+	padding: 0 20px;
+}
+.snipi-tab-btn--active {
+	cursor: default;
+	pointer-events: none;
+}
+
+/* ========================================================================
    GLAVNI WRAPPER
    ======================================================================== */
 
