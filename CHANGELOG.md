@@ -2,6 +2,14 @@
 
 ---
 
+## v2.3.5 (19. marec 2026)
+
+### Razširitev prikaza na 30 prihodnjih dni
+
+- ✅ **Prihodnji dnevi**: razpon razširjen iz 0-3 na 0-30 dni
+- ✅ Posodobljeni vsi varnostni cap-i (`min(30, ...)`) v `class-admin-meta.php`, `class-admin-settings.php`, `class-rest-controller.php` in `class-admin.php`
+- ✅ Posodobljeni opisi polj v nastavitvah in stranski pomoči
+
 ## [2.3.4] – 2026-03-06
 
 ### Izboljšave

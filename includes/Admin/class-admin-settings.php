@@ -212,7 +212,7 @@ class SNIPI_Admin_Settings {
 	 */
 	public static function sanitize_future_days( $value ) {
 		$value = intval( $value );
-		return max( 0, min( 3, $value ) );
+		return max( 0, min( 30, $value ) );
 	}
 
 	/**

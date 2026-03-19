@@ -1,18 +1,19 @@
 <?php
 /**
  * SNIPI Admin Edit Screen
- *
+ * 
  * Glavni edit screen za urejanje posameznega ekrana.
  * Uporablja tab navigacijo (Nastavitve | Oblikovanje) in 60:40 layout.
- *
- * Layout:
- *  - Levo  (60%): Nastavitve / oblikovanje polja
- *  - Desno (40%): Informacije o ekranu (sticky vrh) + navodila (sticky)
- *
+ * 
+ * Layout struktura:
+ * - Levo (60%): Nastavitve/oblikovanje polja
+ * - Desno (40%): Inline navodila in pomoč
+ * 
  * @package SNIPI_Ekrani
- * @since   1.2.0
+ * @since 1.2.0
  */
 
+// Prepoved direktnega dostopa
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -20,63 +21,74 @@ if ( ! defined( 'ABSPATH' ) ) {
 class SNIPI_Admin_Edit_Screen {
 
 	/**
-	 * Inicializacija – registracija WordPress hookov
-	 *
+	 * Inicializacija - registracija WordPress hookov
+	 * 
 	 * @return void
 	 */
 	public static function init() {
+		// Obdelava shranjevanja preko admin_post hook
 		add_action( 'admin_post_snipi_save_screen', array( __CLASS__, 'handle_save' ) );
 	}
 
 	/**
 	 * Renderaj glavni edit screen
-	 *
+	 * 
+	 * Prikaže tab navigacijo, form in 60:40 layout.
+	 * 
 	 * @return void
 	 */
 	public static function render() {
+		// Pridobi post ID iz URL parametra
 		$post_id = isset( $_GET['post'] ) ? absint( $_GET['post'] ) : 0;
 		$post    = $post_id ? get_post( $post_id ) : null;
 
+		// Če post ne obstaja ali ni našega tipa, prikaži napako
 		if ( ! $post || 'ekran' !== $post->post_type ) {
 			self::render_error_message();
 			return;
 		}
 
-		// ── PREDOGLED v ločenem oknu ──────────────────────────────────────
-		// Ko je parameter snipi_preview=1, izrišemo samo vsebino ekrana
-		// (brez WP admin chrome-a) in izhod iz PHP-ja.
-		if ( ! empty( $_GET['snipi_preview'] ) ) {
-			self::render_preview_page( $post_id );
-			return;
-		}
+		// Pridobi vse meta podatke
+		$meta = SNIPI_Admin_Meta::get_all( $post_id );
 
-		$meta       = SNIPI_Admin_Meta::get_all( $post_id );
+		// Določi aktivni tab (default: nastavitve)
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'nastavitve';
-
+		
+		// Validiraj tab - dovoljeni samo nastavitve in oblikovanje
 		if ( ! in_array( $active_tab, array( 'nastavitve', 'oblikovanje' ), true ) ) {
 			$active_tab = 'nastavitve';
 		}
+
+		// Začetek HTML outputa
 		?>
 		<div class="wrap snipi-edit-screen">
-
+			
+			<!-- Header z naslovom -->
 			<h1 class="wp-heading-inline">
 				<?php echo esc_html( SNIPI_Admin_Meta::get_screen_title( $post_id ) ); ?>
 			</h1>
-
+			
+			<!-- Tab navigacija (WP native styling) -->
 			<?php self::render_tab_navigation( $post_id, $active_tab ); ?>
 
+			<!-- Glavni form -->
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="snipi-edit-form">
-
+				
+				<!-- WordPress nonce za varnost -->
 				<?php wp_nonce_field( 'snipi_screen_save', 'snipi_nonce' ); ?>
-				<input type="hidden" name="action"     value="snipi_save_screen" />
-				<input type="hidden" name="post_id"    value="<?php echo intval( $post_id ); ?>" />
+				
+				<!-- Hidden polja -->
+				<input type="hidden" name="action" value="snipi_save_screen" />
+				<input type="hidden" name="post_id" value="<?php echo intval( $post_id ); ?>" />
 				<input type="hidden" name="active_tab" value="<?php echo esc_attr( $active_tab ); ?>" />
 
+				<!-- 60:40 Layout wrapper -->
 				<div class="snipi-layout snipi-layout--60-40">
-
-					<!-- Levi stolpec (60%) -->
+					
+					<!-- Levi stolpec (60%) - Nastavitve -->
 					<div class="snipi-layout__main">
 						<?php
+						// Renderaj vsebino glede na aktivni tab
 						if ( 'nastavitve' === $active_tab ) {
 							SNIPI_Admin_Settings_Tab::render_content( $post_id, $meta );
 						} elseif ( 'oblikovanje' === $active_tab ) {
@@ -85,44 +97,49 @@ class SNIPI_Admin_Edit_Screen {
 						?>
 					</div>
 
-					<!-- Desni stolpec (40%) -->
+					<!-- Desni stolpec (40%) - Navodila -->
 					<div class="snipi-layout__sidebar">
 						<?php
+						// Renderaj navodila glede na aktivni tab
 						if ( 'nastavitve' === $active_tab ) {
-							self::render_settings_help( $meta );
+							self::render_settings_help();
 						} elseif ( 'oblikovanje' === $active_tab ) {
 							self::render_styling_help();
 						}
 						?>
 					</div>
 
-				</div>
+				</div><!-- .snipi-layout -->
 
+				<!-- Submit gumb (spodaj) -->
 				<div class="snipi-submit-wrapper">
 					<?php submit_button( 'Shrani spremembe', 'primary', 'submit', false ); ?>
 				</div>
 
 			</form>
 
-		</div>
+		</div><!-- .wrap -->
 		<?php
 	}
 
 	/**
-	 * Tab navigacija
-	 *
+	 * Renderaj tab navigacijo (WP native style)
+	 * 
 	 * @param int    $post_id    ID ekrana
 	 * @param string $active_tab Aktivni tab
 	 * @return void
 	 */
 	protected static function render_tab_navigation( $post_id, $active_tab ) {
+		// Definicija tabov
 		$tabs = array(
 			'nastavitve'  => 'Nastavitve',
 			'oblikovanje' => 'Oblikovanje',
 		);
 
-		echo '<div class="snipi-tab-nav">';
+		echo '<h2 class="nav-tab-wrapper">';
+		
 		foreach ( $tabs as $tab_key => $tab_label ) {
+			// Generiraj URL za tab
 			$tab_url = add_query_arg(
 				array(
 					'post_type' => 'ekran',
@@ -132,314 +149,185 @@ class SNIPI_Admin_Edit_Screen {
 				),
 				admin_url( 'edit.php' )
 			);
-			$is_active = ( $active_tab === $tab_key );
-			$class     = $is_active ? 'snipi-tab-btn snipi-tab-btn--active' : 'snipi-tab-btn';
+
+			// Določi CSS class (active ali ne)
+			$tab_class = ( $active_tab === $tab_key ) ? 'nav-tab nav-tab-active' : 'nav-tab';
+
+			// Renderaj tab link
 			printf(
 				'<a href="%s" class="%s">%s</a>',
 				esc_url( $tab_url ),
-				esc_attr( $class ),
+				esc_attr( $tab_class ),
 				esc_html( $tab_label )
 			);
 		}
-		echo '</div>';
+		
+		echo '</h2>';
 	}
 
 	/**
-	 * Desni stolpec – Nastavitve tab
-	 *
-	 * Info box je prikazan na vrhu (nad navodili), ker administrator
-	 * najpogosteje želi takoj videti stanje ekrana.
-	 *
-	 * @param array $meta Meta podatki ekrana (za prikaz info boxa)
+	 * Renderaj help box za tab Nastavitve
+	 * 
 	 * @return void
 	 */
-	protected static function render_settings_help( $meta = array() ) {
+	protected static function render_settings_help() {
 		?>
-		<div class="snipi-sidebar-sticky">
+		<div class="snipi-help-box">
+			<h3><i class="fas fa-clipboard-list"></i> Navodila za nastavitve</h3>
+			
+			<h4><i class="fas fa-key"></i> API ključ</h4>
+			<p>API ključ dobite iz SNIPI sistema. To je zadnji del URL naslova vašega ekrana (npr. <code>BdhBcrRm8</code>).</p>
+			
+			<h4><i class="fas fa-file-code"></i> Kratka koda</h4>
+			<p>Kopirajte prikazano kratko kodo in jo prilepite v katerokoli WordPress stran ali prispevek kjer želite prikazati urnik.</p>
+			
+			<h4><i class="fas fa-chart-bar"></i> Prikaz dogodkov</h4>
+			<ul>
+				<li><strong>Vrstic na stran:</strong> Število dogodkov na eni strani (pri paginaciji)</li>
+				<li><strong>Autoplay interval:</strong> Čas (v sekundah) preden se samodejno prestavi na naslednjo stran</li>
+				<li><strong>Prihodnji dnevi:</strong> Prikaz dogodkov za naslednje dni (0-30 dni)</li>
+			</ul>
+			
+			<h4><i class="fas fa-cog"></i> Dodatne možnosti</h4>
+			<ul>
+				<li><strong>Vikend način:</strong> Če vikend ni dogodkov, prikaže dogodke naslednjega tedna</li>
+				<li><strong>Stolpec PROGRAM:</strong> Prikaži dodaten stolpec s podatki o programu/projektu</li>
+			</ul>
 
-			<?php if ( ! empty( $meta ) && is_array( $meta['today_events'] ) ) :
-			$ev = $meta['today_events'];
-		?>
-			<!-- INFORMACIJE O EKRANU (na vrhu desnega stolpca) -->
-			<div class="snipi-info-box snipi-info-box--sidebar">
-				<h4><i class="fas fa-chart-bar"></i> <?php esc_html_e( 'Informacije o ekranu', 'snipi-ekrani' ); ?></h4>
-				<table class="snipi-info-table">
-					<tr>
-						<td><?php esc_html_e( 'Dogodki danes:', 'snipi-ekrani' ); ?></td>
-						<td><span class="snipi-badge snipi-badge--total"><?php echo intval( $ev['total'] ); ?></span></td>
-					</tr>
-					<tr>
-						<td style="padding-left:12px;color:#646970;"><?php esc_html_e( '↳ končani:', 'snipi-ekrani' ); ?></td>
-						<td><span class="snipi-badge snipi-badge--off"><?php echo intval( $ev['finished'] ); ?></span></td>
-					</tr>
-					<tr>
-						<td style="padding-left:12px;color:#646970;"><?php esc_html_e( '↳ potekajo / načrtovani:', 'snipi-ekrani' ); ?></td>
-						<td><span class="snipi-badge snipi-badge--on"><?php echo intval( $ev['active'] ); ?></span></td>
-					</tr>
-					<tr>
-						<td><?php esc_html_e( 'Vikend način:', 'snipi-ekrani' ); ?></td>
-						<td><?php echo $meta['weekend_mode'] ? '<span class="snipi-badge snipi-badge--on">Vključen</span>' : '<span class="snipi-badge snipi-badge--off">Izključen</span>'; ?></td>
-					</tr>
-					<tr>
-						<td><?php esc_html_e( 'Stolpec PROGRAM:', 'snipi-ekrani' ); ?></td>
-						<td><?php echo $meta['show_program_column'] ? '<span class="snipi-badge snipi-badge--on">Prikazan</span>' : '<span class="snipi-badge snipi-badge--off">Skrit</span>'; ?></td>
-					</tr>
-					<tr>
-						<td><?php esc_html_e( 'Skaliranje pisave:', 'snipi-ekrani' ); ?></td>
-						<td><?php echo ( 'fill' === $meta['row_scale_mode'] ) ? '<span class="snipi-badge snipi-badge--on">Samodejno</span>' : '<span class="snipi-badge snipi-badge--off">Prosto</span>'; ?></td>
-					</tr>
-				</table>
-			</div>
-		<?php endif; ?>
+			<h4><i class="fas fa-image"></i> Logotip</h4>
+			<p>Naložite logotip vaše organizacije. Prikazal se bo v levem zgornjem kotu tabele. Priporočena višina je 60-80px.</p>
 
-			<!-- NAVODILA ZA NASTAVITVE -->
-			<div class="snipi-help-box">
-				<h3><i class="fas fa-clipboard-list"></i> Navodila za nastavitve</h3>
-
-				<h4><i class="fas fa-key"></i> API ključ</h4>
-				<p>API ključ dobite iz SNIPI sistema. To je zadnji del URL naslova vašega ekrana (npr. <code>BdhBcrRm8</code>).</p>
-
-				<h4><i class="fas fa-file-code"></i> Kratka koda</h4>
-				<p>Kopirajte prikazano kratko kodo in jo prilepite v katerokoli WordPress stran ali prispevek.</p>
-
-				<h4><i class="fas fa-table"></i> Prikaz dogodkov</h4>
-				<ul>
-					<li><strong>Vrstic na stran:</strong> Ciljna vrednost vrstic. Pri samodejnem skaliranju pisava zapolni zaslon.</li>
-					<li><strong>Interval paginacije:</strong> Čas (v sekundah) med samodejnim menjanjem strani.</li>
-					<li><strong>Prihodnji dnevi:</strong> 0 = samo danes, 1–3 = prikaz prihodnjih dni.</li>
-				</ul>
-
-				<h4><i class="fas fa-text-height"></i> Skaliranje pisave</h4>
-				<p><strong>Samodejno</strong> je priporočeno za TV zaslone – pisava se prilagodi tako, da vrstice vedno zapolnijo celoten zaslon.</p>
-				<p><strong>Prosto</strong> je primerno za spletne strani ali testiranje z brskalnikom na računalniku.</p>
-
-				<h4><i class="fas fa-cog"></i> Dodatne možnosti</h4>
-				<ul>
-					<li><strong>Vikend način:</strong> Če vikend ni dogodkov, prikaže prihodnji teden.</li>
-					<li><strong>Stolpec PROGRAM:</strong> Doda stolpec s podatki o programu/projektu.</li>
-				</ul>
-
-				<h4><i class="fas fa-image"></i> Logotip</h4>
-				<p>Naložite logotip. Prikazal se bo v levem zgornjem kotu. Priporočena višina je 60–80 px.</p>
-
-				<h4><i class="fas fa-thumbtack"></i> Spodnja vrstica</h4>
-				<p>Fiksna vrstica na dnu zaslona. Višina se samodejno prilagodi vsebini – tabela se temu ustrezno skrajša.</p>
-				<p>Izberite <strong>Fiksna višina</strong> za promo vsebine (slike, HTML bloki), kjer vnaprej veste dimenzijo.</p>
-
-				<h4><i class="fas fa-tv"></i> TV Optimizacija</h4>
-				<p>Priporočeno pustiti <strong>Avtomatsko</strong>. Za testiranje TV načina na računalniku izberite <em>Vedno TV način</em>.</p>
-			</div>
-
-		</div><!-- .snipi-sidebar-sticky -->
-		<?php
-	}
-
-	/**
-	 * Desni stolpec – Oblikovanje tab
-	 *
-	 * @return void
-	 */
-	protected static function render_styling_help() {
-		?>
-		<div class="snipi-sidebar-sticky">
-			<div class="snipi-help-box">
-				<h3><i class="fas fa-paint-brush"></i> Navodila za oblikovanje</h3>
-
-				<h4><i class="fas fa-desktop"></i> Cel zaslon</h4>
-				<p>Nastavite pisavo in barve celotnega zaslona. Te nastavitve so osnova – posamezne sekcije jih lahko preglasijo.</p>
-
-				<h4><i class="fas fa-heading"></i> Glava</h4>
-				<p>Barva ozadja, barva naslova, barva datuma in ure. Skaliranje pisave (70–150 %) ne bo nikoli zlomilo layouta.</p>
-
-				<h4><i class="fas fa-table"></i> Tabela</h4>
-				<p>Barve glave tabele, vrstic in izmenjevalnih vrstic. <strong>Padding</strong> je omejen na vrednosti, ki ne prekoračijo razpoložljive višine.</p>
-				<p>Live indikator (utripajoča ikona) je mogoče skriti.</p>
-
-				<h4><i class="fas fa-thumbtack"></i> Spodnja vrstica</h4>
-				<p>Barva ozadja, barva besedila, poravnava in padding. <strong>Padding spodaj ni na voljo</strong> – spodnja vrstica je fiksirana na dno zaslona.</p>
-
-				<h4><i class="fas fa-code"></i> Custom CSS</h4>
-				<p>Za naprednejše uporabnike. Custom CSS se aplicira <em>po</em> GUI nastavitvah in jih preglasi.</p>
-
-				<h4><i class="fas fa-list"></i> Razpoložljive CSS klase</h4>
-				<ul>
-					<li><code>.snipi</code> – glavni wrapper</li>
-					<li><code>.snipi__header</code> – glava</li>
-					<li><code>.snipi__title</code> – naslov ekrana</li>
-					<li><code>.snipi__date</code> – datum</li>
-					<li><code>.snipi__clock-value</code> – ura</li>
-					<li><code>.snipi__pagination</code> – paginacija</li>
-					<li><code>.snipi__table</code> – tabela</li>
-					<li><code>.snipi__row--alt</code> – izmenske vrstice</li>
-					<li><code>.snipi__live-indicator</code> – live ikona</li>
-					<li><code>.snipi__bottom-row</code> – spodnja vrstica</li>
-				</ul>
-			</div>
+			<h4><i class="fas fa-thumbtack"></i> Spodnja vrstica</h4>
+			<p>Opcijska spodnja vrstica za dodatne informacije (kontakt, opombe). Podpira HTML formatiranje.</p>
 		</div>
 		<?php
 	}
 
 	/**
-	 * Shrani nastavitve ekrana
-	 *
+	 * Renderaj help box za tab Oblikovanje
+	 * 
+	 * @return void
+	 */
+	protected static function render_styling_help() {
+		?>
+		<div class="snipi-help-box">
+			<h3><i class="fas fa-palette"></i> Navodila za oblikovanje</h3>
+			
+			<h4><i class="fas fa-paint-brush"></i> Custom CSS</h4>
+			<p>Tukaj lahko vnesete custom CSS kodo za dodatno prilagoditev izgleda tabele.</p>
+			
+			<h4><i class="fas fa-bullseye"></i> Uporabne CSS classe</h4>
+			<p>Glavne CSS classe ki jih lahko uporabite:</p>
+			<ul>
+				<li><code>.snipi</code> - Glavni wrapper</li>
+				<li><code>.snipi__header</code> - Glava tabele</li>
+				<li><code>.snipi__table</code> - Sama tabela</li>
+				<li><code>.snipi__row</code> - Posamezna vrstica</li>
+				<li><code>.snipi__row--alt</code> - Izmenične vrstice</li>
+				<li><code>.snipi__bottom-row</code> - Spodnja vrstica</li>
+			</ul>
+
+			<h4><i class="fas fa-ruler-combined"></i> Primeri uporabe</h4>
+			<pre><code>/* Spremeni barvo headerja */
+.snipi__header {
+	background: #2271b1;
+	color: white;
+}
+
+/* Večji font za naslov */
+.snipi__title {
+	font-size: 2.5rem;
+}
+
+/* Alternirajoče vrstice */
+.snipi__row--alt {
+	background: #f0f0f1;
+}</code></pre>
+
+			<h4><i class="fas fa-search"></i> Predogled</h4>
+			<p>Uporabite gumb "Predogled CSS" za ogled sprememb pred shranjevanjem.</p>
+
+			<h4><i class="fas fa-exclamation-triangle"></i> Pomembno</h4>
+			<p>CSS se aplicira samo na ta ekran. Če imate več ekranov, morate CSS nastaviti za vsakega posebej.</p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Obdelaj shranjevanje forme
+	 * 
+	 * Validira nonce, preveri pravice in shrani podatke.
+	 * 
 	 * @return void
 	 */
 	public static function handle_save() {
-		if ( ! isset( $_POST['snipi_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['snipi_nonce'] ), 'snipi_screen_save' ) ) {
-			wp_die( 'Varnostna preveritev ni uspela.' );
-		}
-
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_die( 'Nimate dovoljenja za to dejanje.' );
-		}
-
+		// Pridobi post ID
 		$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
-		if ( ! $post_id ) {
-			wp_die( 'Neveljaven ID ekrana.' );
+		
+		// Preveri da post obstaja
+		if ( ! $post_id || ! get_post( $post_id ) ) {
+			wp_die( esc_html__( 'Neveljaven ekran.', 'snipi-ekrani' ) );
 		}
 
-		// Posodobi naslov
+		// Preveri uporabnikove pravice
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_die( esc_html__( 'Nimate pravic za urejanje tega ekrana.', 'snipi-ekrani' ) );
+		}
+
+		// Preveri WordPress nonce
+		if ( ! isset( $_POST['snipi_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['snipi_nonce'] ) ), 'snipi_screen_save' ) ) {
+			wp_die( esc_html__( 'Neveljaven varnostni žeton.', 'snipi-ekrani' ) );
+		}
+
+		// Shrani naslov ekrana (če je poslan)
 		if ( isset( $_POST['snipi_post_title'] ) ) {
-			SNIPI_Admin_Meta::update_screen_title( $post_id, sanitize_text_field( wp_unslash( $_POST['snipi_post_title'] ) ) );
+			$title = sanitize_text_field( wp_unslash( $_POST['snipi_post_title'] ) );
+			SNIPI_Admin_Meta::update_screen_title( $post_id, $title );
 		}
 
 		// Shrani vse meta podatke
 		SNIPI_Admin_Meta::save_from_request( $post_id );
 
-		// Redirect nazaj z obvestilom
+		// Pridobi aktivni tab za redirect
 		$active_tab = isset( $_POST['active_tab'] ) ? sanitize_key( $_POST['active_tab'] ) : 'nastavitve';
-		$redirect   = add_query_arg(
+
+		// Redirect nazaj na edit screen z success sporočilom
+		$redirect_url = add_query_arg(
 			array(
 				'post_type' => 'ekran',
 				'page'      => 'snipi-edit-screen',
-				'post'      => $post_id,
+				'post'      => intval( $post_id ),
 				'tab'       => $active_tab,
 				'updated'   => 1,
 			),
 			admin_url( 'edit.php' )
 		);
-		wp_safe_redirect( $redirect );
+
+		wp_safe_redirect( $redirect_url );
 		exit;
 	}
 
 	/**
-	 * Napaka pri nalaganju ekrana
-	 *
+	 * Renderaj error sporočilo če post ne obstaja
+	 * 
 	 * @return void
 	 */
 	protected static function render_error_message() {
-		echo '<div class="wrap"><div class="notice notice-error"><p>';
-		esc_html_e( 'Ekran ni bil najden. Preverite URL ali se vrnite na seznam ekranov.', 'snipi-ekrani' );
-		echo '</p></div></div>';
-	}
-
-	/**
-	 * Izriše minimalen full-page predogled ekrana (brez WP admin chrome-a).
-	 * Odpre se v ločenem oknu, velikost okna je nastavljiva.
-	 *
-	 * @param int $post_id  ID ekrana.
-	 * @return void
-	 */
-	protected static function render_preview_page( $post_id ) {
-		// Varnostni pregled nonce-a (opcijsko, saj je stran za prijavjene)
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_die( esc_html__( 'Nimate dovoljenja za ogled predogleda.', 'snipi-ekrani' ) );
-		}
-
-		// Prisilimo WP da izriše shortcode kot na frontend-u
-		// Skupaj s font-awesome in front CSS/JS odvisnostmi
-		$shortcode_output = do_shortcode( '[snipi_ekran id="' . intval( $post_id ) . '"]' );
-
-		// Zberemo vse enqueued skripte in stile
-		ob_start();
-		wp_head();
-		$head = ob_get_clean();
-
-		ob_start();
-		wp_footer();
-		$footer = ob_get_clean();
-
-		// Pridobimo morebitni styling CSS iz rendererja
-		$styling_css = '';
-		if ( class_exists( 'SNIPI_Renderer' ) && method_exists( 'SNIPI_Renderer', 'generate_styling_css' ) ) {
-			$styling_css = SNIPI_Renderer::generate_styling_css( $post_id );
-		}
-
-		$meta       = SNIPI_Admin_Meta::get_all( $post_id );
-		$screen_title = SNIPI_Admin_Meta::get_screen_title( $post_id );
-
-		?><!DOCTYPE html>
-<html <?php language_attributes(); ?>>
-<head>
-<meta charset="<?php bloginfo( 'charset' ); ?>">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?php echo esc_html( $screen_title ); ?> – <?php esc_html_e( 'Predogled', 'snipi-ekrani' ); ?></title>
-<?php echo $head; // phpcs:ignore WordPress.Security.EscapeOutput ?>
-<style>
-/* Predogled stran – brez margine in scrollbar-a */
-html, body {
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	background: #000;
-	height: 100%;
-	width: 100%;
-}
-/* Toolbar za zapiranje predogleda */
-.snipi-preview-bar {
-	position: fixed;
-	top: 0; left: 0; right: 0;
-	height: 36px;
-	background: rgba(0,0,0,0.85);
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 14px;
-	z-index: 9999;
-	font-family: system-ui, sans-serif;
-	font-size: 13px;
-	color: #ccc;
-}
-.snipi-preview-bar .snipi-preview-title { font-weight: 600; color: #fff; }
-.snipi-preview-bar .snipi-preview-hint  { font-size: 11px; opacity: 0.7; }
-.snipi-preview-bar button {
-	background: #c0392b;
-	border: none;
-	color: #fff;
-	padding: 4px 12px;
-	border-radius: 3px;
-	cursor: pointer;
-	font-size: 12px;
-}
-.snipi-preview-bar button:hover { background: #e74c3c; }
-/* Vsebina ekrana zapolni prostor pod toolbarom */
-.snipi-preview-content {
-	position: fixed;
-	top: 36px; left: 0; right: 0; bottom: 0;
-	overflow: hidden;
-}
-<?php echo wp_strip_all_tags( $styling_css ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-</style>
-</head>
-<body>
-
-<div class="snipi-preview-bar">
-	<span class="snipi-preview-title">
-		<?php echo esc_html( $screen_title ); ?> – <?php esc_html_e( 'Predogled', 'snipi-ekrani' ); ?>
-	</span>
-	<span class="snipi-preview-hint">
-		<?php esc_html_e( 'Povlecite rob okna, da preizkusite skaliranje pisave.', 'snipi-ekrani' ); ?>
-	</span>
-	<button onclick="window.close()">✕ <?php esc_html_e( 'Zapri', 'snipi-ekrani' ); ?></button>
-</div>
-
-<div class="snipi-preview-content">
-	<?php echo $shortcode_output; // phpcs:ignore WordPress.Security.EscapeOutput ?>
-</div>
-
-<?php echo $footer; // phpcs:ignore WordPress.Security.EscapeOutput ?>
-</body>
-</html><?php
-		exit;
+		?>
+		<div class="wrap">
+			<h1>SNIPI ekrani</h1>
+			<div class="notice notice-error">
+				<p>
+					<?php esc_html_e( 'Izberite ekran za urejanje.', 'snipi-ekrani' ); ?>
+					<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=ekran' ) ); ?>">
+						<?php esc_html_e( 'Seznam vseh ekranov', 'snipi-ekrani' ); ?>
+					</a>
+				</p>
+			</div>
+		</div>
+		<?php
 	}
 }
+
+// Inicializacija razreda
+SNIPI_Admin_Edit_Screen::init();
