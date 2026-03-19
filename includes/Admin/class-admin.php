@@ -613,8 +613,7 @@ if ( isset( $_POST['snipi_autoplay_interval'] ) ) {
 update_post_meta( $post_id, '_snipi_autoplay_interval', intval( $_POST['snipi_autoplay_interval'] ) );
 }
 $future_days = isset( $_POST['snipi_future_days'] ) ? intval( $_POST['snipi_future_days'] ) : 0;
-$future_days = max( 0, min( 3, $future_days ) );
-update_post_meta( $post_id, '_snipi_future_days', $future_days );
+$future_days = max( 0, min( 30, $future_days ) );
 
 $weekend_mode = isset( $_POST['snipi_weekend_mode'] ) ? '1' : '0';
 update_post_meta( $post_id, '_snipi_weekend_mode', $weekend_mode );
@@ -648,7 +647,7 @@ $api_key           = get_post_meta( $post_id, '_snipi_api_key', true );
 $rows_per_page     = get_post_meta( $post_id, '_snipi_rows_per_page', true ) ?: 8;
 $autoplay_interval = get_post_meta( $post_id, '_snipi_autoplay_interval', true ) ?: 10;
 $future_days       = intval( get_post_meta( $post_id, '_snipi_future_days', true ) );
-$future_days       = max( 0, min( 3, $future_days ) );
+$future_days       = max( 0, min( 30, $future_days ) );
 $logo_id           = get_post_meta( $post_id, '_snipi_logo_id', true );
 $logo_height       = max( 40, min( 120, get_post_meta( $post_id, '_snipi_logo_height', true ) ?: 60 ) );
 $display_bottom    = get_post_meta( $post_id, '_snipi_display_bottom', true );

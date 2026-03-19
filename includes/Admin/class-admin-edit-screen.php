@@ -185,7 +185,7 @@ class SNIPI_Admin_Edit_Screen {
 			<ul>
 				<li><strong>Vrstic na stran:</strong> Število dogodkov na eni strani (pri paginaciji)</li>
 				<li><strong>Autoplay interval:</strong> Čas (v sekundah) preden se samodejno prestavi na naslednjo stran</li>
-				<li><strong>Prihodnji dnevi:</strong> Prikaz dogodkov za naslednje dni (0-3 dni)</li>
+				<li><strong>Prihodnji dnevi:</strong> Prikaz dogodkov za naslednje dni (0-30 dni)</li>
 			</ul>
 			
 			<h4><i class="fas fa-cog"></i> Dodatne možnosti</h4>

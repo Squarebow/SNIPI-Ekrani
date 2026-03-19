@@ -1,52 +1,64 @@
 /**
- * SNIPI Ekrani - Admin CSS
- * 
- * Styling za admin panel z naslednjimi sekcijami:
- * - 60:40 layout (glavni + sidebar)
- * - Tab navigacija (WP native)
- * - Form elementi in polja
- * - Help boxi in info komponente
- * - Logo controls
- * - WYSIWYG editor wrapping
- * 
+ * SNIPI Ekrani – Admin CSS v2.3.1
+ *
  * @package SNIPI_Ekrani
- * @since 1.2.0
  */
+
+/* ========================================================================
+   TAB GUMBI
+   ======================================================================== */
+
+.snipi-tab-nav {
+	display: flex;
+	gap: 8px;
+	margin: 16px 0 24px;
+}
+.snipi-tab-btn {
+	display: inline-block;
+	padding: 6px 20px;
+	font-size: 14px;
+	font-weight: 500;
+	text-decoration: none;
+	border-radius: 3px;
+	border: 1px solid #2271b1;
+	color: #2271b1;
+	background: #fff;
+	line-height: 2;
+}
+.snipi-tab-btn--active {
+	background: #2271b1;
+	color: #fff;
+	cursor: default;
+	pointer-events: none;
+}
 
 /* ========================================================================
    GLAVNI WRAPPER
    ======================================================================== */
 
-.snipi-edit-screen {
-	max-width: 1400px;
-}
+.snipi-edit-screen { max-width: 1400px; }
 
 /* ========================================================================
-   TAB NAVIGACIJA (WordPress native style)
+   TAB NAVIGACIJA
    ======================================================================== */
 
-/* Tabs wrapper - odstranitev margin */
 .snipi-edit-screen .nav-tab-wrapper {
 	margin-bottom: 20px;
 	border-bottom: 1px solid #ccd0d4;
 }
-
-/* Posamezen tab */
 .snipi-edit-screen .nav-tab {
 	font-size: 14px;
 	padding: 10px 20px;
 	margin-left: 0;
 	margin-bottom: -1px;
 }
-
-/* Aktivni tab */
 .snipi-edit-screen .nav-tab-active {
 	border-bottom-color: #f0f0f1;
 	background: #f0f0f1;
 }
 
 /* ========================================================================
-   60:40 LAYOUT (Main content + Sidebar)
+   60:40 LAYOUT
    ======================================================================== */
 
 .snipi-layout {
@@ -54,133 +66,249 @@
 	gap: 30px;
 	margin-top: 20px;
 }
-
-/* Levi stolpec - 60% širine */
 .snipi-layout__main {
 	flex: 0 0 60%;
 	max-width: 60%;
 }
-
-/* Desni stolpec - 40% širine */
 .snipi-layout__sidebar {
 	flex: 0 0 calc(40% - 30px);
 	max-width: calc(40% - 30px);
 }
 
-/* Responsive - na manjših zaslonih stack */
 @media (max-width: 1024px) {
-	.snipi-layout {
-		flex-direction: column;
-	}
-	
+	.snipi-layout { flex-direction: column; }
 	.snipi-layout__main,
-	.snipi-layout__sidebar {
-		flex: 1 1 100%;
-		max-width: 100%;
-	}
+	.snipi-layout__sidebar { flex: 1 1 100%; max-width: 100%; }
 }
 
 /* ========================================================================
-   FORM ELEMENTI
+   DESNI STOLPEC – STICKY
    ======================================================================== */
 
-/* Field group - odmik med skupinami polj */
+.snipi-sidebar-sticky {
+	position: sticky;
+	top: 32px;
+}
+
+/* ========================================================================
+   FIELD GROUP
+   ======================================================================== */
+
 .snipi-field-group {
 	margin-bottom: 30px;
 	padding-bottom: 20px;
 	border-bottom: 1px solid #e5e5e5;
 }
+.snipi-field-group:last-child { border-bottom: none; }
 
-.snipi-field-group:last-child {
-	border-bottom: none;
+.snipi-field-group h3 {
+	margin-top: 0;
+	margin-bottom: 16px;
+	font-size: 15px;
+	color: #1d2327;
 }
-
-/* FontAwesome ikone v naslovih */
 .snipi-field-group h3 i {
 	margin-right: 8px;
 	color: #2271b1;
 }
 
-/* Label styling */
 .snipi-label {
 	display: block;
 	font-weight: 600;
 	margin-bottom: 8px;
 	font-size: 14px;
 }
+.snipi-required { color: #d63638; }
 
-/* Obvezno polje - zvezdica */
-.snipi-required {
-	color: #d63638;
-}
-
-/* Description text pod polji */
-.snipi-field-group .description {
-	margin-top: 8px;
+.snipi-field-group .description,
+p.description {
+	margin-top: 6px;
 	color: #646970;
-	font-size: 13px;
+	font-size: 12px;
 	line-height: 1.5;
 }
 
 /* ========================================================================
-   INLINE POLJA (Horizontalni layout)
+   ROW LAYOUTS (2-col, 3-col)
    ======================================================================== */
 
-.snipi-field-group--inline {
+.snipi-field-row {
 	display: flex;
 	gap: 20px;
 	flex-wrap: wrap;
 }
-
-.snipi-field-inline {
-	flex: 1 1 auto;
-	min-width: 150px;
+.snipi-field-row--2 > .snipi-field-col {
+	flex: 1 1 calc(50% - 10px);
+	min-width: 180px;
 }
+.snipi-field-row--3 > .snipi-field-col {
+	flex: 1 1 calc(33.33% - 14px);
+	min-width: 140px;
+}
+.snipi-field-col {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+.snipi-field-col .snipi-label,
+.snipi-field-col .description { width: 100%; }
 
-.snipi-field-inline .snipi-label {
-	margin-bottom: 6px;
+.snipi-input-full { width: 100%; box-sizing: border-box; }
+
+@media (max-width: 900px) {
+	.snipi-field-row--2 > .snipi-field-col,
+	.snipi-field-row--3 > .snipi-field-col { flex: 1 1 100%; }
 }
 
 /* ========================================================================
-   KRATKA KODA (Shortcode field + copy button)
+   KRATKA KODA
    ======================================================================== */
 
 .snipi-shortcode-wrapper {
 	display: flex;
 	gap: 10px;
 	align-items: center;
+	width: 100%;
 }
+.snipi-shortcode-wrapper input { flex: 1; }
+.snipi-shortcode-wrapper .button { flex-shrink: 0; }
 
-.snipi-shortcode-wrapper input {
-	flex: 1;
+/* ========================================================================
+   RADIO – BLOCK VARIANTA (fill celotno polje stolpca)
+   ======================================================================== */
+
+.snipi-radio-label {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	cursor: pointer;
+	padding: 10px 14px;
+	border: 1px solid #e5e5e5;
+	border-radius: 4px;
+	background: #fafafa;
+	transition: border-color 0.15s, background 0.15s;
 }
-
-.snipi-shortcode-wrapper .button {
+.snipi-radio-label:has(input:checked) {
+	border-color: #2271b1;
+	background: #f0f6fc;
+}
+.snipi-radio-label input[type="radio"] {
+	margin: 3px 0 0;
 	flex-shrink: 0;
+}
+.snipi-radio-label strong {
+	display: block;
+	font-size: 13px;
+	color: #1d2327;
+}
+.snipi-radio-desc {
+	display: block;
+	font-size: 12px;
+	color: #646970;
+	margin-top: 3px;
+	line-height: 1.4;
+}
+
+/* Block varianta: rasteza na polno višino stolpca */
+.snipi-radio-label--block {
+	width: 100%;
+	box-sizing: border-box;
+	height: 100%;
+}
+.snipi-radio-label--block span {
+	display: flex;
+	flex-direction: column;
 }
 
 /* ========================================================================
-   CHECKBOX STYLING
+   RADIO PILLS (horizontalni – TV način prikaza)
+   ======================================================================== */
+
+.snipi-radio-inline {
+	display: flex;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+.snipi-radio-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 14px;
+	border: 1px solid #c3c4c7;
+	border-radius: 20px;
+	background: #fff;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 500;
+	color: #1d2327;
+	transition: border-color 0.15s, background 0.15s, color 0.15s;
+	white-space: nowrap;
+	user-select: none;
+}
+.snipi-radio-pill input[type="radio"] {
+	/* skrijemo radio – vizual prevzame pill */
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+.snipi-radio-pill:has(input:checked),
+.snipi-radio-pill--active {
+	border-color: #2271b1;
+	background: #2271b1;
+	color: #fff;
+}
+.snipi-radio-pill:hover {
+	border-color: #2271b1;
+}
+
+/* ========================================================================
+   TV OPTION BLOCK (enakomerni razmik med opisi in kontrolami)
+   ======================================================================== */
+
+.snipi-tv-option-block {
+	padding: 12px 16px;
+	background: #f6f7f7;
+	border: 1px solid #e5e5e5;
+	border-radius: 4px;
+	margin-bottom: 0;
+}
+.snipi-tv-option-block .snipi-checkbox-label { margin-bottom: 4px; }
+.snipi-tv-option-block .description { margin-top: 4px; }
+
+/* ========================================================================
+   CHECKBOX
    ======================================================================== */
 
 .snipi-checkbox-label {
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	margin-bottom: 12px;
+	margin-bottom: 6px;
 	cursor: pointer;
 }
-
-.snipi-checkbox-label input[type="checkbox"] {
-	margin: 0;
-}
-
-.snipi-checkbox-label span {
-	font-weight: 500;
-}
+.snipi-checkbox-label input[type="checkbox"] { margin: 0; }
+.snipi-checkbox-label span { font-weight: 500; font-size: 13px; }
 
 /* ========================================================================
-   INFO BOX (Prikazuje statistike)
+   BADGES
+   ======================================================================== */
+
+.snipi-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 10px;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.5;
+}
+.snipi-badge--on      { background: #d1f0d1; color: #1a6e1a; }
+.snipi-badge--off     { background: #f0f0f0; color: #646970; }
+.snipi-badge--neutral { background: #fff3cd; color: #664d03; font-weight: 500; vertical-align: middle; }
+.snipi-badge--total   { background: #e8eaf0; color: #1d2327; font-weight: 700; }
+
+/* ========================================================================
+   INFO BOX (sidebar)
    ======================================================================== */
 
 .snipi-info-box {
@@ -188,41 +316,24 @@
 	border: 1px solid #c3e6ff;
 	border-radius: 4px;
 	padding: 15px 20px;
-	margin: 15px 0;
+	margin-bottom: 20px;
 }
-
 .snipi-info-box h4 {
 	margin-top: 0;
 	margin-bottom: 12px;
 	color: #1d2327;
 	font-size: 14px;
 }
-
-.snipi-info-table {
-	width: 100%;
-	border-collapse: collapse;
-}
-
-.snipi-info-table td {
-	padding: 6px 0;
-	font-size: 13px;
-}
-
-.snipi-info-table td:first-child {
-	color: #646970;
-	width: 60%;
-}
-
-.snipi-info-table td:last-child {
-	font-weight: 600;
-	color: #1d2327;
-}
+.snipi-info-box h4 i { margin-right: 6px; color: #2271b1; }
+.snipi-info-table { width: 100%; border-collapse: collapse; }
+.snipi-info-table td { padding: 5px 0; font-size: 13px; vertical-align: middle; }
+.snipi-info-table td:first-child { color: #646970; width: 55%; }
+.snipi-info-table td:last-child { text-align: right; }
 
 /* ========================================================================
    LOGO CONTROLS
    ======================================================================== */
 
-/* Logo preview container */
 .snipi-logo-preview {
 	min-height: 80px;
 	padding: 15px;
@@ -234,52 +345,43 @@
 	align-items: center;
 	justify-content: center;
 }
+.snipi-logo-preview img { max-width: 100%; height: auto; display: block; }
+.snipi-logo-controls { display: flex; gap: 10px; margin-bottom: 20px; }
+.snipi-logo-height-control { margin-top: 15px; }
+.snipi-logo-height-control label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 13px; }
 
-.snipi-logo-preview img {
-	max-width: 100%;
-	height: auto;
-	display: block;
-}
-
-/* Logo gumbi */
-.snipi-logo-controls {
-	display: flex;
-	gap: 10px;
-	margin-bottom: 20px;
-}
-
-/* Logo višina slider */
-.snipi-logo-height-control {
-	margin-top: 15px;
-}
-
-.snipi-logo-height-control label {
-	display: block;
-	margin-bottom: 8px;
-	font-weight: 500;
-}
+/* ========================================================================
+   SLIDER (range input)
+   ======================================================================== */
 
 .snipi-slider {
 	width: 100%;
 	max-width: 300px;
+	display: block;
+	margin-top: 4px;
 }
 
 /* ========================================================================
-   SPODNJA VRSTICA EDITOR
+   FOOTER HEIGHT
    ======================================================================== */
 
-/* Container za WYSIWYG editor */
-.snipi-bottom-editor {
-	margin-top: 15px;
+.snipi-footer-fixed-control {
+	background: #f6f7f7;
+	border: 1px solid #e5e5e5;
+	border-radius: 4px;
+	padding: 12px 16px;
 }
-
-/* Skrit editor - ko checkbox ni označen */
-.snipi-bottom-editor--hidden {
-	display: none;
-}
+.snipi-footer-fixed-control label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 13px; }
 
 /* ========================================================================
-   CSS EDITOR (Oblikovanje tab)
+   WYSIWYG EDITOR
+   ======================================================================== */
+
+.snipi-bottom-editor { margin-top: 0; }
+.snipi-bottom-editor--hidden { display: none; }
+
+/* ========================================================================
+   CSS EDITOR
    ======================================================================== */
 
 .snipi-css-editor {
@@ -292,66 +394,15 @@
 	background: #1e1e1e;
 	color: #d4d4d4;
 	tab-size: 4;
+	width: 100%;
+	box-sizing: border-box;
 }
-
 .snipi-css-editor:focus {
 	border-color: #2271b1;
 	box-shadow: 0 0 0 1px #2271b1;
 	outline: none;
 }
-
-/* Preview actions */
-.snipi-preview-actions {
-	margin-top: 15px;
-	display: flex;
-	align-items: center;
-	gap: 15px;
-}
-
-/* FontAwesome ikone v gumbih */
-.button i.fas {
-	margin-right: 6px;
-}
-
-/* ========================================================================
-   STYLING PREVIEW BOX
-   ======================================================================== */
-
-.snipi-styling-preview {
-	background: #fff;
-	border: 1px solid #c3c4c7;
-	border-radius: 4px;
-	padding: 20px;
-	min-height: 400px;
-	overflow: auto;
-}
-
-.snipi-preview-empty,
-.snipi-preview-error {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	min-height: 300px;
-	color: #646970;
-	font-size: 14px;
-}
-
-.snipi-preview-error {
-	color: #d63638;
-}
-
-/* ========================================================================
-   CSS REFERENCE TABLE
-   ======================================================================== */
-
-.snipi-css-reference {
-	margin-top: 15px;
-}
-
-.snipi-css-reference table {
-	margin: 0;
-}
-
+.snipi-css-reference { margin-top: 15px; }
 .snipi-css-reference td code {
 	background: #f0f0f1;
 	padding: 2px 6px;
@@ -361,36 +412,7 @@
 }
 
 /* ========================================================================
-   CSS EXAMPLES
-   ======================================================================== */
-
-.snipi-css-examples {
-	margin-top: 15px;
-}
-
-.snipi-css-examples h4 {
-	margin-top: 20px;
-	margin-bottom: 10px;
-	font-size: 14px;
-	color: #2271b1;
-}
-
-.snipi-css-examples pre {
-	background: #1e1e1e;
-	color: #d4d4d4;
-	padding: 15px;
-	border-radius: 4px;
-	overflow-x: auto;
-	font-size: 12px;
-	line-height: 1.6;
-}
-
-.snipi-css-examples code {
-	font-family: 'Courier New', Courier, monospace;
-}
-
-/* ========================================================================
-   HELP BOX (Desni sidebar)
+   HELP BOX
    ======================================================================== */
 
 .snipi-help-box {
@@ -398,146 +420,63 @@
 	border: 1px solid #c3c4c7;
 	border-radius: 4px;
 	padding: 20px;
-	position: sticky;
-	top: 32px; /* WordPress admin bar */
+	margin-top: 20px;
 }
-
 .snipi-help-box h3 {
 	margin-top: 0;
 	margin-bottom: 15px;
-	font-size: 16px;
+	font-size: 15px;
 	color: #1d2327;
 	border-bottom: 2px solid #2271b1;
 	padding-bottom: 8px;
 }
-
-/* FontAwesome ikone v naslovih */
 .snipi-help-box h3 i,
-.snipi-help-box h4 i {
-	margin-right: 8px;
-	color: #2271b1;
-}
-
-.snipi-help-box h4 {
-	margin-top: 20px;
-	margin-bottom: 8px;
-	font-size: 14px;
-	color: #2271b1;
-}
-
-.snipi-help-box p {
-	font-size: 13px;
-	line-height: 1.6;
-	color: #50575e;
-	margin-bottom: 12px;
-}
-
-.snipi-help-box ul {
-	margin-left: 20px;
-	margin-bottom: 15px;
-}
-
-.snipi-help-box li {
-	margin-bottom: 8px;
-	font-size: 13px;
-	line-height: 1.5;
-	color: #50575e;
-}
-
-.snipi-help-box strong {
-	color: #1d2327;
-}
-
-.snipi-help-box code {
-	background: #f0f0f1;
-	padding: 2px 6px;
-	border-radius: 3px;
-	font-size: 12px;
-	color: #d63638;
-}
-
-.snipi-help-box pre {
-	background: #1e1e1e;
-	color: #d4d4d4;
-	padding: 12px;
-	border-radius: 4px;
-	overflow-x: auto;
-	font-size: 11px;
-	line-height: 1.5;
-	margin: 10px 0;
-}
+.snipi-help-box h4 i { margin-right: 6px; color: #2271b1; }
+.snipi-help-box h4 { margin-top: 18px; margin-bottom: 6px; font-size: 13px; color: #2271b1; }
+.snipi-help-box p { font-size: 13px; line-height: 1.5; color: #50575e; margin-bottom: 10px; }
+.snipi-help-box ul { margin-left: 18px; margin-bottom: 12px; }
+.snipi-help-box li { margin-bottom: 6px; font-size: 13px; line-height: 1.4; color: #50575e; }
+.snipi-help-box strong { color: #1d2327; }
+.snipi-help-box code { background: #f0f0f1; padding: 2px 5px; border-radius: 3px; font-size: 11px; color: #d63638; }
 
 /* ========================================================================
-   SUBMIT WRAPPER (Spodnji gumb)
+   SUBMIT WRAPPER
    ======================================================================== */
 
 .snipi-submit-wrapper {
 	margin-top: 30px;
-	padding-top: 20px;
-	border-top: 1px solid #c3c4c7;
-	background: #f6f7f7;
 	padding: 20px;
+	background: #f6f7f7;
 	margin-left: -20px;
 	margin-right: -20px;
 	margin-bottom: -20px;
+	border-top: 1px solid #c3c4c7;
 	position: sticky;
 	bottom: 0;
+	z-index: 10;
 }
-
-.snipi-submit-wrapper .button-primary {
-	min-width: 150px;
-	height: 40px;
-	font-size: 14px;
-}
+.snipi-submit-wrapper .button-primary { min-width: 150px; height: 40px; font-size: 14px; }
 
 /* ========================================================================
-   KOPIRANJE SHORTCODE V LISTI (CPT columns)
+   KOPIRANJE V LISTI
    ======================================================================== */
 
-/* Copy gumb v listi */
 .snipi-copy-list {
-	background: none;
-	border: none;
-	padding: 4px;
-	cursor: pointer;
-	vertical-align: middle;
-	opacity: 0.6;
-	transition: opacity 0.2s;
+	background: none; border: none; padding: 4px; cursor: pointer;
+	vertical-align: middle; opacity: 0.6; transition: opacity 0.2s;
 }
-
-.snipi-copy-list:hover {
-	opacity: 1;
-}
-
-.snipi-copy-icon {
-	width: 16px;
-	height: 16px;
-	display: inline-block;
-	vertical-align: middle;
-}
+.snipi-copy-list:hover { opacity: 1; }
+.snipi-copy-icon { width: 16px; height: 16px; display: inline-block; vertical-align: middle; }
 
 /* ========================================================================
-   RESPONSIVE ADJUSTMENTS
+   RESPONSIVE
    ======================================================================== */
 
 @media (max-width: 782px) {
-	/* Manjši padding na mobilnih */
-	.snipi-help-box {
-		padding: 15px;
-	}
-	
-	/* Stack inline polja */
-	.snipi-field-group--inline {
-		flex-direction: column;
-	}
-	
-	/* Polna širina shortcode wrapper */
-	.snipi-shortcode-wrapper {
-		flex-direction: column;
-	}
-	
-	.snipi-shortcode-wrapper input,
-	.snipi-shortcode-wrapper .button {
-		width: 100%;
-	}
+	.snipi-help-box, .snipi-info-box { padding: 15px; }
+	.snipi-field-row { flex-direction: column; }
+	.snipi-shortcode-wrapper { flex-direction: column; }
+	.snipi-shortcode-wrapper input, .snipi-shortcode-wrapper .button { width: 100%; }
+	.snipi-sidebar-sticky { position: static; }
+	.snipi-radio-inline { flex-direction: column; }
 }

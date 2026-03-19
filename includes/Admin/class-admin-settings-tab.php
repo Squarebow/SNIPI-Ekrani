@@ -144,13 +144,13 @@ class SNIPI_Admin_Settings_Tab {
 					class="small-text" 
 					value="<?php echo esc_attr( $meta['future_days'] ); ?>" 
 					min="0" 
-					max="3"
+					max="30"
 				/>
 			</div>
 		</div>
 
 		<p class="description">
-			<?php esc_html_e( 'Vrstic na stran: Število dogodkov prikazanih na eni strani. Autoplay: Čas (v sekundah) preden se samodejno prestavi na naslednjo stran. Prihodnji dnevi: Prikaz dogodkov za naslednje dni (0-3).', 'snipi-ekrani' ); ?>
+			<?php esc_html_e( 'Vrstic na stran: Število dogodkov prikazanih na eni strani. Autoplay: Čas (v sekundah) preden se samodejno prestavi na naslednjo stran. Prihodnji dnevi: Prikaz dogodkov za naslednje dni (0-30).', 'snipi-ekrani' ); ?>
 		</p>
 
 		<!-- INFO BOX - Število dogodkov danes -->

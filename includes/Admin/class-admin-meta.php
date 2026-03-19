@@ -49,7 +49,7 @@ class SNIPI_Admin_Meta {
 
 		// Prihodnji dnevi - število med 0 in 3
 		if ( isset( $_POST['snipi_future_days'] ) ) {
-			$future_days = max( 0, min( 3, intval( $_POST['snipi_future_days'] ) ) );
+			$future_days = max( 0, min( 30, intval( $_POST['snipi_future_days'] ) ) );
 			update_post_meta( $post_id, '_snipi_future_days', $future_days );
 		}
 
@@ -137,7 +137,7 @@ class SNIPI_Admin_Meta {
 		// Nastavi default vrednosti če meta ne obstaja
 		$rows_per_page     = $rows_per_page ?: 8;
 		$autoplay_interval = $autoplay_interval ?: 10;
-		$future_days       = max( 0, min( 3, intval( $future_days ) ) );
+		$future_days       = max( 0, min( 30, intval( $future_days ) ) );
 		$logo_height       = max( 40, min( 120, intval( $logo_height ?: 60 ) ) );
 		$custom_css        = is_string( $custom_css ) ? $custom_css : '';
 		

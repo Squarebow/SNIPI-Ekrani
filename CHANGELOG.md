@@ -1,5 +1,89 @@
 # SNIPI Ekrani - Changelog
 
+---
+
+## v2.3.5 (19. marec 2026)
+
+### Razširitev prikaza na 30 prihodnjih dni
+
+- ✅ **Prihodnji dnevi**: razpon razširjen iz 0-3 na 0-30 dni
+- ✅ Posodobljeni vsi varnostni cap-i (`min(30, ...)`) v `class-admin-meta.php`, `class-admin-settings.php`, `class-rest-controller.php` in `class-admin.php`
+- ✅ Posodobljeni opisi polj v nastavitvah in stranski pomoči
+
+## [2.3.4] – 2026-03-06
+
+### Izboljšave
+- **Predogled**: namesto WP admin chrome-a vtičnik zdaj poišče objavljeno WordPress stran, ki vsebuje shortcode tega ekrana (`LIKE '%[snipi_ekran id="X"]%'`), in jo odpre direktno v ločenem oknu — predogled je identičen prikazu na TV zaslonu
+- Če shortcode še ni vstavljen v nobeno stran, gumb prikaže obvestilo z navodilom
+
+## [2.3.3] – 2026-03-06
+
+### Popravki
+- **Predogled**: popravljena napaka `rest_no_route` (404) — gumb je napačno klical neobstoječ REST endpoint; zamenjano z WP admin URL pristopom, ki odpre stran prek `render_preview_page()` znotraj WP admin konteksta
+
+## [2.3.2] – 2026-03-06
+
+### Popravki
+- **Admin meni**: odstranjen vnos "Uredi ekran" iz stranskega menija — stran je še vedno dostopna prek redirecta iz seznama ekranov, le brez odvečnega menijskega vnosa
+- **Live ikona**: povečana na 34px (prej 20px), poravnana na desni rob časovne celice z ustreznimi odmiki, dodana utripajoča animacija (`@keyframes snipi-pulse`)
+
+## [2.3.1] – 2026-03-06
+
+### Admin – Nastavitve tab
+- **Skaliranje pisave**: radio gumbi prerazporejeni v dve koloni (50:50), vsak z opisom pod seboj
+- **Spodnja vrstica – višina**: radio gumbi prerazporejeni v dve koloni (50:50)
+- Dodan naslov **Urejevalnik vsebine spodnje vrstice** nad WYSIWYG editorjem
+- **TV optimizacija**:
+  - Opis sekcije dobil konsistenten spodnji odmik pred kontrolami
+  - Polje za detekcijo obdano v siv blok (`.snipi-tv-option-block`) za vizualno ločitev
+  - **Način prikaza** in **Potrditveno okno** postavljeni v eno vrstico (50:50)
+  - Način prikaza: zamenjali dropdown s tremi horizontalnimi radio pill gumbi (Avtomatsko / Vedno TV / Namizni)
+
+### Admin – Oblikovanje tab
+- **Spodnja vrstica – 1. vrstica**: Poravnava besedila premaknjena za barvo besedila → razporeditev 33:33:33 (Ozadje | Besedilo | Poravnava)
+- **Spodnja vrstica – 2. vrstica**: Padding zgoraj premaknjen na desno → razporeditev 33:33:33 (Velikost pisave | Padding L/D | Padding zgoraj)
+- **Predogled**: odstranjen vgrajen preview box, nadomestil ga gumb **Odpri predogled v novem oknu** — odpre odzivno okno (1280×720, nastavljiva velikost), kjer uporabnik testira skaliranje pisave
+
+### CSS / JS
+- `admin.css`: dodani stili za `.snipi-radio-pill`, `.snipi-radio-inline`, `.snipi-tv-option-block`, `.snipi-radio-label--block`
+- `admin-styling.css`: poenostavljen, odstranjena pravila za preview box
+- `admin-styling.js`: dodan handler za radio pill aktivni razred; predogled zdaj odpre `window.open()` popup namesto injiciranja CSS v vgrajen box
+
+## [2.3.0] – 2025-03-06
+
+### Admin – Nastavitve tab
+- **Ime ekrana + API ključ** prikazana v eni vrstici (50:50)
+- **Dodatne možnosti** premaknjene takoj za kratko kodo
+- Polja Vrstic / Interval / Prihodnji dnevi v razporeditvi 33:33:33 z opisom pod vsakim poljem
+- **Vikend način** in **Prikaži stolpec PROGRAM** v eni vrstici (50:50)
+- **Informacije o ekranu** (info box) premaknjene na vrh desnega stolpca nad navodila
+- Dodano nastavitev **Skaliranje pisave** (Samodejno fill / Prosto)
+- **Spodnja vrstica**: dodan radio switch Samodejno / Fiksna višina z px sliderjem (40–200px)
+
+### Admin – Oblikovanje tab (novo)
+- Zamenjali smo golo CSS polje s **4-sekcijskim GUI**: Cel zaslon, Glava, Tabela, Spodnja vrstica
+- **Color picker** (wp-color-picker / Iris) za vse barvne lastnosti
+- **Range sliderji** z prikazano vrednostjo za pisave (70–150%), padding (px)
+- **Dropdown** za izbiro pisave (8 možnosti) in poravnavo besedila
+- **Toggle** za live indikator (prikaži/skrij)
+- **Custom CSS** ohranjen kot accordion sekcija za napredne uporabnike
+- Živi predogled CSS se injicira brez shranjevanja forme
+
+### Frontend – font scaling
+- Nov način **fill**: pisava vrstic se skalira (CSS `--snipi-row-scale`) da `rowsPerPage` vrstic vedno zapolni razpoložljivi zaslon
+- Nov način **free**: ohrani obstoječe vedenje (privzeta pisava, prikaži kolikor vrstic se ujame)
+
+### Frontend – footer
+- **ResizeObserver** na spodnji vrstici: pri vsaki spremembi višine se tabela samodejno preračuna
+- Podpora za **fiksno višino footerja**: `footerHeightMode=fixed` rezervira točno toliko px prostora
+- Popravek: `totalPages` se izračuna z enim korakom – odpravljena možnost zamika paginacije pri prvem renderu
+
+### Interno
+- `class-admin-meta.php`: nova meta polja `_snipi_row_scale_mode`, `_snipi_footer_height_mode`, `_snipi_footer_fixed_height`, `_snipi_styling_data` (JSON)
+- `class-renderer.php`: nova metoda `generate_styling_css()` – generira scoped CSS iz GUI podatkov
+- `class-shortcode.php`: injicira styling CSS + posreduje nova JS konfig polja
+- `class-admin-core.php`: doda `wp-color-picker` v enqueue
+
 ## v2.2.0 (15. februar 2026) - TV DETECTION & OPTIMIZATION
 
 ### ✨ Nove funkcionalnosti

@@ -238,7 +238,7 @@ return new WP_REST_Response( array(
 		$today = new DateTime( 'now', $tz );
 
 		$future_days = intval( get_post_meta( $post_id, '_snipi_future_days', true ) );
-		$future_days = max( 0, min( 3, $future_days ) );
+		$future_days = max( 0, min( 30, $future_days ) );
 		$weekend_mode = get_post_meta( $post_id, '_snipi_weekend_mode', true ) === '1';
 
 		$date_from = $today->format( 'Y-m-d' );
