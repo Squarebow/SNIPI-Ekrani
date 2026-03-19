@@ -207,6 +207,7 @@
 	display: none;
 }
 
+<<<<<<< Updated upstream
 .snipi__bottom-row > * {
 	margin: 0;
 }
@@ -247,6 +248,9 @@
 	width: 100%;
 }
 =======
+=======
+/* ============================================================
+>>>>>>> Stashed changes
    LIVE EVENT INDICATOR — using external Live.svg without row expansion
    ============================================================ */
 
@@ -290,4 +294,7 @@
     object-fit: contain;
     display: block;               /* removes inline whitespace baseline issues */
 }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
