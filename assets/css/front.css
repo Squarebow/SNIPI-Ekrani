@@ -212,6 +212,7 @@
 }
 
 /* ============================================================
+<<<<<<< Updated upstream
    LIVE EVENT INDICATOR
    - Ikona je poravnana na desni rob celice s pravilnimi odmiki
    - Večja in bolj vidna (34px)
@@ -245,3 +246,48 @@
 	line-height: 1.1;
 	width: 100%;
 }
+=======
+   LIVE EVENT INDICATOR — using external Live.svg without row expansion
+   ============================================================ */
+
+/* Time + icon wrapper remain on one line */
+.snipi__time-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+/* Time text inline alignment */
+.snipi__time {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+/* Never allow first TD to wrap */
+.snipi__table td:first-child {
+    white-space: nowrap;
+}
+
+/* Live.svg container – fixed height = text height */
+.snipi__live-indicator {
+    display: inline-flex;         /* consistent inline alignment */
+    align-items: center;          /* vertical centering */
+    justify-content: center;
+    margin-left: 6px;
+
+    height: 1.1em;                /* ← controls icon size safely */
+    width: 1.1em;                 /* square box to preserve proportions */
+
+    overflow: hidden;             /* prevents SVG from increasing row height */
+    flex-shrink: 0;               /* prevents collapse */
+}
+
+/* Scale the SVG inside the fixed box */
+.snipi__live-indicator img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;               /* removes inline whitespace baseline issues */
+}
+>>>>>>> Stashed changes
