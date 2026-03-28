@@ -54,7 +54,7 @@ Namenjen je šolam, fakultetam in drugim izobraževalnim ustanovam, ki že upora
 - Samodejno prehaja med stranmi, če je število vnosov za več kot eno stran
 - Število prikazanih dogodkov (vrstic) in interval prehajanja sta nastavljiva
 
-### Oblikovanje
+### Oblikovanje tabele
 - Lasten logotip organizacije z nastavljivo višino
 - Spodnja vrstica (noga) z lastno vsebino, na primer legendo kratic ipd. (WYSIWYG urejevalnik)
 - Popoln nadzor nad izgledom z lastnim CSS
