@@ -1,356 +1,426 @@
 # SNIPI Ekrani
 
-**Version:** 2.3.5
-**Author:** Aleš Lednik (SquareBow)  
-**Requires WordPress:** 6.7  
-**Tested up to:** 6.7  
-**Requires PHP:** 8.1
-**License:** GPLv2 or later
+**Prikaz urnikov iz sistema Snipi na velikih TV zaslonih.**
 
-SNIPI Ekrani je WordPress vtičnik za prikaz urnikov in aktivnosti v živo na velikih zaslonih iz programa **Snipi**.  
-Samodejno upravlja z **paginacijo**, **predvajanjem strani**, **podpira 16:9 responsive layout**, in **interval osveževanja podatkov**.
-
-Vtičnik administratorjem omogoča dodajanje več ekranov, konfiguriranje obdobja prikaza podatkov (privzeto za tekoči dan) ter oblikovanje tabele za prikaz.
+![WordPress](https://img.shields.io/badge/WordPress-6.7%2B-21759B?logo=wordpress&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)
+![Licenca](https://img.shields.io/badge/Licenca-GPLv2-green)
+![Verzija](https://img.shields.io/badge/Verzija-2.3.5-blue)
+![Status](https://img.shields.io/badge/Status-Stabilna-brightgreen)
 
 ---
 
-## 📌 Features
+## Kazalo
 
-### Frontend
-- ✅ Fetches and displays schedule data from the Snipi API  
-- ✅ **NEW v2.2.0:** Avtomatska TV detekcija (Samsung, LG, Sony, itd.)
-- ✅ **NEW v2.2.0:** Zero-scroll TV optimizacija (dinamično skaliranje)
-- ✅ **NEW v2.2.0:** Support za HD Ready, Full HD, 4K TV ekrane
-- ✅ Autoplay carousel with configurable intervals 
-- ✅ Automatic page refresh every 60 seconds
-- ✅ Responsive 16:9 layout  
-- ✅ Automatic pagination
-- ✅ Live indicator for ongoing events
-- ✅ Day labels for future events
-- ✅ Weekend mode (shows next week events)
-- ✅ Optional PROGRAM column
-- ✅ Customizable logo and bottom row
-- ✅ **NO jQuery** - Pure vanilla JavaScript
-- ✅ **NO caching** - Always live data
-- ✅ Shortcodes for embedding schedules on any page
-
-### Admin Area
-- ✅ Custom Post Type: **SNIPI ekrani**
-- ✅ **NEW v2.2.0:** TV Optimizacija meta box (auto-detection settings)
-- ✅ **NEW v2.1.0:** Refactored modular architecture
-- ✅ **NEW v2.1.0:** 60:40 layout (settings + inline help)
-- ✅ **NEW v2.1.0:** Tab system (Nastavitve | Oblikovanje)
-- ✅ **NEW v2.1.0:** Slovenian code comments (30% of codebase)
-- ✅ **NEW v2.1.0:** No inline CSS - all in files
-- ✅ API configuration with validation
-- ✅ Display configuration (autoplay, refresh interval, etc.)  
-- ✅ Custom CSS editor with live preview
-- ✅ Logo upload with height control
-- ✅ WYSIWYG editor for bottom row
-- ✅ WordPress native styling
-- ✅ Custom CSS/JS enqueues located in `assets/`
+- [O vtičniku](#o-vtičniku)
+- [Kaj vtičnik zmore](#kaj-vtičnik-zmore)
+- [Namestitev](#namestitev)
+- [Začetek uporabe](#začetek-uporabe)
+- [Nastavitve](#nastavitve)
+- [TV ekrani](#tv-ekrani)
+- [Oblikovanje](#oblikovanje)
+- [Pogosta vprašanja](#pogosta-vprašanja)
+- [Roadmap](#roadmap)
+- [Podpora in kontakt](#podpora-in-kontakt)
+- [Licenca](#licenca)
 
 ---
 
-## 🏗️ Architecture (v1.2.0)
+## O vtičniku
 
-### Modular Structure
+**SNIPI Ekrani** je WordPress vtičnik, ki prikazuje urnike iz CRM sistema *SNIPI* na velikih LCD zaslonih in pametnih televizorjih — brez kakršnegakoli ročnega posodabljanja.
 
+Namenjen je šolam, fakultetam in drugim izobraževalnim ustanovam, ki že uporabljajo SNIPI za upravljanje urnikov. Podatki se samodejno osvežujejo v živo, zaslon pa se prilagodi vsaki ločljivosti — od navadnega monitorja do 4K TV zaslona.
+
+---
+
+## Kaj vtičnik zmore
+
+### Prikaz urnika
+- Prikazuje urnik za tekoči dan iz sistema SNIPI v pregledni tabeli
+- Samodejno osvežuje podatke vsakih 60 sekund — vedno aktualno
+- Označuje aktivne (trenutno potekajoče) dogodke
+- Lahko prikazuje urnik za prihodnje dni (do 30 dni vnaprej)
+- Podpira vikend način (v petek po zadnjem dogodku preskoči soboto in nedeljo ter na ekranu prikazuje dogodke od prihodnjega ponedeljka dalje)
+- Po želji prikazuje stolpec PROGRAM
+
+### TV optimizacija
+- Samodejno zazna pametne TV ekrane (Samsung, LG, Sony itd.)
+- Prilagodi velikost pisave in razporeditev glede na ločljivost zaslona
+- Podpora za HD Ready (1366×768), Full HD (1920×1080) in 4K (3840×2160)
+- Brez drsenja — vsebina se vedno prilagodi ekranu
+
+### Paginacija strani
+- Samodejno prehaja med stranmi, če je število vnosov za več kot eno stran
+- Število prikazanih dogodkov (vrstic) in interval prehajanja sta nastavljiva
+
+### Oblikovanje
+- Lasten logotip organizacije z nastavljivo višino
+- Spodnja vrstica (noga) z lastno vsebino, na primer legendo kratic ipd. (WYSIWYG urejevalnik)
+- Popoln nadzor nad izgledom z lastnim CSS
+
+### Skrbniški vmesnik
+- Dodajanje več ekranov z ločenimi nastavitvami
+- Kratka koda za vgraditev na katero koli WordPress stran ali objavo
+- Zavihka Nastavitve in Oblikovanje s preglednim vmesnikom
+
+---
+
+## Namestitev
+1. [Prenesite najnovejšo ZIP datoteko vtičnika] (https://github.com/Squarebow/SNIPI-Ekrani/releases/download/v2.3.5/SNIPI-Ekrani-v2.3.5.zip)
+2. V WordPress skrbniškem vmesniku pojdite na **Vtičniki → Dodaj nov vtičnik**
+3. Kliknite **Naloži vtičnik** in izberite preneseno ZIP datoteko
+4. Kliknite **Namesti zdaj**, nato **Aktiviraj**
+
+> **FTP metoda:** ZIP datoteko razpakirajte in mapo `snipi-ekrani` prekopirajte v `/wp-content/plugins/` prek FTP, nato vtičnik aktivirajte v WordPress vmesniku.
+
+---
+
+## Začetek uporabe
+
+### 1. Ustvarite nov ekran
+
+V skrbniškem meniju na levi kliknite **SNIPI ekrani → Dodaj ekran**.
+
+### 2. Vnesite API ključ
+
+API ključ je zadnji del URL naslova vašega zaslona v sistemu SNIPI.
+
+**Primer:**
 ```
-snipi-ekrani/
-├── assets/
-│   ├── css/
-│   │   ├── admin.css              # Admin panel (60:40 layout, tabs)
-│   │   ├── admin-styling.css      # Styling page specific
-│   │   └── front.css              # Frontend table styling
-│   ├── js/
-│   │   ├── admin.js               # Admin functionality (vanilla JS)
-│   │   ├── admin-styling.js       # Styling page JS
-│   │   └── front.js               # Frontend logic (vanilla JS)
-│   ├── Copy_icon_256px.svg
-│   └── Live.svg
-├── includes/
-│   ├── Admin/
-│   │   ├── class-admin-core.php         # CPT, menu, assets
-│   │   ├── class-admin-meta.php         # Meta save/get logic
-│   │   ├── class-admin-columns.php      # Custom columns in list
-│   │   ├── class-admin-edit-screen.php  # Main edit screen
-│   │   ├── class-admin-settings-tab.php # Settings tab content
-│   │   └── class-admin-styling-tab.php  # Styling tab content
-│   ├── Api/
-│   │   ├── class-data-service.php       # API communication
-│   │   └── class-rest-controller.php    # REST endpoints
-│   └── Front/
-│       ├── class-renderer.php           # HTML rendering
-│       └── class-shortcode.php          # Shortcode handler
-├── snipi-ekrani.php                     # Main plugin file
-├── AGENT.md                             # Development guidelines
-├── REFACTORING_CHANGELOG.md             # Refactoring details
-└── README.md                            # This file
+https://ustanova.snipi.si/BdhBcrRm8
+                        ↑
+                    API ključ = BdhBcrRm8
 ```
 
-### Tech Stack
-- **Backend:** PHP 8.3, WordPress 6.7, OOP with static classes
-- **Frontend:** Vanilla JavaScript (ES5), Fetch API, Intl API
-- **CSS:** Grid + Flexbox, BEM methodology
-- **WP Integration:** Custom Post Type, REST API, Shortcodes
-- **NO jQuery** - Pure vanilla JS
-- **NO caching** - Always live data
+Ključ vnesite v polje **API ključ** na strani za urejanje ekrana ga shranite.
 
----
+### 3. Kopirajte kratko kodo
 
-## 🔧 Installation
+Po shranjevanju se prikaže vaša kratka koda, na primer:
 
-1. Upload the plugin folder to `/wp-content/plugins/`  
-2. Activate the plugin in **Plugins > Installed Plugins**  
-3. Go to **SNIPI ekrani** in the WordPress admin menu  
-4. Click **Dodaj ekran** to create a new screen
-5. Enter your API key (from Snipi system)
-6. Copy the shortcode
-7. Paste the shortcode into any page or post
-
----
-
-## 🎨 Admin Interface (v1.2.0)
-
-### New UI Features:
-- **60:40 Layout:** Settings (60%) + Inline help (40%)
-- **Tab System:** Nastavitve | Oblikovanje
-- **Sticky Sidebar:** Help stays visible while scrolling
-- **WordPress Native Tabs:** Uses WP native tab styling
-- **No Inline CSS:** All styling in CSS files
-
-### Settings Tab:
-- Screen name
-- API key (required)
-- Shortcode (with copy button)
-- Rows per page / Autoplay interval / Future days
-- Info box (events count today)
-- Weekend mode checkbox
-- Show PROGRAM column checkbox
-- Logo upload with height slider
-- Bottom row toggle + WYSIWYG editor
-
-### Styling Tab:
-- Custom CSS editor (dark theme)
-- Preview button
-- Live preview box
-- CSS class reference table
-- 5 practical CSS examples
-
----
-
-## 💻 Usage
-
-### Basic Shortcode:
 ```
 [snipi_ekran id="123"]
 ```
 
-### API Key Format:
-The API key is the last part of your Snipi screen URL.  
-Example: `https://urnik.snipi.si/BdhBcrRm8` → Key: `BdhBcrRm8`
+### 4. Vgradnja na Wordpress stran
 
-### CSS Customization:
-Add custom CSS in **Oblikovanje** tab:
+Kratko kodo prilepite na katero koli stran ali objavo v WordPressu — urnik se bo prikazal. Pritisnite v brskalniku Ctrl + F5 za osvežitev strani.
+
+> **Priporočilo:** Wordpress stran, kjer želite prikazati urnik, naj bo popolnoma prazna. To pomeni, da je na njej priporočljivo odstraniti oziroma skriti privzeto glavo in nogo (header & footer). Odvisno od vaše Wordpress teme, gradnikov (blocks, Elementor ipd.) ter vtičnikov, je to mogoče narediti na več načinov. Nekatere sodobne teme omogočajo izključitev prikaza glave in noge na posameznih straneh. Če te možnosti nimate, je potrebno te elemente "skriti" s CSS kodo, da se ne prikazujejo na ekranu. Če uporabljate vtičnik za medpomnjenje (caching), je url strani, npr. `moja-ustanova.si/ekran` priporočeno dodati med izključitve (do not cache).
+
+> **Namig:** Kateri podatki se bodo prikazovali na ekranu *izberete pri ustvarjanju novega ekjrana v SNIPIju oziroma s klikom na Uredi*. Možnosti, ki so na voljo za prikaz podatkov, vključujejo: lokacije, prostore, projekte, šolske programe, izvajalce ipd. Registrirani uporabniki SNIPIja seznam ekranov in API ključ najdete v razdelku *Rezervacija prostorov → Izpisi na ekranih*.
+
+### 5. Vgradnja urnika med vsebino vaše strani (iframe)
+
+Ko ste urnik izdelali in shranili, ga lahko kot HTML element vgradite tudi na katero koli obstoječo spletno stran (page) ali objavo (post) z elementom `<iframe>`. Spodnji primer prikazuje urnik pomanjšan v razmerju 2:3, tako da se prilagodi manjšemu prostoru na strani, a ohrani izvorno obliko. Ključno je, da *uporabite url strani, na kateri imate kratko kodo urnika*. Na primer, če ste Wordpress stran z urnikom poimenovali urnik-pritlicje, boste v iframe vstavili url https://moja-ustanova/urnik-pritlicje. Kopirajte in prilepite spodnjo kodo v HTML blok na strani ali objavi, kjer želite prikazati urnik, in *spremenite URL* ter po potrebi velikost.
+
+---
+
+#### Osnovna koda
+```html
+<div style="
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+">
+    <iframe
+        style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 150%;
+            height: 150%;
+            border: none;
+            transform: scale(0.667);
+            transform-origin: top left;
+            pointer-events: none;
+        "
+        src="https://moja-domena.si/urnik"
+        scrolling="no">
+    </iframe>
+
+    
+        href="https://mopja-domena/urnik"
+        target="_blank"
+        title="Odpri celotno stran"
+        style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            cursor: pointer;
+            display: block;
+        ">
+    </a>
+</div>
+```
+
+---
+
+#### Kako to deluje
+
+Iframe je nastavljen na **150 % širine in višine** vsebnika, nato pa pomanjšan nazaj na **66,7 %** z `transform: scale(0.667)`. Rezultat je urnik v polni ločljivosti, ki vizualno zasede manjši prostor — brez drsnih vrstic in brez deformacije besedila ali elementov.
+
+Ob kliku se odpre urnik v novi zavihku.
+
+---
+
+#### Parametri, ki jih lahko prilagodite
+
+| Parameter | Kje v kodi | Opis |
+|---|---|---|
+| `max-width: 900px` | zunanja `div` | Največja širina vsebnika; zmanjšajte za ožji prikaz ali povečajte za širši prikaz |
+| `aspect-ratio: 16 / 10` | zunanja `div` | Razmerje stranic vsebnika; `16 / 9` za TV format |
+| `border-radius: 6px` | zunanja `div` | Zaobljenost vogalov; `0` za pravokotni okvir |
+| `box-shadow: ...` | zunanja `div` | Senca okoli vsebnika; odstranite vrstico, če je ne želite |
+| `width: 150%` + `height: 150%` | `iframe` | Določata, kako velik je iframe pred pomanjšanjem — skupaj s `scale` |
+| `transform: scale(0.667)` | `iframe` | Faktor pomanjšanja (0.667 = 2/3); za manj pomanjšan prikaz povečajte vrednost (npr. `0.75`) |
+| `src="https://..."` | `iframe` in `<a>` | URL *vaše strani z urnikom*; nujno ga zamenjajte z pravim naslovom |
+
+**Razmerje med `width`/`height` in `scale` mora biti vedno usklajeno:**  
+Če nastavite `width: 133%` in `height: 133%`, mora biti `scale(0.75)` — vrednosti sta med seboj obratno sorazmerni.
+
+---
+
+#### Opomba glede (ne)prikazovanja) urnika na strani pri vgradnji z iframe metodo
+
+- Če je stran z urnikom na **isti domeni** kot stran, na katero jo vgrajujete, teh omejitev ni in iframe bo deloval brez posebnih nastavitev.
+- Če je stran z urnikom na **drugi domeni**, mora strežnik dovoliti vgradnjo — glava `X-Frame-Options` ne sme biti nastavljena na `SAMEORIGIN` ali `DENY`.
+
+Kar vpliva na vgradnjo z iframom je glava `X-Frame-Options` (ali `Content-Security-Policy: frame-ancestors`) na vaši ciljni strani (kamor vgrajujete iframe)!
+
+> Na strežnikih nginx in pri uporabi Cloudflare CDN je pogosta težava, da je glava `X-Frame-Options: SAMEORIGIN` nastavljena privzeto — bodisi v nginx konfiguraciji, WordPress kodi ali prek Cloudflare upravljanih preoblikovanj. Preverite vse tri vire, če iframe prikazuje prazno vsebino ali napako.
+
+
+---
+
+## Nastavitve
+
+Na zaslonu za urejanje ekrana so na voljo naslednje nastavitve:
+
+| Nastavitev | Opis | Privzeto |
+|---|---|---|
+| **Ime ekrana** | Naziv za prepoznavanje v skrbniškem vmesniku | — |
+| **API ključ** | Ključ iz sistema Snipi (obvezno) | — |
+| **Vrstic na stran** | Koliko vnosov oziroma vrstic se prikaže na eni strani | 10 |
+| **Interval prehajanja** | Čas med stranmi v sekundah | 10 s |
+| **Prihodnji dnevi** | Koliko dni vnaprej se prikazuje urnik | 1 |
+| **Vikend način** | V petek preskoči soboto in nedeljo ter prikazuje naslednji teden | Izklopljeno |
+| **Stolpec PROGRAM** | Prikazuje stolpec z imenom programa | Izklopljeno |
+| **Logotip** | Slika za glavo ekrana | — |
+| **Višina logotipa** | Višina logotipa v pikslih | 60 px |
+| **Spodnja vrstica** | Fiksna vsebina na dnu (HTML) | Izklopljeno |
+
+---
+
+## TV ekrani
+
+SNIPI Ekrani vsebuje poseben način optimizacije za pametne televizorje.
+
+### Samodejna zaznava
+
+Vtičnik samodejno prepozna, ali je zaslon priklopljen na pametni TV (Samsung Tizen, LG webOS, Sony Android TV in drugi). Ko zazna TV, preklopi v TV način, ki zagotavlja:
+
+- Prilagajanje vsebine celotnemu zaslonu brez drsenja
+- Pisava je dovolj velika za branje z razdalje
+- Razporeditev je optimizirana za daljinski upravljalnik
+
+> **Opozorilo:** Brskalniki, ki so vgrajeni v pametne TV naprave, niso zelo zmogljivi in delujejo drugače kot brskalniki na računalniki. Če na zaslonu opazite nenavaden prikaz, preizkusite na TV naložiti več različnih brskalnikov in jih preizkusite, kateri vam najbolj ustreza.
+
+### Nastavitve TV načina
+
+| Možnost | Opis |
+|---|---|
+| **Samodejno** | Vtičnik sam zazna TV in preklopi način |
+| **Vedno TV** | TV način vedno vklopljen (priporočeno za namenske zaslone) |
+| **Vedno Desktop** | TV način vedno izklopljen |
+
+> **Nasvet:** Če zaslon služi izključno kot informacijski ekran, priporočamo možnost **Vedno TV** — tako ni odvisen od zaznave brskalnika.
+
+### Podprte ločljivosti
+
+| Resolucija | Tip zaslona |
+|---|---|
+| 1366 × 768 | HD Ready TV |
+| 1920 × 1080 | Full HD TV |
+| 3840 × 2160 | 4K TV |
+
+---
+
+## Oblikovanje
+
+Na jezičku **Oblikovanje** lahko spremenite videz urnika z lastnim CSS. Za napredne uporabnike so na voljo so tudi primeri in referenca CSS razredov.
+
+### Zgradba zaslona
+
+Zaslon urnika je sestavljen iz štirih področij. Vsako področje lahko oblikujete neodvisno.
+
+---
+
+**Glava strani** `.snipi__header`
+
+Prikazuje se na vrhu zaslona in ostane vidna ves čas. Vsebuje logotip vaše ustanove (če ga naložite), ime ekrana kot naslov, tekoči datum ter uro, ki se samodejno posodablja vsako sekundo. Glava je fiksni element — ne izgine pri menjavi strani ob paginaciji.
+
+Kaj lahko spremenite: barvo ozadja in pisave, velikost in poravnavo logotipa, vidnost posameznih elementov (datum, ura, naslov).
+
+---
+
+**Glava tabele** `.snipi__table thead`
+
+Vrstica z imeni stolpcev, ki se prikaže tik pod glavo strani. Vsebuje naslove stolpcev: Čas, Izobraževanje, Program (če je vključen prikaz), Predavatelj, Učilnica in Nadstropje. Glava tabele je vedno fiksna, medtem ko se vrstice z dogodki menjajo.
+
+Kaj lahko spremenite: barvo ozadja in pisave, debelino in barvo spodnje obrobe, velikost in težo pisave.
+
+---
+
+**Telo tabele** `.snipi__row`
+
+Osrednji del zaslona — seznam dogodkov za izbrani dan ali obdobje. Vsaka vrstica predstavlja en dogodek. Vrstice se izmenjujejo v dveh odtenkih ozadja (`.snipi__row--alt`) za boljšo berljivost. Aktiven (trenutno potekajoč) dogodek je dodatno označen z utripajočim indikatorjem v živo (`.snipi__live-indicator`). Če urnik obsega več strani, je prehajanje med njimi samodejno. Prihodnji dnevi so ločeni z imenom dneva in datumom (`.snipi__day-label`).
+
+Kar lahko spremenite: barvo in višino vrstic, barvo izmenitvenih vrstic, poudaritev aktivnega dogodka, slog oznake za prihodnji dan, velikost in barvo pisave v posameznih stolpcih.
+
+---
+
+**Noga strani** `.snipi__bottom-row`
+
+Prikazuje se na dnu zaslona in ostane vidna ves čas, neodvisno od vsebine tabele. Je opcijska — vklopite jo v nastavitvah in vanjo z WYSIWYG urejevalnikom vnesete poljubno HTML vsebino: obvestilo, logotip partnerja, kontaktne podatke ali kateri koli vsebinski element. Noga je priporočljiva za zaslone v hodnikih, kjer želite prikazati stalne informacije poleg urnika.
+
+Kar lahko spremenite: barvo ozadja in pisave, višino, poravnavo vsebine, robove in obrobe.
+
+
+###  Uporabljeni CSS razredi (napredni uporabniki)
+
+| Razred | Element |
+|---|---|
+| `.snipi` | Celoten blok urnika |
+| `.snipi__header` | Glava (logotip, datum, ura) |
+| `.snipi__title` | Naslov |
+| `.snipi__table` | Tabela urnika |
+| `.snipi__row` | Vrstica dogodka |
+| `.snipi__row--alt` | Izmenična vrstica (drugačno ozadje) |
+| `.snipi__live-indicator` | Oznaka za aktiven dogodek |
+| `.snipi__day-label` | Oznaka za prihodnji dan |
+| `.snipi__bottom-row` | Spodnja fiksna vrstica |
+| `.snipi__logo` | Logotip |
+
+### Primeri
 
 ```css
-/* Example: Change header color */
+/* Sprememba barve glave */
 .snipi__header {
-    background: #2271b1;
+    background: #1a3a5c;
     color: white;
 }
 
-/* Example: Larger title */
+/* Večja pisava naslova */
 .snipi__title {
     font-size: 3rem;
 }
 
-/* Example: Alternating rows */
+/* Izmenične vrstice */
 .snipi__row--alt {
-    background: #f6f7f7;
+    background: #f0f4f8;
+}
+
+/* Barva aktivnega dogodka */
+.snipi__live-indicator {
+    color: #e53e3e;
 }
 ```
 
 ---
 
-## 🔌 API Integration
+## Pogosta vprašanja
 
-### Endpoint:
-```
-https://upi.snipi.si/api/Scheduler/GetTimeSlots
-```
+**Kje dobim API ključ?**  
+API ključ je zadnji del URL naslova vašega zaslona v sistemu SNIPI (primer: `https://ustanova.snipi.si/BdhBcrRm8` → API ključ je `BdhBcrRm8`). Registrirani uporabniki SNIPIja seznam ekranov in API ključ najdete v razdelku *Rezervacija prostorov → Izpisi na ekranih*. Kateri podatki se bodo prikazali na ekranu izberete pri ustvarjanju novega ekrana v SNIPIju oziroma s klikom na Uredi. Možnosti, ki so na voljo za prikaz podatkov, so: lokacije, prostori, projekti, šolski programi, izvajalci ipd.
 
-### Parameters:
-- `key` - Your API key
-- `dateFrom` - Start date (YYYY-MM-DD)
-- `dateTo` - End date (YYYY-MM-DD)
+**Koliko ekranov lahko ustvarim?**  
+Ni omejitve — ustvarite toliko ekranov, kolikor jih potrebujete. Vsak ima ločene nastavitve in svojo kratko kodo.
 
-### Example Call:
-```
-https://upi.snipi.si/api/Scheduler/GetTimeSlots?dateFrom=2025-11-11&dateTo=2025-11-30&key=BdhBcrRm8
-```
+**Ali vtičnik deluje na starejših TV ekranih?**  
+Da. Prikaz je optimiziran za starejše brskalnike Smart TV (vključno s Samsung Tizen pred letom 2018). Vtičnik ne uporablja jQuery ali modernih ogrodij — samo čisti JavaScript.
 
-### Response Format:
-Returns array of events with fields:
-- `objectId` - Event ID
-- `type` - Event type (0-4)
-- `name` - Event name
-- `location` - Location name
-- `room` - Room name
-- `floor` - Floor name
-- `start` - Start time (ISO 8601)
-- `end` - End time (ISO 8601)
-- `teacher` - Teacher name(s)
-- `subjects` - Array of subjects
-- `displayNameWithIcon` - Name with icon
+**Ali se podatki shranjujejo lokalno?**  
+Ne. Vtičnik vsakič pridobi sveže podatke neposredno iz Snipi API — brez predpomnilnika.
+
+**Ali moram imeti WordPress za uporabo vtičnika?**  
+DA — vtičnik zahteva WordPress. Načrtujemo pa različico brez WordPressa; glejte razdelek [Roadmap](#roadmap).
+
+**Ali vtičnik podpira večjezičnost?**  
+Skrbniški vmesnik je v slovenščini. Podatki v urniku se prikazujejo točno tako, kot so vneseni v sistemu Snipi.
 
 ---
 
-## 🎯 CSS Classes Reference
+## Roadmap
 
-### Main Elements:
-- `.snipi` - Main wrapper
-- `.snipi__header` - Header (logo, date, clock)
-- `.snipi__title` - Main title
-- `.snipi__table` - Table element
-- `.snipi__table thead` - Table header
-- `.snipi__row` - Event row
-- `.snipi__row--alt` - Alternating rows
+> 🚀 **SNIPI Ekrani kot samostojna aplikacija**
 
-### Data Columns:
-- `[data-snipi-col="time"]` - Time column
-- `[data-snipi-col="name"]` - Event name column
-- `[data-snipi-col="program"]` - Program column
-- `[data-snipi-col="teacher"]` - Teacher column
-- `[data-snipi-col="room"]` - Room column
-- `[data-snipi-col="floor"]` - Floor column
+Ker vse ustanove nimajo spletnih strani, zgrajenih na platformi WordPress, pripravljamo **samostojno različico SNIPI Ekrani**, ki ne bo zahtevala nobene vsebinske platforme.
 
-### Special Elements:
-- `.snipi__live-indicator` - Live event indicator
-- `.snipi__day-label` - Future day label
-- `.snipi__bottom-row` - Bottom fixed row
-- `.snipi__logo` - Logo element
+### Načrtovane možnosti
+
+**SaaS storitev (gostovana rešitev)**  
+Preprosta spletna aplikacija, dostopna prek brskalnika. Ustvarite brezplačen uporabniški račun, dodate ekrane in pridobite URL za vsak zaslon — brez nameščanja česarkoli.
+
+**Docker (samogostovanje)**  
+Za ustanove z lastno IT infrastrukturo (spletnim strežnikom in gostovanjem) bo na voljo Docker kontejner. Zaženete jo na svojem strežniku in tako v celoti nadzorujete podatke in zasebnost.
+
+### Kaj ostaja enako
+
+Prikaz urnika na TV zaslonu bo v obeh različicah enak kot je v Wordpress vtičniku — enak videz, enaka hitrost. Samo skrbniški oziroma administratorsdki del bo dostopen neposredno prek spleta - brez WordPressa.
+
+### Kdaj?
+
+Predvidoma do konca leta 2026. Sledite repozitoriju na GitHubu za novosti.
 
 ---
 
-## 📋 Changelog
+## Podpora in kontakt
 
-### v1.2.0 (February 14, 2026)
-**🎉 MAJOR REFACTORING - Faza 2 Complete**
+Za prijavo napak in predloge novih funkcionalnosti uporabite [GitHub Issues](https://github.com/Squarebow/snipi-ekrani/issues).
 
-**Architecture:**
-- ✅ Modularized `class-admin.php` (754 lines) into 6 clean modules
-- ✅ Created `class-admin-core.php` - CPT, menu, assets (230 lines)
-- ✅ Created `class-admin-meta.php` - Meta logic (150 lines)
-- ✅ Created `class-admin-columns.php` - List columns (120 lines)
-- ✅ Created `class-admin-edit-screen.php` - Edit UI (250 lines)
-- ✅ Created `class-admin-settings-tab.php` - Settings content (200 lines)
-- ✅ Created `class-admin-styling-tab.php` - Styling content (180 lines)
+Tehnična pomoč pri namestitvi ali naročilo prilagoditev: [Pišite nam](mailto:info@squarebow.com?subject=SNIPI%20Ekrani%20podpora)
 
-**UI Improvements:**
-- ✅ New 60:40 layout (main content + inline help sidebar)
-- ✅ Tab system instead of separate pages
-- ✅ WordPress native tab styling
-- ✅ Sticky help sidebar
-- ✅ Responsive design (stacks on mobile)
-
-**Code Quality:**
-- ✅ **Added 350+ lines of Slovenian comments** (30% of codebase)
-- ✅ **Removed ALL inline CSS** - moved to admin.css
-- ✅ Centralized meta save/get logic
-- ✅ Consistent validation across all fields
-- ✅ Better code organization and readability
-
-**Documentation:**
-- ✅ Created REFACTORING_CHANGELOG.md (detailed changes)
-- ✅ Updated README.md with v1.2.0 features
-- ✅ Documented all modules and functions
-
-### v1.1 (Previous stable)
-- WordPress native success notice after saving
-- Fixed autoplay to show all pages including future days
-- Fixed save error and preview link
-- Weekend mode uses Today + 3 days range
-- Added PROGRAM column option
-- WYSIWYG editor for bottom row
-- Logo upload with height control
-- CSS editor with preview
-
-### v1.0.4
-- Added WordPress native success notice
-- Fixed autoplay pagination
-
-### v1.0.3
-- Fixed save error
-- Updated preview to actual page with shortcode
-- Weekend mode improvements
+SNIPI podpora (Dejan Dular): [SNIPI podpora](mailto:dejan@snipi.si)
 
 ---
 
-## 🛠️ Development
+## Dnevnik sprememb
 
-### Requirements:
-- WordPress 6.7+
-- PHP 8.3+
-- Modern browser with ES6 support
+### v2.3.5 — trenutna stabilna verzija
+- Najnovejše popravke in izboljšave najdete v datoteki `CHANGELOG.md`
 
-### Coding Standards:
-- **Tabs for indentation** (not spaces)
-- **BEM methodology** for CSS
-- **WordPress coding standards** for PHP
-- **Slovenian comments** for all important code
-- **NO jQuery** - vanilla JavaScript only
-- **NO caching** - always live data
+### v2.2.0
+- Avtomatska zaznava Smart TV ekranov
+- TV optimizacija: zero-scroll, dinamično skaliranje pisave
+- Podpora za HD Ready, Full HD in 4K resolucije
+- Nov meta box TV Optimizacija v skrbniškem vmesniku
 
-### Asset Versioning:
-Assets use `filemtime()` for cache-busting:
-```php
-snipi_ekrani_asset_version( 'assets/css/admin.css' )
-```
+### v2.1.0
+- FontAwesome ikone v skrbniškem vmesniku
+- WordPress Settings API integracija z avtomatično sanitizacijo
 
-### Enqueue Strategy:
-Assets load only where needed - not globally:
-```php
-if ( $is_snipi_page || $is_ekran_cpt ) {
-    wp_enqueue_style( 'snipi-admin-css', ... );
-}
-```
+### v2.0.0
+- Popolna prenova arhitekture v 6 ločenih modulov
+- Nov 60:40 layout (nastavitve + vgrajeni priročnik)
+- Sistem jezičkov (Nastavitve | Oblikovanje)
+- Vsi komentarji v kodi v slovenščini
 
 ---
 
-## 🤝 Contributing
+## Licenca
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Follow WordPress coding standards
-4. Add Slovenian comments to all important code
-5. Commit changes (`git commit -m 'Add AmazingFeature'`)
-6. Push to branch (`git push origin feature/AmazingFeature`)
-7. Open Pull Request
+Vtičnik je licenciran pod [GPLv2 ali novejšo](https://www.gnu.org/licenses/gpl-2.0.html) licenco.
 
 ---
 
-## 📄 License
-
-This plugin is licensed under the GPLv2 or later.
-
----
-
-## 🙋 Support
-
-For bug reports and feature requests, please use [GitHub Issues](https://github.com/Squarebow/snipi-ekrani/issues).
-
-For custom development or support: [https://squarebow.com](https://squarebow.com)
-
----
-
-## 🎓 Credits
-
-- **Developer:** Aleš Lednik
-- **Company:** SquareBow
-- **API Integration:** Snipi CRM System
-
----
-
-**Made with ❤️ in Slovenia**
+**Razvil:** Aleš Lednik · [SquareBow](https://squarebow.com)  
+**Narejeno s ❤️ v Sloveniji**
