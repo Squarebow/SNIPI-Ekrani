@@ -286,29 +286,25 @@ Zaslon urnika je sestavljen iz štirih področij. Vsako področje lahko oblikuje
 
 ---
 
-**Glava strani** `.snipi__header`
-
+**GLAVA STRANI** `.snipi__header`
 Prikazuje se na vrhu zaslona in ostane vidna ves čas. Vsebuje logotip vaše ustanove (če ga naložite), ime ekrana kot naslov, tekoči datum ter uro, ki se samodejno posodablja vsako sekundo. Glava je fiksni element — ne izgine pri menjavi strani ob paginaciji.
 
 **Kaj lahko spremenite:** barvo ozadja in pisave, velikost in poravnavo logotipa, vidnost posameznih elementov (datum, ura, naslov).
 
 
-**Glava tabele** `.snipi__table thead`
-
+**GLAVA TABELE** `.snipi__table thead`
 Vrstica z imeni stolpcev, ki se prikaže tik pod glavo strani. Vsebuje naslove stolpcev: Čas, Izobraževanje, Program (če je vključen prikaz), Predavatelj, Učilnica in Nadstropje. Glava tabele je vedno fiksna, medtem ko se vrstice z dogodki menjajo.
 
 **Kaj lahko spremenite:** barvo ozadja in pisave, debelino in barvo spodnje obrobe, velikost in težo pisave.
 
 
-**Telo tabele** `.snipi__row`
-
+**TELO TABELE** `.snipi__row`
 Osrednji del zaslona — seznam dogodkov za izbrani dan ali obdobje. Vsaka vrstica predstavlja en dogodek. Vrstice se izmenjujejo v dveh odtenkih ozadja (`.snipi__row--alt`) za boljšo berljivost. Aktiven (trenutno potekajoč) dogodek je dodatno označen z utripajočim indikatorjem v živo (`.snipi__live-indicator`). Če urnik obsega več strani, je prehajanje med njimi samodejno. Prihodnji dnevi so ločeni z imenom dneva in datumom (`.snipi__day-label`).
 
 **Kar lahko spremenite:** barvo in višino vrstic, barvo izmenitvenih vrstic, poudaritev aktivnega dogodka, slog oznake za prihodnji dan, velikost in barvo pisave v posameznih stolpcih.
 
 
-**Noga strani** `.snipi__bottom-row`
-
+**NOGA STRANI** `.snipi__bottom-row`
 Prikazuje se na dnu zaslona in ostane vidna ves čas, neodvisno od vsebine tabele. Je opcijska — vklopite jo v nastavitvah in vanjo z WYSIWYG urejevalnikom vnesete poljubno HTML vsebino: obvestilo, logotip partnerja, kontaktne podatke ali kateri koli vsebinski element. Noga je priporočljiva za zaslone v hodnikih, kjer želite prikazati stalne informacije poleg urnika.
 
 **Kar lahko spremenite:** barvo ozadja in pisave, višino, poravnavo vsebine, robove in obrobe.
