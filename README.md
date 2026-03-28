@@ -6,7 +6,6 @@
 ![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)
 ![Licenca](https://img.shields.io/badge/Licenca-GPLv2-green)
 ![Verzija](https://img.shields.io/badge/Verzija-2.3.5-blue)
-![Status](https://img.shields.io/badge/Status-Stabilna-verzija-brightgreen)
 
 ---
 
