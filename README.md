@@ -301,13 +301,13 @@ Vrstica z imeni stolpcev, ki se prikaže tik pod glavo strani. Vsebuje naslove s
 **TELO TABELE** `.snipi__row`
 Osrednji del zaslona — seznam dogodkov za izbrani dan ali obdobje. Vsaka vrstica predstavlja en dogodek. Vrstice se izmenjujejo v dveh odtenkih ozadja (`.snipi__row--alt`) za boljšo berljivost. Aktiven (trenutno potekajoč) dogodek je dodatno označen z utripajočim indikatorjem v živo (`.snipi__live-indicator`). Če urnik obsega več strani, je prehajanje med njimi samodejno. Prihodnji dnevi so ločeni z imenom dneva in datumom (`.snipi__day-label`).
 
-**Kar lahko spremenite:** barvo in višino vrstic, barvo izmenitvenih vrstic, poudaritev aktivnega dogodka, slog oznake za prihodnji dan, velikost in barvo pisave v posameznih stolpcih.
+**Kaj lahko spremenite:** barvo in višino vrstic, barvo izmenitvenih vrstic, poudaritev aktivnega dogodka, slog oznake za prihodnji dan, velikost in barvo pisave v posameznih stolpcih.
 
 
 **NOGA STRANI** `.snipi__bottom-row`
 Prikazuje se na dnu zaslona in ostane vidna ves čas, neodvisno od vsebine tabele. Je opcijska — vklopite jo v nastavitvah in vanjo z WYSIWYG urejevalnikom vnesete poljubno HTML vsebino: obvestilo, logotip partnerja, kontaktne podatke ali kateri koli vsebinski element. Noga je priporočljiva za zaslone v hodnikih, kjer želite prikazati stalne informacije poleg urnika.
 
-**Kar lahko spremenite:** barvo ozadja in pisave, višino, poravnavo vsebine, robove in obrobe.
+**Kaj lahko spremenite:** barvo ozadja in pisave, višino, poravnavo vsebine, robove in obrobe.
 
 
 ###  Uporabljeni CSS razredi (napredni uporabniki)
@@ -328,7 +328,7 @@ Na zavihku **Oblikovanje** lahko spremenite videz urnika z lastnim CSS. Primeri 
 | `.snipi__bottom-row` | Spodnja fiksna vrstica |
 | `.snipi__logo` | Logotip |
 
-### Primeri
+### Primeri CSS po meri
 
 ```css
 /* Sprememba barve glave */
@@ -358,10 +358,10 @@ Na zavihku **Oblikovanje** lahko spremenite videz urnika z lastnim CSS. Primeri 
 ## Pogosta vprašanja
 
 **Kje dobim API ključ?**  
-API ključ je zadnji del URL naslova vašega zaslona v sistemu SNIPI (primer: `https://ustanova.snipi.si/BdhBcrRm8` → API ključ je `BdhBcrRm8`). Registrirani uporabniki SNIPIja seznam ekranov in API ključ najdete v razdelku **Rezervacija prostorov → Izpisi na ekranih**.<br> Kateri podatki se bodo prikazali na ekranu izberete pri ustvarjanju novega ekrana v SNIPIju oziroma s klikom na Uredi. Možnosti, ki so na voljo za prikaz podatkov, so: lokacije, prostori, projekti, šolski programi, izvajalci ipd.
+API ključ je zadnji del URL naslova vašega zaslona v sistemu SNIPI (primer: `https://ustanova.snipi.si/BdhBcrRm8` → API ključ je `BdhBcrRm8`). Registrirani uporabniki SNIPIja seznam ekranov in API ključ najdete v razdelku **Rezervacija prostorov → Izpisi na ekranih** (morate imeti izdelan ekran).<br> Kateri podatki se bodo prikazali na ekranu izberete pri ustvarjanju novega ekrana v SNIPIju oziroma s klikom na Uredi. Možnosti, ki so na voljo za prikaz podatkov, so: lokacije, prostori, projekti, šolski programi, izvajalci ipd.
 
 **Koliko ekranov lahko ustvarim?**  
-Ni omejitve — ustvarite lahko toliko ekranov, kolikor jih potrebujete. Za prikaze različnih podatkov najprej ekran ustvarite v SNIPIju in izberite parametre, nato pa še v Wordpress vtičniku. Vsak ima ločene nastavitve in svojo kratko kodo.
+Ni omejitve — ustvarite lahko toliko ekranov, kolikor jih potrebujete. Za prikaze različnih podatkov najprej ekran ustvarite v SNIPIju in izberite parametre, nato pa še v Wordpress vtičniku. Vsak ima lahko ločene nastavitve in svojo kratko kodo.
 
 **Ali vtičnik deluje na starejših TV ekranih?**  
 Da. Prikaz je optimiziran za starejše brskalnike Smart TV (vključno s Samsung Tizen pred letom 2018). Vtičnik ne uporablja jQuery ali modernih ogrodij — samo čisti JavaScript.
@@ -403,7 +403,7 @@ Predvidoma do konca leta 2026. Sledite repozitoriju na GitHubu za novosti.
 
 ## Podpora in kontakt
 
-Za prijavo napak in predloge novih funkcionalnosti uporabite [GitHub Issues](https://github.com/Squarebow/snipi-ekrani/issues).
+Za prijavo napak in predloge novih funkcionalnosti administratorji uporabite [GitHub Issues](https://github.com/Squarebow/snipi-ekrani/issues).
 
 Tehnična pomoč pri namestitvi ali naročilo prilagoditev: [Pišite nam](mailto:info@squarebow.com?subject=SNIPI%20Ekrani%20podpora)
 
@@ -420,16 +420,16 @@ SNIPI podpora (Dejan Dular): [SNIPI podpora](mailto:dejan@snipi.si)
 - Avtomatska zaznava Smart TV ekranov
 - TV optimizacija: zero-scroll, dinamično skaliranje pisave
 - Podpora za HD Ready, Full HD in 4K resolucije
-- Nov meta box TV Optimizacija v skrbniškem vmesniku
+- Nov metabox TV Optimizacija v skrbniškem vmesniku
 
 ### v2.1.0
 - FontAwesome ikone v skrbniškem vmesniku
-- WordPress Settings API integracija z avtomatično sanitizacijo
+- WordPress Settings API integracija z avtomatično HTML sanitizacijo
 
 ### v2.0.0
 - Popolna prenova arhitekture v 6 ločenih modulov
 - Nov 60:40 layout (nastavitve + vgrajeni priročnik)
-- Sistem jezičkov (Nastavitve | Oblikovanje)
+- Sistem zavihkov (Nastavitve | Oblikovanje)
 - Vsi komentarji v kodi v slovenščini
 
 ---
