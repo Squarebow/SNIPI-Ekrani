@@ -215,7 +215,7 @@ Ob kliku se odpre urnik v novi zavihku.
 
 #### Opomba v primeru (ne)prikazovanja) urnika na strani pri vgradnji z iframe metodo
 
-- Če je stran z urnikom na **isti domeni** kot stran, na katero jo vgrajujete, teh omejitev ni in iframe bo deloval brez posebnih nastavitev.
+- Če je stran z urnikom na **isti domeni** kot stran, na katero jo vgrajujete, ni nobenih omejitev in iframe bo deloval brez posebnih nastavitev.
 - Če je stran z urnikom na **drugi domeni**, mora strežnik dovoliti vgradnjo — glava `X-Frame-Options` ne sme biti nastavljena na `SAMEORIGIN` ali `DENY`.
 
 Kar vpliva na vgradnjo z iframom je glava `X-Frame-Options` (ali `Content-Security-Policy: frame-ancestors`) na vaši ciljni strani (kamor vgrajujete iframe)!
