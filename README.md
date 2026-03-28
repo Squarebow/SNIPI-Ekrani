@@ -120,7 +120,7 @@ Po shranjevanju se prikaže vaša **kratka koda** za vgradnjo, na primer:
 
 V WordPressu **ustvarite novo stran** in po poimenujte npr. ekran. Kratko kodo prilepite na stran z uporabo bloka "HTML po meri" ali "Kratka koda". Shranite stran in jo osvežite v  brskalniku (Ctrl + F5) - urnik se bo prikazal.
 
-> **Priporočilo:** Wordpress stran, kjer želite prikazati urnik, naj bo **popolnoma prazna**. To pomeni, da je na njej priporočljivo odstraniti oziroma skriti privzeto glavo in nogo (header & footer).
+> **Priporočilo:** Wordpress stran, kjer želite prikazati urnik, naj bo **popolnoma prazna**. To pomeni, da je na njej priporočljivo odstraniti oziroma skriti privzeto glavo in nogo (header & footer). Za tehnično izvedbo se obrnite na skrbnika vaše spletne strani.
 
 Odvisno od vaše Wordpress teme, gradnikov (blocks, Elementor ipd.) ter vtičnikov, je to mogoče narediti na več načinov. Nekatere sodobne teme omogočajo izključitev prikaza glave in noge na posameznih stranehv prilagoditvah teme (customizer).
 
@@ -131,7 +131,7 @@ Odvisno od vaše Wordpress teme, gradnikov (blocks, Elementor ipd.) ter vtičnik
 
 ### 6. Vgradnja urnika med vsebino vaše strani (iframe)
 
-Ko ste urnik izdelali in shranili, ga lahko kot HTML element vgradite tudi **na katero koli obstoječo spletno stran (page) ali objavo (post)** bodisi z uporabo enake kratke kode kot v prejšnjem koraku ali pa z elementom `<iframe>`.
+Ko ste urnik izdelali in shranili, ga lahko kot HTML element vgradite tudi **na katero koli obstoječo spletno stran (page) ali objavo (post)**, bodisi z uporabo enake kratke kode kot v prejšnjem koraku, ali pa z elementom `<iframe>`.
 
 Spodnji primer prikazuje urnik pomanjšan v razmerju 2:3, tako da se prilagodi manjšemu prostoru na strani, a ohrani izvorno obliko.
 
