@@ -171,7 +171,7 @@ Nato kopirajte in prilepite spodnjo kodo v HTML blok na strani ali objavi, kjer 
     
         href="https://mopja-domena/urnik"
         target="_blank"
-        title="Odpri celotno stran"
+        title="Odpri celo stran"
         style="
             position: absolute;
             top: 0;
@@ -188,7 +188,7 @@ Nato kopirajte in prilepite spodnjo kodo v HTML blok na strani ali objavi, kjer 
 
 ---
 
-#### Kako to deluje
+#### Kako deluje
 
 Iframe je nastavljen na **150 % širine in višine** vsebnika, nato pa pomanjšan nazaj na **66,7 %** z `transform: scale(0.667)`. Rezultat je urnik v polni ločljivosti, ki vizualno zasede manjši prostor — brez drsnih vrstic in brez deformacije besedila ali elementov.
 
