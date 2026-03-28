@@ -1,12 +1,12 @@
 # SNIPI Ekrani
 
-**Prikaz urnikov iz sistema Snipi na velikih TV zaslonih.**
+**Prikaz urnikov iz sistema SNIPI na velikih TV zaslonih in spletnih straneh**
 
 ![WordPress](https://img.shields.io/badge/WordPress-6.7%2B-21759B?logo=wordpress&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)
 ![Licenca](https://img.shields.io/badge/Licenca-GPLv2-green)
 ![Verzija](https://img.shields.io/badge/Verzija-2.3.5-blue)
-![Status](https://img.shields.io/badge/Status-Stabilna-brightgreen)
+![Status](https://img.shields.io/badge/Status-Stabilna-verzija-brightgreen)
 
 ---
 
