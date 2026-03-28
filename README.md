@@ -131,7 +131,13 @@ Odvisno od vaše Wordpress teme, gradnikov (blocks, Elementor ipd.) ter vtičnik
 
 ### 6. Vgradnja urnika med vsebino vaše strani (iframe)
 
-Ko ste urnik izdelali in shranili, ga lahko kot HTML element vgradite tudi **na katero koli obstoječo spletno stran (page) ali objavo (post)** bodisi z uporabo enake kratke kode kot v prejšnjem koraku ali pa z elementom `<iframe>`.<br> Spodnji primer prikazuje urnik pomanjšan v razmerju 2:3, tako da se prilagodi manjšemu prostoru na strani, a ohrani izvorno obliko. Ključno je, da **uporabite url strani, na kateri imate kratko kodo urnika**.<br> Na primer, če ste Wordpress stran z urnikom poimenovali urnik-pritlicje, boste v iframe vstavili url `https://moja-ustanova/urnik-pritlicje`.<br> Kopirajte in prilepite spodnjo kodo v HTML blok na strani ali objavi, kjer želite prikazati urnik, in **spremenite URL** ter po potrebi velikost (max-width).
+Ko ste urnik izdelali in shranili, ga lahko kot HTML element vgradite tudi **na katero koli obstoječo spletno stran (page) ali objavo (post)** bodisi z uporabo enake kratke kode kot v prejšnjem koraku ali pa z elementom `<iframe>`.
+
+Spodnji primer prikazuje urnik pomanjšan v razmerju 2:3, tako da se prilagodi manjšemu prostoru na strani, a ohrani izvorno obliko.
+
+Ključno je, da **uporabite url strani, na kateri imate kratko kodo urnika**. Na primer, če ste Wordpress stran z urnikom poimenovali urnik-pritlicje, boste v iframe vstavili url `https://moja-ustanova/urnik-pritlicje`.
+
+Nato kopirajte in prilepite spodnjo kodo v HTML blok na strani ali objavi, kjer želite prikazati urnik, in **spremenite URL** ter po potrebi velikost (max-width).
 
 ---
 
