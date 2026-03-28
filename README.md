@@ -28,7 +28,7 @@
 
 ## O vtičniku
 
-**SNIPI Ekrani** je WordPress vtičnik, ki prikazuje urnike iz CRM sistema *SNIPI* na velikih LCD zaslonih in pametnih televizorjih — brez kakršnegakoli ročnega posodabljanja.
+**SNIPI Ekrani** je WordPress vtičnik, ki prikazuje urnike iz CRM sistema **SNIPI** na velikih LCD zaslonih in pametnih televizorjih — brez ročnega posodabljanja.
 
 Namenjen je šolam, fakultetam in drugim izobraževalnim ustanovam, ki že uporabljajo SNIPI za upravljanje urnikov. Podatki se samodejno osvežujejo v živo, zaslon pa se prilagodi vsaki ločljivosti — od navadnega monitorja do 4K TV zaslona.
 
@@ -42,7 +42,7 @@ Namenjen je šolam, fakultetam in drugim izobraževalnim ustanovam, ki že upora
 - Označuje aktivne (trenutno potekajoče) dogodke
 - Lahko prikazuje urnik za prihodnje dni (do 30 dni vnaprej)
 - Podpira vikend način (v petek po zadnjem dogodku preskoči soboto in nedeljo ter na ekranu prikazuje dogodke od prihodnjega ponedeljka dalje)
-- Po želji prikazuje stolpec PROGRAM
+- Po želji prikazuje stolpec PROGRAM (vsebina je odvisna od vaše konfiguracije v SNIPIju)
 
 ### TV optimizacija
 - Samodejno zazna pametne TV ekrane (Samsung, LG, Sony itd.)
@@ -67,7 +67,7 @@ Namenjen je šolam, fakultetam in drugim izobraževalnim ustanovam, ki že upora
 ---
 
 ## Namestitev
-1. [Prenesite najnovejšo ZIP datoteko vtičnika] (https://github.com/Squarebow/SNIPI-Ekrani/releases/download/v2.3.5/SNIPI-Ekrani-v2.3.5.zip)
+1. [Prenesite najnovejšo ZIP datoteko vtičnika](https://github.com/Squarebow/SNIPI-Ekrani/releases/download/v2.3.5/SNIPI-Ekrani-v2.3.5.zip)
 2. V WordPress skrbniškem vmesniku pojdite na **Vtičniki → Dodaj nov vtičnik**
 3. Kliknite **Naloži vtičnik** in izberite preneseno ZIP datoteko
 4. Kliknite **Namesti zdaj**, nato **Aktiviraj**
@@ -76,15 +76,17 @@ Namenjen je šolam, fakultetam in drugim izobraževalnim ustanovam, ki že upora
 
 ---
 
-## Začetek uporabe
+## Uporaba
 
-### 1. Ustvarite nov ekran
+### 1. Najprej ustvarite ekran v SNIPIju
 
-V skrbniškem meniju na levi kliknite **SNIPI ekrani → Dodaj ekran**.
+Registrirani uporabniki SNIPIja se po prijavi pomaknite v razdelek **Rezervacija prostorov → Izpisi na ekranih**. Ustvarite nov ekran ali uredite obstoječega.
 
-### 2. Vnesite API ključ
+Izberite, katere podatke želite prikazati na ekranu. Možnosti, ki so na voljo za prikaz, vključujejo: lokacije, prostore, projekte, šolske programe, izvajalce ipd.
 
-API ključ je zadnji del URL naslova vašega zaslona v sistemu SNIPI.
+> **Pomembno:** Po potrebi lahko ustvarite več ekranov z različnimi konfiguracijami za prikaz na različnih straneh, objavah ali TV zaslonih!
+
+Ko ekran v SNIPIju shranite, dobi URL povezavo. **API ključ** je zadnji del URL naslova vašega zaslona v SNIPIju.
 
 **Primer:**
 ```
@@ -93,27 +95,37 @@ https://ustanova.snipi.si/BdhBcrRm8
                     API ključ = BdhBcrRm8
 ```
 
-Ključ vnesite v polje **API ključ** na strani za urejanje ekrana ga shranite.
+Kopirajte API ključ za naslednji korak!
 
-### 3. Kopirajte kratko kodo
 
-Po shranjevanju se prikaže vaša kratka koda, na primer:
+### 2. Ustvarite nov ekran v Wordpressu
+
+Po namestitvi in aktivaciji tega vtičnika v skrbniškem meniju na levi kliknite **SNIPI ekrani → Dodaj ekran**.
+
+
+### 3. Vnesite API ključ
+
+Kopirani ključ prilepite ali vpišite v polje **API ključ** na strani za urejanje ekrana ga shranite.
+
+
+### 4. Kopirajte kratko kodo
+
+Po shranjevanju se prikaže vaša **kratka koda** za vgradnjo, na primer:
 
 ```
 [snipi_ekran id="123"]
 ```
 
-### 4. Vgradnja na Wordpress stran
+### 5. Vgradnja na Wordpress stran
 
-Kratko kodo prilepite na katero koli stran ali objavo v WordPressu — urnik se bo prikazal. Pritisnite v brskalniku Ctrl + F5 za osvežitev strani.
+V WordPressu **ustvarite novo stran** in po poimenujte npr. ekran. Kratko kodo prilepite na stran z uporabo bloka "HTML po meri" ali "Kratka koda". Shranite stran in jo osvežite v  brskalniku (Ctrl + F5) - urnik se bo prikazal.
 
-> **Priporočilo:** Wordpress stran, kjer želite prikazati urnik, naj bo popolnoma prazna. To pomeni, da je na njej priporočljivo odstraniti oziroma skriti privzeto glavo in nogo (header & footer). Odvisno od vaše Wordpress teme, gradnikov (blocks, Elementor ipd.) ter vtičnikov, je to mogoče narediti na več načinov. Nekatere sodobne teme omogočajo izključitev prikaza glave in noge na posameznih straneh. Če te možnosti nimate, je potrebno te elemente "skriti" s CSS kodo, da se ne prikazujejo na ekranu. Če uporabljate vtičnik za medpomnjenje (caching), je url strani, npr. `moja-ustanova.si/ekran` priporočeno dodati med izključitve (do not cache).
+> **Priporočilo:** Wordpress stran, kjer želite prikazati urnik, naj bo popolnoma prazna. To pomeni, da je na njej priporočljivo odstraniti oziroma skriti privzeto glavo in nogo (header & footer).<br> Odvisno od vaše Wordpress teme, gradnikov (blocks, Elementor ipd.) ter vtičnikov, je to mogoče narediti na več načinov. Nekatere sodobne teme omogočajo izključitev prikaza glave in noge na posameznih stranehv prilagoditvah teme (customizer).<br> Če te možnosti nimate, je potrebno te elemente "skriti" s CSS kodo, da se ne prikazujejo na ekranu.<br> Če uporabljate vtičnik za medpomnjenje (caching), je url strani, npr. `moja-ustanova.si/ekran` priporočeno dodati med izključitve (do not cache).
 
-> **Namig:** Kateri podatki se bodo prikazovali na ekranu *izberete pri ustvarjanju novega ekjrana v SNIPIju oziroma s klikom na Uredi*. Možnosti, ki so na voljo za prikaz podatkov, vključujejo: lokacije, prostore, projekte, šolske programe, izvajalce ipd. Registrirani uporabniki SNIPIja seznam ekranov in API ključ najdete v razdelku *Rezervacija prostorov → Izpisi na ekranih*.
 
-### 5. Vgradnja urnika med vsebino vaše strani (iframe)
+### 6. Vgradnja urnika med vsebino vaše strani (iframe)
 
-Ko ste urnik izdelali in shranili, ga lahko kot HTML element vgradite tudi na katero koli obstoječo spletno stran (page) ali objavo (post) z elementom `<iframe>`. Spodnji primer prikazuje urnik pomanjšan v razmerju 2:3, tako da se prilagodi manjšemu prostoru na strani, a ohrani izvorno obliko. Ključno je, da *uporabite url strani, na kateri imate kratko kodo urnika*. Na primer, če ste Wordpress stran z urnikom poimenovali urnik-pritlicje, boste v iframe vstavili url https://moja-ustanova/urnik-pritlicje. Kopirajte in prilepite spodnjo kodo v HTML blok na strani ali objavi, kjer želite prikazati urnik, in *spremenite URL* ter po potrebi velikost.
+Ko ste urnik izdelali in shranili, ga lahko kot HTML element vgradite tudi **na katero koli obstoječo spletno stran (page) ali objavo (post)** bodisi z uporabo enake kratke kode kot v prejšnjem koraku ali pa z elementom `<iframe>`.<br> Spodnji primer prikazuje urnik pomanjšan v razmerju 2:3, tako da se prilagodi manjšemu prostoru na strani, a ohrani izvorno obliko. Ključno je, da **uporabite url strani, na kateri imate kratko kodo urnika**.<br> Na primer, če ste Wordpress stran z urnikom poimenovali urnik-pritlicje, boste v iframe vstavili url `https://moja-ustanova/urnik-pritlicje`.<br> Kopirajte in prilepite spodnjo kodo v HTML blok na strani ali objavi, kjer želite prikazati urnik, in **spremenite URL** ter po potrebi velikost (max-width).
 
 ---
 
@@ -189,7 +201,7 @@ Ob kliku se odpre urnik v novi zavihku.
 
 ---
 
-#### Opomba glede (ne)prikazovanja) urnika na strani pri vgradnji z iframe metodo
+#### Opomba v primeru (ne)prikazovanja) urnika na strani pri vgradnji z iframe metodo
 
 - Če je stran z urnikom na **isti domeni** kot stran, na katero jo vgrajujete, teh omejitev ni in iframe bo deloval brez posebnih nastavitev.
 - Če je stran z urnikom na **drugi domeni**, mora strežnik dovoliti vgradnjo — glava `X-Frame-Options` ne sme biti nastavljena na `SAMEORIGIN` ali `DENY`.
@@ -256,8 +268,6 @@ Vtičnik samodejno prepozna, ali je zaslon priklopljen na pametni TV (Samsung Ti
 
 ## Oblikovanje
 
-Na jezičku **Oblikovanje** lahko spremenite videz urnika z lastnim CSS. Za napredne uporabnike so na voljo so tudi primeri in referenca CSS razredov.
-
 ### Zgradba zaslona
 
 Zaslon urnika je sestavljen iz štirih področij. Vsako področje lahko oblikujete neodvisno.
@@ -294,10 +304,12 @@ Prikazuje se na dnu zaslona in ostane vidna ves čas, neodvisno od vsebine tabel
 
 Kar lahko spremenite: barvo ozadja in pisave, višino, poravnavo vsebine, robove in obrobe.
 
-
 ###  Uporabljeni CSS razredi (napredni uporabniki)
 
-| Razred | Element |
+Na zavihku **Oblikovanje** lahko spremenite videz urnika z lastnim CSS. Primeri in reference CSS razredov (class).
+
+
+| Class | Element |
 |---|---|
 | `.snipi` | Celoten blok urnika |
 | `.snipi__header` | Glava (logotip, datum, ura) |
@@ -340,10 +352,10 @@ Kar lahko spremenite: barvo ozadja in pisave, višino, poravnavo vsebine, robove
 ## Pogosta vprašanja
 
 **Kje dobim API ključ?**  
-API ključ je zadnji del URL naslova vašega zaslona v sistemu SNIPI (primer: `https://ustanova.snipi.si/BdhBcrRm8` → API ključ je `BdhBcrRm8`). Registrirani uporabniki SNIPIja seznam ekranov in API ključ najdete v razdelku *Rezervacija prostorov → Izpisi na ekranih*. Kateri podatki se bodo prikazali na ekranu izberete pri ustvarjanju novega ekrana v SNIPIju oziroma s klikom na Uredi. Možnosti, ki so na voljo za prikaz podatkov, so: lokacije, prostori, projekti, šolski programi, izvajalci ipd.
+API ključ je zadnji del URL naslova vašega zaslona v sistemu SNIPI (primer: `https://ustanova.snipi.si/BdhBcrRm8` → API ključ je `BdhBcrRm8`). Registrirani uporabniki SNIPIja seznam ekranov in API ključ najdete v razdelku **Rezervacija prostorov → Izpisi na ekranih**.<br> Kateri podatki se bodo prikazali na ekranu izberete pri ustvarjanju novega ekrana v SNIPIju oziroma s klikom na Uredi. Možnosti, ki so na voljo za prikaz podatkov, so: lokacije, prostori, projekti, šolski programi, izvajalci ipd.
 
 **Koliko ekranov lahko ustvarim?**  
-Ni omejitve — ustvarite toliko ekranov, kolikor jih potrebujete. Vsak ima ločene nastavitve in svojo kratko kodo.
+Ni omejitve — ustvarite lahko toliko ekranov, kolikor jih potrebujete. Za prikaze različnih podatkov najprej ekran ustvarite v SNIPIju in izberite parametre, nato pa še v Wordpress vtičniku. Vsak ima ločene nastavitve in svojo kratko kodo.
 
 **Ali vtičnik deluje na starejših TV ekranih?**  
 Da. Prikaz je optimiziran za starejše brskalnike Smart TV (vključno s Samsung Tizen pred letom 2018). Vtičnik ne uporablja jQuery ali modernih ogrodij — samo čisti JavaScript.
@@ -422,5 +434,5 @@ Vtičnik je licenciran pod [GPLv2 ali novejšo](https://www.gnu.org/licenses/gpl
 
 ---
 
-**Razvil:** Aleš Lednik · [SquareBow](https://squarebow.com)  
+**Avtor:** Aleš Lednik · [SquareBow](https://squarebow.com)  
 **Narejeno s ❤️ v Sloveniji**
