@@ -120,9 +120,12 @@ Po shranjevanju se prikaže vaša **kratka koda** za vgradnjo, na primer:
 
 V WordPressu **ustvarite novo stran** in po poimenujte npr. ekran. Kratko kodo prilepite na stran z uporabo bloka "HTML po meri" ali "Kratka koda". Shranite stran in jo osvežite v  brskalniku (Ctrl + F5) - urnik se bo prikazal.
 
-> **Priporočilo:** Wordpress stran, kjer želite prikazati urnik, naj bo popolnoma prazna. To pomeni, da je na njej priporočljivo odstraniti oziroma skriti privzeto glavo in nogo (header & footer).<br> 
-Odvisno od vaše Wordpress teme, gradnikov (blocks, Elementor ipd.) ter vtičnikov, je to mogoče narediti na več načinov. Nekatere sodobne teme omogočajo izključitev prikaza glave in noge na posameznih stranehv prilagoditvah teme (customizer).<br> 
-Če te možnosti nimate, je potrebno te elemente "skriti" s CSS kodo, da se ne prikazujejo na ekranu.<br> 
+> **Priporočilo:** Wordpress stran, kjer želite prikazati urnik, naj bo **popolnoma prazna**. To pomeni, da je na njej priporočljivo odstraniti oziroma skriti privzeto glavo in nogo (header & footer).
+
+Odvisno od vaše Wordpress teme, gradnikov (blocks, Elementor ipd.) ter vtičnikov, je to mogoče narediti na več načinov. Nekatere sodobne teme omogočajo izključitev prikaza glave in noge na posameznih stranehv prilagoditvah teme (customizer).
+
+Če te možnosti nimate, je potrebno te elemente "skriti" s CSS kodo, da se ne prikazujejo na ekranu.
+
 Če uporabljate vtičnik za medpomnjenje (caching), je url strani, npr. `moja-ustanova.si/ekran` priporočeno dodati **med izključitve (do not cache)**.
 
 
